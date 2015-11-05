@@ -18,6 +18,10 @@ redux state and keeps it in sync with any react-router changes.
 Additionally, you can change the URL via redux and react-router will
 change accordingly.
 
+```js
+npm install redux-simple-router
+```
+
 ## Isn't there already redux-router?
 
 [redux-router](https://github.com/rackt/redux-router) is another
