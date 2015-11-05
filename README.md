@@ -1,5 +1,5 @@
 
-# redux-simple-routing
+# redux-simple-router
 
 [Redux](https://github.com/rackt/redux) is cool.
 [react-router](https://github.com/rackt/react-router) is neat. The

@@ -1,11 +1,11 @@
 {
-  "name": "redux-simple-routing",
+  "name": "redux-simple-router",
   "version": "0.0.6",
   "description": "Ruthlessly simple bindings to keep react-router and redux in sync",
   "main": "lib/index",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jlongster/redux-simple-routing.git"
+    "url": "https://github.com/jlongster/redux-simple-router.git"
   },
   "authors": [
     "James Long"
