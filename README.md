@@ -26,7 +26,7 @@ npm install redux-simple-router
 
 [redux-router](https://github.com/rackt/redux-router) is another
 project which solves the same problem. However, it's far more complex.
-Just looks look at this code: the whole thing is only 68 lines of JS.
+Just look at this code: the whole thing is only 68 lines of JS.
 redux-router is much bigger and more complex.
 
 That said, redux-router is a fine project and has features this
@@ -48,7 +48,7 @@ It should be very future-proof with any versions of either libraries.
 
 ## How to Use
 
-The idea of this libray is to use react-router's functionality exactly
+The idea of this library is to use react-router's functionality exactly
 like its documentation tells you to. You can access all of its APIs in
 routing components. Additionally, you can use redux like you normally
 would, with a single app state and "connected" components. It's even
@@ -61,16 +61,17 @@ it, and also change it with an action.
 Here's some code:
 
 ```js
-const { createStore } = require('redux');
+const { createStore, combineReducers } = require('redux');
 const { Provider } = require('react-redux');
 const { Router, Route } = require('react-router');
 const createBrowserHistory = require('history/lib/createBrowserHistory');
 const { syncReduxAndRouter, routeReducer } = require('redux-simple-routing');
 const reducers = require('<project-path>/reducers');
 
-const store = createStore(Object.assign({}, reducers, {
+const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
-});
+}));
+const store = createStore(reducer);
 const history = createBrowserHistory();
 
 syncReduxAndRouter(history, store);
@@ -121,7 +122,7 @@ function update(state, action) {
 ### `syncReduxAndRouter(history, store)`
 
 Call this with a react-router and a redux store instance to install
-hooks that always keep both of them in sync. When one changes, so with
+hooks that always keep both of them in sync. When one changes, so will
 the other.
 
 ### `routeReducer`
