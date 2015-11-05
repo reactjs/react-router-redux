@@ -58,7 +58,7 @@ function syncReduxAndRouter(history, store) {
     // edge cases.
     if(routing.path !== locationToString(window.location) &&
        !routing.noRouterUpdate) {
-      history.pushState(null, routeState.path);
+      history.pushState(null, routing.path);
     }
   });
 }
