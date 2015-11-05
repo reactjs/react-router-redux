@@ -20,7 +20,7 @@ function update(state=initialState, action) {
   if(action.type === UPDATE_PATH) {
     return Object.assign({}, state, {
       path: action.path,
-      noRouterUpdate: noRouterUpdate
+      noRouterUpdate: action.noRouterUpdate
     });
   }
   return state;
