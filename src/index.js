@@ -5,10 +5,11 @@ const UPDATE_PATH = "@@router/UPDATE_PATH";
 
 // Action creator
 
-function updatePath(path) {
+function updatePath(path, noRouterUpdate) {
   return {
     type: UPDATE_PATH,
-    path: path
+    path: path,
+    noRouterUpdate: noRouterUpdate
   }
 }
 
@@ -17,7 +18,10 @@ function updatePath(path) {
 const initialState = {};
 function update(state=initialState, action) {
   if(action.type === UPDATE_PATH) {
-    return Object.assign({}, state, { path: action.path });
+    return Object.assign({}, state, {
+      path: action.path,
+      noRouterUpdate: noRouterUpdate
+    });
   }
   return state;
 }
