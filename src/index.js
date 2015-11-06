@@ -29,9 +29,7 @@ function update(state=initialState, action) {
 // Syncing
 
 function locationToString(location) {
-  return location.pathname +
-    (location.search ? ('?' + location.search) : '') +
-    (location.hash ? ('#' + location.hash) : '');
+  return location.pathname + location.search + location.hash;
 }
 
 function syncReduxAndRouter(history, store) {
