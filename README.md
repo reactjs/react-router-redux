@@ -65,7 +65,7 @@ const { createStore, combineReducers } = require('redux');
 const { Provider } = require('react-redux');
 const { Router, Route } = require('react-router');
 const createBrowserHistory = require('history/lib/createBrowserHistory');
-const { syncReduxAndRouter, routeReducer } = require('redux-simple-routing');
+const { syncReduxAndRouter, routeReducer } = require('redux-simple-router');
 const reducers = require('<project-path>/reducers');
 
 const reducer = combineReducers(Object.assign({}, reducers, {
@@ -94,7 +94,7 @@ more likely that you want to change the URL more often, however. You
 can use the `updatePath` action creator the we provide:
 
 ```js
-const { updatePath } = require ('redux-simple-routing');
+const { updatePath } = require ('redux-simple-router');
 
 function MyComponent({ dispatch }) {
   return <Button onClick={() => dispatch(updatePath('/foo'))}/>;
@@ -107,7 +107,7 @@ Additionally, if you want to respond to the path update action, just
 handle the `UPDATE_PATH` constant that we provide:
 
 ```js
-const { UPDATE_PATH } = require('redux-simple-routing');
+const { UPDATE_PATH } = require('redux-simple-router');
 
 function update(state, action) {
   switch(action.type) {
