@@ -3,7 +3,7 @@
 
 [Redux](https://github.com/rackt/redux) is cool.
 [react-router](https://github.com/rackt/react-router) is neat. The
-problem is that react-router manages an important piece of your piece
+problem is that react-router manages an important piece
 of your application state: the URL. If you are using redux, you want
 your app state to fully represent your UI; if you snapshotted the app
 state, you should be able to load it up later and see the same thing.
