@@ -1,7 +1,7 @@
 {
   "name": "redux-simple-router",
-  "version": "0.0.6",
-  "description": "Ruthlessly simple bindings to keep react-router and redux in sync",
+  "version": "0.0.7",
+  "description": "Ruthlessly simple bindings to keep react-router and redux in syncy",
   "main": "lib/index",
   "repository": {
     "type": "git",
