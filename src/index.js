@@ -15,7 +15,7 @@ const updatePath = (path, noRouterUpdate) => ({
 
 const initialState = {};
 
-const update = (state = initialState, { type, path }) => (
+const update = (state = initialState, { type, path, noRouterUpdate }) => (
   type === UPDATE_PATH
     ? Object.assign({}, state, {
       path,
