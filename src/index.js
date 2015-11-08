@@ -5,34 +5,30 @@ const UPDATE_PATH = "@@router/UPDATE_PATH";
 
 // Action creator
 
-function updatePath(path, noRouterUpdate) {
-  return {
-    type: UPDATE_PATH,
-    path: path,
-    noRouterUpdate: noRouterUpdate
-  }
-}
+const updatePath = (path, noRouterUpdate) => ({
+  type: UPDATE_PATH,
+  path,
+  noRouterUpdate
+});
 
 // Reducer
 
 const initialState = {};
-function update(state=initialState, action) {
-  if(action.type === UPDATE_PATH) {
-    return Object.assign({}, state, {
-      path: action.path,
-      noRouterUpdate: action.noRouterUpdate
-    });
-  }
-  return state;
-}
+
+const update = (state = initialState, { type, path, noRouterUpdate }) => (
+  type === UPDATE_PATH
+    ? Object.assign({}, state, {
+      path,
+      noRouterUpdate
+    })
+    : state
+);
 
 // Syncing
 
-function locationToString(location) {
-  return location.pathname + location.search + location.hash;
-}
+const locationToString = (location) => location.pathname + location.search + location.hash;
 
-function syncReduxAndRouter(history, store) {
+const syncReduxAndRouter = (history, store) => {
   if(!store.getState().routing) {
     throw new Error(
       "Cannot sync router: route state does not exist. Did you " +
@@ -49,7 +45,7 @@ function syncReduxAndRouter(history, store) {
   });
 
   store.subscribe(() => {
-    const routing = store.getState().routing;
+    const { routing } = store.getState();
     // Don't update the router if nothing has changed. The
     // `avoidRouterUpdate` flag can be set to avoid updating altogether,
     // which is useful for things like loading snapshots or very special
