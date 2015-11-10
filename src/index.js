@@ -54,7 +54,7 @@ function syncReduxAndRouter(history, store) {
   store.subscribe(() => {
     const routing = store.getState().routing;
     // Don't update the router if nothing has changed. The
-    // `avoidRouterUpdate` flag can be set to avoid updating altogether,
+    // `noRouterUpdate` flag can be set to avoid updating altogether,
     // which is useful for things like loading snapshots or very special
     // edge cases.
     if(routing.path !== locationToString(window.location) &&
