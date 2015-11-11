@@ -43,15 +43,15 @@ function syncReduxAndRouter(history, store) {
     );
   }
 
-  history.listen(location => {
+  const unsubscribeHistory = history.listen(location => {
     // Avoid dispatching an action if the store is already up-to-date,
-    // even if `history` wouldn't do anthing if the location is the same
+    // even if `history` wouldn't do anything if the location is the same
     if(store.getState().routing.path !== locationToString(location)) {
       store.dispatch(updatePath(locationToString(location)));
     }
   });
 
-  store.subscribe(() => {
+  const unsubscribeStore = store.subscribe(() => {
     const routing = store.getState().routing;
     // Don't update the router if nothing has changed. The
     // `noRouterUpdate` flag can be set to avoid updating altogether,
@@ -62,6 +62,11 @@ function syncReduxAndRouter(history, store) {
       history.pushState(null, routing.path);
     }
   });
+
+  return function unsubscribe() {
+    unsubscribeHistory();
+    unsubscribeStore();
+  };
 }
 
 module.exports = {
