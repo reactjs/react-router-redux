@@ -2,6 +2,7 @@
 // constants
 
 const UPDATE_PATH = "@@router/UPDATE_PATH";
+const SELECT_STATE = (state) => state.routing;
 
 // Action creator
 
@@ -35,19 +36,19 @@ function locationToString(location) {
   return location.pathname + location.search + location.hash;
 }
 
-function syncReduxAndRouter(history, store, prop='routing') {
-  const getRouterState = () => store.getState()[prop];
+function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
+  const getRouterState = () => selectRouterState(store.getState());
 
   if(!getRouterState()) {
     throw new Error(
       "Cannot sync router: route state does not exist. Did you " +
-      "install the reducer under the name `" + prop + "`?"
+      "install the reducer under the name `routing`?"
     );
   }
 
   const unsubscribeHistory = history.listen(location => {
     // Avoid dispatching an action if the store is already up-to-date,
-    // even if `history` wouldn't do anthing if the location is the same
+    // even if `history` wouldn't do anything if the location is the same
     if(getRouterState().path !== locationToString(location)) {
       store.dispatch(updatePath(locationToString(location)));
     }
