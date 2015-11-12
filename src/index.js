@@ -32,7 +32,9 @@ function update(state=initialState, action) {
 // Syncing
 
 function locationToString(location) {
-  return location.pathname + location.search + location.hash;
+  const regex = /\/#(\/[^\?]*)/.exec(location.href);
+  if( regex!==null && typeof regex[1] !== 'undefined') return regex[1];
+  else return location.pathname;
 }
 
 function syncReduxAndRouter(history, store) {
