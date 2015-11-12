@@ -15,7 +15,7 @@ function updatePath(path, noRouterUpdate) {
 
 // Reducer
 
-const initialState = typeof window === undefined ? {} : {
+const initialState = typeof window === 'undefined' ? {} : {
   path: locationToString(window.location)
 };
 
