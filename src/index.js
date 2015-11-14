@@ -2,7 +2,7 @@
 // constants
 
 const UPDATE_PATH = "@@router/UPDATE_PATH";
-const SELECT_STATE = (state) => state.routing;
+const SELECT_STATE = state => state.routing;
 
 // Action creator
 
@@ -42,7 +42,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   if(!getRouterState()) {
     throw new Error(
       "Cannot sync router: route state does not exist. Did you " +
-      "install the reducer under the name `routing`?"
+      "install the routing reducer?"
     );
   }
 

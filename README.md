@@ -119,11 +119,16 @@ function update(state, action) {
 
 ## API
 
-### `syncReduxAndRouter(history, store)`
+### `syncReduxAndRouter(history, store, selectRouterState?)`
 
 Call this with a react-router and a redux store instance to install
 hooks that always keep both of them in sync. When one changes, so will
 the other.
+
+Supply an optional function `selectRouterState` to customize where to
+find the router state on your app state. It defaults to `state =>
+state.routing`, so you would install the reducer under the name
+"routing". Feel free to change this to whatever you like.
 
 ### `routeReducer`
 
