@@ -2,6 +2,7 @@
 // constants
 
 const UPDATE_PATH = "@@router/UPDATE_PATH";
+const SELECT_STATE = (state) => state.routing;
 
 // Action creator
 
@@ -35,8 +36,10 @@ function locationToString(location) {
   return location.pathname + location.search + location.hash;
 }
 
-function syncReduxAndRouter(history, store) {
-  if(!store.getState().routing) {
+function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
+  const getRouterState = () => selectRouterState(store.getState());
+
+  if(!getRouterState()) {
     throw new Error(
       "Cannot sync router: route state does not exist. Did you " +
       "install the reducer under the name `routing`?"
@@ -46,13 +49,14 @@ function syncReduxAndRouter(history, store) {
   const unsubscribeHistory = history.listen(location => {
     // Avoid dispatching an action if the store is already up-to-date,
     // even if `history` wouldn't do anything if the location is the same
-    if(store.getState().routing.path !== locationToString(location)) {
+    if(getRouterState().path !== locationToString(location)) {
       store.dispatch(updatePath(locationToString(location)));
     }
   });
 
   const unsubscribeStore = store.subscribe(() => {
-    const routing = store.getState().routing;
+    const routing = getRouterState();
+
     // Don't update the router if nothing has changed. The
     // `noRouterUpdate` flag can be set to avoid updating altogether,
     // which is useful for things like loading snapshots or very special
