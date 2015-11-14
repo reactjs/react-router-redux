@@ -52,15 +52,19 @@ function syncReduxAndRouter(history, store) {
   });
 
   const unsubscribeStore = store.subscribe(() => {
-    const routing = store.getState().routing;
-    // Don't update the router if nothing has changed. The
-    // `noRouterUpdate` flag can be set to avoid updating altogether,
-    // which is useful for things like loading snapshots or very special
-    // edge cases.
-    if(routing.path !== locationToString(window.location) &&
-       !routing.noRouterUpdate) {
-      history.pushState(null, routing.path);
-    }
+    // Wait until all other listeners have fired and all react components are updated
+    // before triggering the new route; this ensures they all have the new data first.
+    setTimeout(function() {
+      const routing = store.getState().routing;
+      // Don't update the router if nothing has changed. The
+      // `noRouterUpdate` flag can be set to avoid updating altogether,
+      // which is useful for things like loading snapshots or very special
+      // edge cases.
+      if(routing.path !== locationToString(window.location) &&
+         !routing.noRouterUpdate) {
+        history.pushState(null, routing.path);
+      }
+    }, 0);
   });
 
   return function unsubscribe() {
