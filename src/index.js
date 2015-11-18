@@ -4,13 +4,21 @@
 const UPDATE_PATH = "@@router/UPDATE_PATH";
 const SELECT_STATE = state => state.routing;
 
-// Action creator
+// Action creators
 
 function updatePath(path, noRouterUpdate) {
   return {
     type: UPDATE_PATH,
     path: path,
     noRouterUpdate: noRouterUpdate
+  }
+}
+
+function replacePath(path) {
+  return {
+    type: UPDATE_PATH,
+    path: path,
+    replaceState: true
   }
 }
 
@@ -24,7 +32,8 @@ function update(state=initialState, action) {
   if(action.type === UPDATE_PATH) {
     return Object.assign({}, state, {
       path: action.path,
-      noRouterUpdate: action.noRouterUpdate
+      noRouterUpdate: action.noRouterUpdate,
+      replaceState: action.replaceState
     });
   }
   return state;
@@ -63,7 +72,12 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
     // edge cases.
     if(routing.path !== locationToString(window.location) &&
        !routing.noRouterUpdate) {
-      history.pushState(null, routing.path);
+      if(routing.replaceState) {
+        history.replaceState(null, routing.path);
+      }
+      else {
+        history.pushState(null, routing.path);
+      }
     }
   });
 
@@ -76,6 +90,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
 module.exports = {
   UPDATE_PATH,
   updatePath,
+  replacePath,
   syncReduxAndRouter,
   routeReducer: update,
 };
