@@ -51,6 +51,12 @@ This only depends on the `history.listen` function from react-router
 and the `store.getState` and `store.subscribe` functions from redux.
 It should be very future-proof with any versions of either libraries.
 
+## Examples
+
+There are examples in the `examples` directory:
+
+1. [basic](https://github.com/jlongster/redux-simple-router/blob/master/examples/basic)
+
 ## How to Use
 
 The idea of this library is to use react-router's functionality exactly
