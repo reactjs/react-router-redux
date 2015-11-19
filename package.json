@@ -36,5 +36,8 @@
     "isparta": "^4.0.0",
     "mocha": "^2.3.4",
     "redux": "^3.0.4"
+  },
+  "dependencies": {
+    "deep-equal": "^1.0.1"
   }
 }

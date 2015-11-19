@@ -1,5 +1,5 @@
 const expect = require('expect');
-const { updatePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } = require('../src/index');
+const { pushPath, replacePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } = require('../src/index');
 const { createStore, combineReducers } = require('redux');
 const { createMemoryHistory: createHistory } = require('history');
 
@@ -12,17 +12,41 @@ function createSyncedHistoryAndStore() {
   return { history, store };
 }
 
-describe('updatePath', () => {
+describe('pushPath', () => {
   it('creates actions', () => {
-    expect(updatePath('/foo')).toEqual({
+    expect(pushPath('/foo', { bar: 'baz' })).toEqual({
       type: UPDATE_PATH,
       path: '/foo',
+      replace: false,
+      state: { bar: 'baz' },
       avoidRouterUpdate: false
     });
 
-    expect(updatePath('/foo', { avoidRouterUpdate: true })).toEqual({
+    expect(pushPath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
       type: UPDATE_PATH,
       path: '/foo',
+      state: undefined,
+      replace: false,
+      avoidRouterUpdate: true
+    });
+  });
+});
+
+describe('replacePath', () => {
+  it('creates actions', () => {
+    expect(replacePath('/foo', { bar: 'baz' })).toEqual({
+      type: UPDATE_PATH,
+      path: '/foo',
+      replace: true,
+      state: { bar: 'baz' },
+      avoidRouterUpdate: false
+    });
+
+    expect(replacePath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
+      type: UPDATE_PATH,
+      path: '/foo',
+      state: undefined,
+      replace: true,
       avoidRouterUpdate: true
     });
   });
@@ -37,9 +61,12 @@ describe('routeReducer', () => {
   it('updates the path', () => {
     expect(routeReducer(state, {
       type: UPDATE_PATH,
-      path: '/bar'
+      path: '/bar',
+      replace: false
     })).toEqual({
       path: '/bar',
+      replace: false,
+      state: undefined,
       changeId: 2
     });
   });
@@ -48,9 +75,12 @@ describe('routeReducer', () => {
     expect(routeReducer(state, {
       type: UPDATE_PATH,
       path: '/bar',
+      replace: false,
       avoidRouterUpdate: true
     })).toEqual({
       path: '/bar',
+      replace: false,
+      state: undefined,
       changeId: 1
     });
   });
@@ -63,9 +93,15 @@ describe('syncReduxAndRouter', () => {
 
     history.pushState(null, '/foo');
     expect(store.getState().routing.path).toEqual('/foo');
+    expect(store.getState().routing.state).toBe(null);
+
+    history.pushState({ bar: 'baz' }, '/foo');
+    expect(store.getState().routing.path).toEqual('/foo');
+    expect(store.getState().routing.state).toEqual({ bar: 'baz' });
 
     history.pushState(null, '/bar');
     expect(store.getState().routing.path).toEqual('/bar');
+    expect(store.getState().routing.state).toBe(null);
 
     history.pushState(null, '/bar?query=1');
     expect(store.getState().routing.path).toEqual('/bar?query=1');
@@ -78,31 +114,49 @@ describe('syncReduxAndRouter', () => {
     const { history, store } = createSyncedHistoryAndStore();
     expect(store.getState().routing).toEqual({
       path: '/',
-      changeId: 1
+      changeId: 1,
+      replace: false,
+      state: undefined
     });
 
-    store.dispatch(updatePath('/foo'));
+    store.dispatch(pushPath('/foo'));
     expect(store.getState().routing).toEqual({
       path: '/foo',
-      changeId: 2
+      changeId: 2,
+      replace: false,
+      state: undefined
     });
 
-    store.dispatch(updatePath('/bar'));
+    store.dispatch(pushPath('/foo', { bar: 'baz' }));
+    expect(store.getState().routing).toEqual({
+      path: '/foo',
+      changeId: 3,
+      replace: false,
+      state: { bar: 'baz' }
+    });
+
+    store.dispatch(pushPath('/bar'));
     expect(store.getState().routing).toEqual({
       path: '/bar',
-      changeId: 3
+      changeId: 4,
+      replace: false,
+      state: undefined
     });
 
-    store.dispatch(updatePath('/bar?query=1'));
+    store.dispatch(pushPath('/bar?query=1'));
     expect(store.getState().routing).toEqual({
       path: '/bar?query=1',
-      changeId: 4
+      changeId: 5,
+      replace: false,
+      state: undefined
     });
 
-    store.dispatch(updatePath('/bar?query=1#hash=2'));
+    store.dispatch(pushPath('/bar?query=1#hash=2'));
     expect(store.getState().routing).toEqual({
       path: '/bar?query=1#hash=2',
-      changeId: 5
+      changeId: 6,
+      replace: false,
+      state: undefined
     });
   });
 
@@ -110,19 +164,25 @@ describe('syncReduxAndRouter', () => {
     const { history, store } = createSyncedHistoryAndStore();
     expect(store.getState().routing).toEqual({
       path: '/',
-      changeId: 1
+      changeId: 1,
+      replace: false,
+      state: undefined
     });
 
-    store.dispatch(updatePath('/foo'));
+    store.dispatch(pushPath('/foo'));
     expect(store.getState().routing).toEqual({
       path: '/foo',
-      changeId: 2
+      changeId: 2,
+      replace: false,
+      state: undefined
     });
 
-    store.dispatch(updatePath('/foo'));
+    store.dispatch(pushPath('/foo'));
     expect(store.getState().routing).toEqual({
       path: '/foo',
-      changeId: 3
+      changeId: 3,
+      replace: false,
+      state: undefined
     });
   });
 
@@ -135,7 +195,9 @@ describe('syncReduxAndRouter', () => {
 
     expect(store.getState().routing).toEqual({
       path: '/',
-      changeId: 1
+      changeId: 1,
+      replace: false,
+      state: undefined
     });
   });
 
@@ -143,7 +205,9 @@ describe('syncReduxAndRouter', () => {
     const { history, store } = createSyncedHistoryAndStore();
     expect(store.getState().routing).toEqual({
       path: '/',
-      changeId: 1
+      changeId: 1,
+      replace: false,
+      state: undefined
     });
 
     history.listenBefore(location => {
@@ -154,10 +218,12 @@ describe('syncReduxAndRouter', () => {
       });
     });
 
-    store.dispatch(updatePath('/foo'));
+    store.dispatch(pushPath('/foo'));
     expect(store.getState().routing).toEqual({
       path: '/foo',
-      changeId: 2
+      changeId: 2,
+      replace: false,
+      state: undefined
     });
   });
 
@@ -165,23 +231,29 @@ describe('syncReduxAndRouter', () => {
     const { history, store } = createSyncedHistoryAndStore();
     expect(store.getState().routing).toEqual({
       path: '/',
-      changeId: 1
+      changeId: 1,
+      replace: false,
+      state: undefined
     });
 
     history.listenBefore(location => {
       if(location.pathname === '/foo') {
         expect(store.getState().routing).toEqual({
           path: '/foo',
-          changeId: 2
+          changeId: 2,
+          replace: false,
+          state: undefined
         });
-        store.dispatch(updatePath('/bar'));
+        store.dispatch(pushPath('/bar'));
       }
     });
 
-    store.dispatch(updatePath('/foo'));
+    store.dispatch(pushPath('/foo'));
     expect(store.getState().routing).toEqual({
       path: '/bar',
-      changeId: 3
+      changeId: 3,
+      replace: false,
+      state: undefined
     });
   })
 
@@ -215,10 +287,12 @@ describe('syncReduxAndRouter', () => {
     history.pushState(null, '/foo');
     expect(store.getState().routing.path).toEqual('/foo');
 
-    store.dispatch(updatePath('/bar'));
+    store.dispatch(pushPath('/bar'));
     expect(store.getState().routing).toEqual({
       path: '/bar',
-      changeId: 2
+      changeId: 2,
+      replace: false,
+      state: undefined
     });
 
     unsubscribe();
@@ -230,7 +304,7 @@ describe('syncReduxAndRouter', () => {
       throw new Error()
     });
     expect(
-      () => store.dispatch(updatePath('/foo'))
+      () => store.dispatch(pushPath('/foo'))
     ).toNotThrow();
   });
 });
