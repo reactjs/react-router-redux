@@ -117,6 +117,8 @@ function update(state, action) {
 }
 ```
 
+For more context, check out this [full example](https://github.com/freeqaz/redux-simple-router-example).
+
 ## API
 
 ### `syncReduxAndRouter(history, store, selectRouterState?)`
