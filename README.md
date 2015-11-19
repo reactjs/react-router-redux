@@ -153,3 +153,8 @@ to this and all future URL changes. Pass `false` to make it start
 reacting again. This is useful if replaying snapshots while using the
 `forceRefresh` option of the browser history which forces full
 reloads. It's a rare edge case.
+
+### `replacePath(path)`
+
+Similar to `updatePath` except it replaces the current path in the browser
+history instead of adding a new entry.
