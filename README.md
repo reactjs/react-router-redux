@@ -136,7 +136,8 @@ state.routing`, so you would install the reducer under the name
 
 A reducer function that keeps track of the router state. You need to
 add this reducer to your app reducers when creating the store. **The
-piece of state must be named `routing`**
+piece of state must be named `routing`** (unless you provide a custom
+`selectRouterState` function).
 
 ### `UPDATE_PATH`
 
