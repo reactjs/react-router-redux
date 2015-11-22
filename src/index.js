@@ -6,25 +6,26 @@ const SELECT_STATE = state => state.routing;
 
 // Action creator
 
-function updatePath(path, noRouterUpdate) {
+function updatePath(path, avoidRouterUpdate) {
   return {
     type: UPDATE_PATH,
     path: path,
-    noRouterUpdate: noRouterUpdate
+    avoidRouterUpdate: !!avoidRouterUpdate
   }
 }
 
 // Reducer
 
 const initialState = typeof window === 'undefined' ? {} : {
-  path: locationToString(window.location)
+  path: locationToString(window.location),
+  changeId: 1
 };
 
 function update(state=initialState, action) {
   if(action.type === UPDATE_PATH) {
     return Object.assign({}, state, {
       path: action.path,
-      noRouterUpdate: action.noRouterUpdate
+      changeId: state.changeId + (action.avoidRouterUpdate ? 0 : 1)
     });
   }
   return state;
@@ -37,8 +38,7 @@ function locationToString(location) {
 }
 
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
-  let isTransitioning = false;
-  let currentLocation;
+  let lastChangeId = 0;
   const getRouterState = () => selectRouterState(store.getState());
 
   if(!getRouterState()) {
@@ -49,31 +49,22 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   }
 
   const unsubscribeHistory = history.listen(location => {
-    currentLocation = location;
-    isTransitioning = false;
+    const routePath = locationToString(location);
 
-    // Avoid dispatching an action if the store is already up-to-date,
-    // even if `history` wouldn't do anything if the location is the same
-    if(getRouterState().path !== locationToString(location)) {
-      store.dispatch(updatePath(newLocation));
+    // Avoid dispatching an action if the store is already up-to-date
+    if(getRouterState().path !== routePath) {
+      store.dispatch(updatePath(routePath, { avoidRouterUpdate: true }));
     }
   });
 
   const unsubscribeStore = store.subscribe(() => {
     const routing = getRouterState();
 
-    // Don't update the router if they are already in sync, or if
-    // we've already triggered an update for this path. The latter can
-    // happen if any state changes happen during transitions (for
-    // example: updating app state during `listenBefore`).
-    //
-    // The `noRouterUpdate` flag can be set to avoid updating
-    // altogether, which is useful for things like loading snapshots
-    // or very special edge cases.
-    if(!isTransitioning &&
-       routing.path !== locationToString(currentLocation) &&
-       !routing.noRouterUpdate) {
-      isTransitioning = true;
+    // Only update the router once per `updatePath` call. This is
+    // indicated by the `changeId` state; when that number changes, we
+    // should call `pushState`.
+    if(lastChangeId !== routing.changeId) {
+      lastChangeId = routing.changeId;
       history.pushState(null, routing.path);
     }
   });
