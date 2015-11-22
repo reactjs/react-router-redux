@@ -37,7 +37,8 @@ function locationToString(location) {
 }
 
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
-  let lastRoute;
+  let isTransitioning = false;
+  let currentLocation;
   const getRouterState = () => selectRouterState(store.getState());
 
   if(!getRouterState()) {
@@ -48,11 +49,12 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   }
 
   const unsubscribeHistory = history.listen(location => {
-    const newLocation = locationToString(location);
+    currentLocation = location;
+    isTransitioning = false;
+
     // Avoid dispatching an action if the store is already up-to-date,
     // even if `history` wouldn't do anything if the location is the same
-    if(getRouterState().path !== newLocation) {
-      lastRoute = newLocation;
+    if(getRouterState().path !== locationToString(location)) {
       store.dispatch(updatePath(newLocation));
     }
   });
@@ -60,14 +62,18 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   const unsubscribeStore = store.subscribe(() => {
     const routing = getRouterState();
 
-    // Don't update the router if the routing state hasn't changed or the new routing path
-    // is already the current location.
-    // The `noRouterUpdate` flag can be set to avoid updating altogether,
-    // which is useful for things like loading snapshots or very special
-    // edge cases.
-    if(lastRoute !== routing.path && routing.path !== locationToString(window.location) &&
+    // Don't update the router if they are already in sync, or if
+    // we've already triggered an update for this path. The latter can
+    // happen if any state changes happen during transitions (for
+    // example: updating app state during `listenBefore`).
+    //
+    // The `noRouterUpdate` flag can be set to avoid updating
+    // altogether, which is useful for things like loading snapshots
+    // or very special edge cases.
+    if(!isTransitioning &&
+       routing.path !== locationToString(currentLocation) &&
        !routing.noRouterUpdate) {
-      lastRoute = routing.path;
+      isTransitioning = true;
       history.pushState(null, routing.path);
     }
   });
