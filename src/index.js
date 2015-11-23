@@ -38,7 +38,13 @@ function locationToString(location) {
 
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   let lastRoute;
-  const getRouterState = () => selectRouterState(store.getState());
+  const getRouterState = () => {
+    let state = store.getState();
+    if (typeof state.toJS === 'function') {
+      state = state.toJS();
+    }
+    return selectRouterState(state);
+  }
 
   if(!getRouterState()) {
     throw new Error(
