@@ -184,4 +184,14 @@ describe('syncReduxAndRouter', () => {
       changeId: 3
     });
   })
+
+  it('throws if "routing" key is missing with default selectRouteState', () => {
+    const store = createStore(combineReducers({
+      notRouting: routeReducer
+    }));
+    const history = createHistory();
+    expect(
+      () => syncReduxAndRouter(history, store)
+    ).toThrow(/Cannot sync router: route state does not exist/);
+  });
 });
