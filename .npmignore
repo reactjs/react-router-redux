@@ -1,1 +1,2 @@
-.*
+# Do not publish .babelrc to npm since it can create problems with babel 5 in other projects
+.babelrc
