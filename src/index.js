@@ -6,25 +6,28 @@ const SELECT_STATE = state => state.routing;
 
 // Action creator
 
-function updatePath(path, noRouterUpdate) {
+function updatePath(path, avoidRouterUpdate) {
   return {
     type: UPDATE_PATH,
     path: path,
-    noRouterUpdate: noRouterUpdate
+    avoidRouterUpdate: !!avoidRouterUpdate
   }
 }
 
 // Reducer
 
-const initialState = typeof window === 'undefined' ? {} : {
-  path: locationToString(window.location)
+const initialState = {
+  changeId: 1,
+  path: (typeof window !== 'undefined') ?
+    locationToString(window.location) :
+    '/'
 };
 
 function update(state=initialState, action) {
   if(action.type === UPDATE_PATH) {
     return Object.assign({}, state, {
       path: action.path,
-      noRouterUpdate: action.noRouterUpdate
+      changeId: state.changeId + (action.avoidRouterUpdate ? 0 : 1)
     });
   }
   return state;
@@ -37,8 +40,8 @@ function locationToString(location) {
 }
 
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
-  let lastRoute;
   const getRouterState = () => selectRouterState(store.getState());
+  let lastChangeId = 0;
 
   if(!getRouterState()) {
     throw new Error(
@@ -48,26 +51,22 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   }
 
   const unsubscribeHistory = history.listen(location => {
-    const newLocation = locationToString(location);
-    // Avoid dispatching an action if the store is already up-to-date,
-    // even if `history` wouldn't do anything if the location is the same
-    if(getRouterState().path !== newLocation) {
-      lastRoute = newLocation;
-      store.dispatch(updatePath(newLocation));
+    const routePath = locationToString(location);
+
+    // Avoid dispatching an action if the store is already up-to-date
+    if(getRouterState().path !== routePath) {
+      store.dispatch(updatePath(routePath, { avoidRouterUpdate: true }));
     }
   });
 
   const unsubscribeStore = store.subscribe(() => {
     const routing = getRouterState();
 
-    // Don't update the router if the routing state hasn't changed or the new routing path
-    // is already the current location.
-    // The `noRouterUpdate` flag can be set to avoid updating altogether,
-    // which is useful for things like loading snapshots or very special
-    // edge cases.
-    if(lastRoute !== routing.path && routing.path !== locationToString(window.location) &&
-       !routing.noRouterUpdate) {
-      lastRoute = routing.path;
+    // Only update the router once per `updatePath` call. This is
+    // indicated by the `changeId` state; when that number changes, we
+    // should call `pushState`.
+    if(lastChangeId !== routing.changeId) {
+      lastChangeId = routing.changeId;
       history.pushState(null, routing.path);
     }
   });
