@@ -194,4 +194,14 @@ describe('syncReduxAndRouter', () => {
       () => syncReduxAndRouter(history, store)
     ).toThrow(/Cannot sync router: route state does not exist/);
   });
+
+  it('accepts custom selectRouterState', () => {
+    const store = createStore(combineReducers({
+      notRouting: routeReducer
+    }));
+    const history = createHistory();
+    syncReduxAndRouter(history, store, state => state.notRouting)
+    history.pushState(null, '/bar');
+    expect(store.getState().notRouting.path).toEqual('/bar');
+  });
 });
