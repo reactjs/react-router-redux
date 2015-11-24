@@ -1,6 +1,8 @@
 
 # redux-simple-router
 
+*Let react-router do all the work.*
+
 [Redux](https://github.com/rackt/redux) is cool.
 [react-router](https://github.com/rackt/react-router) is neat. The
 problem is that react-router manages an important piece
