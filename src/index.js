@@ -16,9 +16,11 @@ function updatePath(path, avoidRouterUpdate) {
 
 // Reducer
 
-const initialState = typeof window === 'undefined' ? {} : {
-  path: locationToString(window.location),
-  changeId: 1
+const initialState = {
+  changeId: 1,
+  path: (typeof window !== 'undefined') ?
+    locationToString(window.location) :
+    '/'
 };
 
 function update(state=initialState, action) {
@@ -38,8 +40,8 @@ function locationToString(location) {
 }
 
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
-  let lastChangeId = 0;
   const getRouterState = () => selectRouterState(store.getState());
+  let lastChangeId = 0;
 
   if(!getRouterState()) {
     throw new Error(
