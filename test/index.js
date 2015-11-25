@@ -49,6 +49,14 @@ describe('replacePath', () => {
       replace: true,
       avoidRouterUpdate: true
     });
+
+    expect(replacePath('/foo', undefined, { avoidRouterUpdate: false })).toEqual({
+      type: UPDATE_PATH,
+      path: '/foo',
+      state: undefined,
+      replace: true,
+      avoidRouterUpdate: false
+    });
   });
 });
 
