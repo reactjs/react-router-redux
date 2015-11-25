@@ -273,6 +273,67 @@ describe('syncReduxAndRouter', () => {
     });
   });
 
+  it('does not unnecessarily update the store', () => {
+    const { history, store } = createSyncedHistoryAndStore();
+    const updates = [];
+
+    const unsubscribe = store.subscribe(() => {
+      updates.push(store.getState())
+    });
+
+    store.dispatch(pushPath('/foo'));
+    store.dispatch(pushPath('/foo'));
+    store.dispatch(pushPath('/foo', { bar: 'baz' }));
+    store.dispatch(replacePath('/bar'));
+    store.dispatch(replacePath('/bar', { bar: 'foo' }));
+
+    unsubscribe();
+
+    expect(updates.length).toBe(5);
+    expect(updates).toEqual([
+      {
+        routing: {
+          changeId: 2,
+          path: '/foo',
+          state: undefined,
+          replace: false
+        }
+      },
+      {
+        routing: {
+          changeId: 3,
+          path: '/foo',
+          state: undefined,
+          replace: false
+        }
+      },
+      {
+        routing: {
+          changeId: 4,
+          path: '/foo',
+          state: { bar: 'baz' },
+          replace: false
+        }
+      },
+      {
+        routing: {
+          changeId: 5,
+          path: '/bar',
+          state: undefined,
+          replace: true
+        }
+      },
+      {
+        routing: {
+          changeId: 6,
+          path: '/bar',
+          state: { bar: 'foo' },
+          replace: true
+        }
+      }
+    ]);
+  });
+
   it('allows updating the route from within `listenBefore`', () => {
     const { history, store } = createSyncedHistoryAndStore();
     expect(store.getState().routing).toEqual({
