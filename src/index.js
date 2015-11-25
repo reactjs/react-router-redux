@@ -68,18 +68,16 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   }
 
   const unsubscribeHistory = history.listen(location => {
-    const historyLocation = {
+    const route = {
       path: history.createPath(location),
       state: location.state
     };
 
-    const routing = getRouterState();
- 
     // Avoid dispatching an action if the store is already up-to-date,
     // even if `history` wouldn't do anything if the location is the same
-    if(locationsAreEqual(routing, historyLocation)) return;
+    if(locationsAreEqual(getRouterState(), route)) return;
 
-    store.dispatch(pushPath(historyLocation.path, historyLocation.state, { avoidRouterUpdate: true }));
+    store.dispatch(pushPath(route.path, route.state, { avoidRouterUpdate: true }));
   });
 
   const unsubscribeStore = store.subscribe(() => {
