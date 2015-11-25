@@ -67,10 +67,8 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
     );
   }
 
-  let historyLocation = {};
-
   const unsubscribeHistory = history.listen(location => {
-    historyLocation = {
+    const historyLocation = {
       path: history.createPath(location),
       state: location.state
     };
