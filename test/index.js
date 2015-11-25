@@ -184,4 +184,53 @@ describe('syncReduxAndRouter', () => {
       changeId: 3
     });
   })
+
+  it('throws if "routing" key is missing with default selectRouteState', () => {
+    const store = createStore(combineReducers({
+      notRouting: routeReducer
+    }));
+    const history = createHistory();
+    expect(
+      () => syncReduxAndRouter(history, store)
+    ).toThrow(/Cannot sync router: route state does not exist/);
+  });
+
+  it('accepts custom selectRouterState', () => {
+    const store = createStore(combineReducers({
+      notRouting: routeReducer
+    }));
+    const history = createHistory();
+    syncReduxAndRouter(history, store, state => state.notRouting)
+    history.pushState(null, '/bar');
+    expect(store.getState().notRouting.path).toEqual('/bar');
+  });
+
+  it('returns unsubscribe to stop listening to history and store', () => {
+    const store = createStore(combineReducers({
+      routing: routeReducer
+    }));
+    const history = createHistory();
+    const unsubscribe = syncReduxAndRouter(history, store)
+
+    history.pushState(null, '/foo');
+    expect(store.getState().routing.path).toEqual('/foo');
+
+    store.dispatch(updatePath('/bar'));
+    expect(store.getState().routing).toEqual({
+      path: '/bar',
+      changeId: 2
+    });
+
+    unsubscribe();
+
+    history.pushState(null, '/foo');
+    expect(store.getState().routing.path).toEqual('/bar');
+
+    history.listenBefore(location => {
+      throw new Error()
+    });
+    expect(
+      () => store.dispatch(updatePath('/foo'))
+    ).toNotThrow();
+  });
 });

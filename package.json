@@ -14,6 +14,7 @@
   "scripts": {
     "build": "mkdir -p lib && babel ./src/index.js --plugins transform-object-assign --out-file ./lib/index.js",
     "test": "mocha --compilers js:babel-core/register --recursive",
+    "test:cov": "babel-node $(npm bin)/isparta cover $(npm bin)/_mocha -- --recursive",
     "prepublish": "npm run build"
   },
   "tags": [
@@ -32,6 +33,7 @@
     "babel-preset-es2015": "^6.1.2",
     "expect": "^1.13.0",
     "history": "^1.13.1",
+    "isparta": "^4.0.0",
     "mocha": "^2.3.4",
     "redux": "^3.0.4"
   }
