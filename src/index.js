@@ -55,7 +55,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
 
     // Avoid dispatching an action if the store is already up-to-date
     if(getRouterState().path !== routePath) {
-      store.dispatch(updatePath(routePath, { avoidRouterUpdate: true }));
+      store.dispatch(updatePath(routePath, true));
     }
   });
 
