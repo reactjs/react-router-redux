@@ -71,6 +71,20 @@ describe('routeReducer', () => {
     });
   });
 
+  it('respects replace', () => {
+    expect(routeReducer(state, {
+      type: UPDATE_PATH,
+      path: '/bar',
+      replace: true,
+      avoidRouterUpdate: false
+    })).toEqual({
+      path: '/bar',
+      replace: true,
+      state: undefined,
+      changeId: 2
+    });
+  });
+
   it('respects `avoidRouterUpdate` flag', () => {
     expect(routeReducer(state, {
       type: UPDATE_PATH,
@@ -99,12 +113,20 @@ describe('syncReduxAndRouter', () => {
     expect(store.getState().routing.path).toEqual('/foo');
     expect(store.getState().routing.state).toEqual({ bar: 'baz' });
 
+    history.replaceState(null, '/bar');
+    expect(store.getState().routing.path).toEqual('/bar');
+    expect(store.getState().routing.state).toBe(null);
+
     history.pushState(null, '/bar');
     expect(store.getState().routing.path).toEqual('/bar');
     expect(store.getState().routing.state).toBe(null);
 
     history.pushState(null, '/bar?query=1');
     expect(store.getState().routing.path).toEqual('/bar?query=1');
+
+    history.replaceState({ bar: 'baz' }, '/bar?query=1');
+    expect(store.getState().routing.path).toEqual('/bar?query=1');
+    expect(store.getState().routing.state).toEqual({ bar: 'baz' });
 
     history.pushState(null, '/bar?query=1#hash=2');
     expect(store.getState().routing.path).toEqual('/bar?query=1#hash=2');
@@ -135,10 +157,18 @@ describe('syncReduxAndRouter', () => {
       state: { bar: 'baz' }
     });
 
-    store.dispatch(pushPath('/bar'));
+    store.dispatch(replacePath('/bar', { bar: 'foo' }));
     expect(store.getState().routing).toEqual({
       path: '/bar',
       changeId: 4,
+      replace: true,
+      state: { bar: 'foo' }
+    });
+
+    store.dispatch(pushPath('/bar'));
+    expect(store.getState().routing).toEqual({
+      path: '/bar',
+      changeId: 5,
       replace: false,
       state: undefined
     });
@@ -146,7 +176,7 @@ describe('syncReduxAndRouter', () => {
     store.dispatch(pushPath('/bar?query=1'));
     expect(store.getState().routing).toEqual({
       path: '/bar?query=1',
-      changeId: 5,
+      changeId: 6,
       replace: false,
       state: undefined
     });
@@ -154,7 +184,7 @@ describe('syncReduxAndRouter', () => {
     store.dispatch(pushPath('/bar?query=1#hash=2'));
     expect(store.getState().routing).toEqual({
       path: '/bar?query=1#hash=2',
-      changeId: 6,
+      changeId: 7,
       replace: false,
       state: undefined
     });
@@ -182,6 +212,14 @@ describe('syncReduxAndRouter', () => {
       path: '/foo',
       changeId: 3,
       replace: false,
+      state: undefined
+    });
+
+    store.dispatch(replacePath('/foo'));
+    expect(store.getState().routing).toEqual({
+      path: '/foo',
+      changeId: 4,
+      replace: true,
       state: undefined
     });
   });
@@ -246,6 +284,15 @@ describe('syncReduxAndRouter', () => {
         });
         store.dispatch(pushPath('/bar'));
       }
+      else if(location.pathname === '/replace') {
+        expect(store.getState().routing).toEqual({
+          path: '/replace',
+          changeId: 4,
+          replace: false,
+          state: { bar: 'baz' }
+        });
+        store.dispatch(replacePath('/baz', { foo: 'bar' }));
+      }
     });
 
     store.dispatch(pushPath('/foo'));
@@ -254,6 +301,14 @@ describe('syncReduxAndRouter', () => {
       changeId: 3,
       replace: false,
       state: undefined
+    });
+
+    store.dispatch(pushPath('/replace', { bar: 'baz' }));
+    expect(store.getState().routing).toEqual({
+      path: '/baz',
+      changeId: 5,
+      replace: true,
+      state: { foo: 'bar' }
     });
   })
 
