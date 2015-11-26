@@ -93,7 +93,7 @@ React.render(
 
 Now you can read from `state.routing.path` to get the URL. It's far
 more likely that you want to change the URL more often, however. You
-can use the `updatePath` action creator the we provide:
+can use the `updatePath` action creator that we provide:
 
 ```js
 const { updatePath } = require ('redux-simple-router');
