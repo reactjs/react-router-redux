@@ -63,20 +63,20 @@ it, and also change it with an action.
 Here's some code:
 
 ```js
-const { createStore, combineReducers } = require('redux');
-const { Provider } = require('react-redux');
-const { Router, Route } = require('react-router');
-const createBrowserHistory = require('history/lib/createBrowserHistory');
-const { syncReduxAndRouter, routeReducer } = require('redux-simple-router');
-const reducers = require('<project-path>/reducers');
+import { createStore, combineReducers } from 'redux'
+import { Provider } from 'react-redux'
+import { Router, Route } from 'react-router'
+import createBrowserHistory from 'history/lib/createBrowserHistory'
+import { syncReduxAndRouter, routeReducer } from 'redux-simple-router'
+import reducers from '<project-path>/reducers'
 
 const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
-}));
-const store = createStore(reducer);
-const history = createBrowserHistory();
+}))
+const store = createStore(reducer)
+const history = createBrowserHistory()
 
-syncReduxAndRouter(history, store);
+syncReduxAndRouter(history, store)
 
 React.render(
   <Provider store={store}>
@@ -88,7 +88,7 @@ React.render(
     </Router>
   </Provider>,
   document.getElementById('mount')
-);
+)
 ```
 
 Now you can read from `state.routing.path` to get the URL. It's far
@@ -96,7 +96,7 @@ more likely that you want to change the URL more often, however. You
 can use the `updatePath` action creator that we provide:
 
 ```js
-const { updatePath } = require ('redux-simple-router');
+import { updatePath } from 'redux-simple-router'
 
 function MyComponent({ dispatch }) {
   return <Button onClick={() => dispatch(updatePath('/foo'))}/>;
@@ -109,7 +109,7 @@ Additionally, if you want to respond to the path update action, just
 handle the `UPDATE_PATH` constant that we provide:
 
 ```js
-const { UPDATE_PATH } = require('redux-simple-router');
+import { UPDATE_PATH } from 'redux-simple-router'
 
 function update(state, action) {
   switch(action.type) {
