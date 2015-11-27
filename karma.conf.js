@@ -11,10 +11,9 @@ module.exports = function (config) {
   if (runCoverage) {
     coverageLoaders.push({
       test: /\.js$/,
-      include: path.resolve('modules/'),
-      exclude: /__tests__/,
+      include: path.resolve('src/'),
       loader: 'isparta'
-    })
+    }),
 
     coverageReporters.push('coverage');
   }
@@ -42,17 +41,11 @@ module.exports = function (config) {
           {
             test: /\.js$/,
             exclude: [
-              path.resolve('src/'),
               path.resolve('node_modules/')
             ],
             loader: 'babel'
           },
-          {
-            test: /\.js$/,
-            include: path.resolve('src/'),
-            loader: 'isparta'
-          }
-        ]
+        ].concat(coverageLoaders)
       }
     },
 
@@ -63,7 +56,7 @@ module.exports = function (config) {
     coverageReporter: {
       reporters: [
         { type: 'text' },
-        { type: 'html', subdir: 'html' }
+        { type: 'json', subdir: 'browser-coverage', file: 'coverage.json' }
       ]
     }
   });
