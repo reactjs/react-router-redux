@@ -1,16 +1,31 @@
+const deepEqual = require('deep-equal');
 
-// constants
+// Constants
 
 const UPDATE_PATH = "@@router/UPDATE_PATH";
 const SELECT_STATE = state => state.routing;
 
 // Action creator
 
-function updatePath(path, avoidRouterUpdate) {
+function pushPath(path, state, opts) {
+  opts = opts || {};
   return {
     type: UPDATE_PATH,
     path: path,
-    avoidRouterUpdate: !!avoidRouterUpdate
+    state: state,
+    replace: false,
+    avoidRouterUpdate: !!opts.avoidRouterUpdate
+  };
+}
+
+function replacePath(path, state, opts) {
+  opts = opts || {};
+  return {
+    type: UPDATE_PATH,
+    path: path,
+    state: state,
+    replace: true,
+    avoidRouterUpdate: !!opts.avoidRouterUpdate
   }
 }
 
@@ -18,16 +33,18 @@ function updatePath(path, avoidRouterUpdate) {
 
 const initialState = {
   changeId: 1,
-  path: (typeof window !== 'undefined') ?
-    locationToString(window.location) :
-    '/'
+  path: undefined,
+  state: undefined,
+  replace: false
 };
 
 function update(state=initialState, action) {
   if(action.type === UPDATE_PATH) {
     return Object.assign({}, state, {
       path: action.path,
-      changeId: state.changeId + (action.avoidRouterUpdate ? 0 : 1)
+      changeId: state.changeId + (action.avoidRouterUpdate ? 0 : 1),
+      state: action.state,
+      replace: action.replace
     });
   }
   return state;
@@ -35,8 +52,8 @@ function update(state=initialState, action) {
 
 // Syncing
 
-function locationToString(location) {
-  return location.pathname + location.search + location.hash;
+function locationsAreEqual(a, b) {
+  return a.path === b.path && deepEqual(a.state, b.state);
 }
 
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
@@ -51,24 +68,31 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   }
 
   const unsubscribeHistory = history.listen(location => {
-    const routePath = locationToString(location);
+    const route = {
+      path: history.createPath(location),
+      state: location.state
+    };
 
-    // Avoid dispatching an action if the store is already up-to-date
-    if(getRouterState().path !== routePath) {
-      store.dispatch(updatePath(routePath, { avoidRouterUpdate: true }));
-    }
+    // Avoid dispatching an action if the store is already up-to-date,
+    // even if `history` wouldn't do anything if the location is the same
+    if(locationsAreEqual(getRouterState(), route)) return;
+
+    store.dispatch(pushPath(route.path, route.state, { avoidRouterUpdate: true }));
   });
 
   const unsubscribeStore = store.subscribe(() => {
     const routing = getRouterState();
 
-    // Only update the router once per `updatePath` call. This is
+    // Only update the router once per `pushPath` call. This is
     // indicated by the `changeId` state; when that number changes, we
-    // should call `pushState`.
-    if(lastChangeId !== routing.changeId) {
-      lastChangeId = routing.changeId;
-      history.pushState(null, routing.path);
-    }
+    // should update the history.
+    if(lastChangeId === routing.changeId) return;
+
+    lastChangeId = routing.changeId;
+
+    const method = routing.replace ? 'replaceState' : 'pushState';
+
+    history[method](routing.state, routing.path);
   });
 
   return function unsubscribe() {
@@ -79,7 +103,8 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
 
 module.exports = {
   UPDATE_PATH,
-  updatePath,
+  pushPath,
+  replacePath,
   syncReduxAndRouter,
   routeReducer: update
 };
