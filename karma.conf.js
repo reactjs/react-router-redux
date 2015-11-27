@@ -3,11 +3,27 @@ var webpack = require('webpack');
 
 module.exports = function (config) {
 
+  var runCoverage = process.env.COVERAGE === 'true';
+
+  var coverageLoaders = [];
+  var coverageReporters = [];
+
+  if (runCoverage) {
+    coverageLoaders.push({
+      test: /\.js$/,
+      include: path.resolve('modules/'),
+      exclude: /__tests__/,
+      loader: 'isparta'
+    })
+
+    coverageReporters.push('coverage');
+  }
+
   config.set({
 
     browsers: [ 'Firefox' ],
     frameworks: [ 'mocha' ],
-    reporters: [ 'mocha' ],
+    reporters: [ 'mocha' ].concat(coverageReporters),
 
     files: [
       'test/index.js'
@@ -21,13 +37,20 @@ module.exports = function (config) {
 
     webpack: {
       devtool: 'inline-source-map',
-      entry: path.join(__dirname, 'test', 'index.js'),
       module: {
         preLoaders: [
           {
             test: /\.js$/,
-            exclude: /node_modules/,
+            exclude: [
+              path.resolve('src/'),
+              path.resolve('node_modules/')
+            ],
             loader: 'babel'
+          },
+          {
+            test: /\.js$/,
+            include: path.resolve('src/'),
+            loader: 'isparta'
           }
         ]
       }
@@ -36,5 +59,12 @@ module.exports = function (config) {
     webpackServer: {
       noInfo: true
     },
+
+    coverageReporter: {
+      reporters: [
+        { type: 'text' },
+        { type: 'html', subdir: 'html' }
+      ]
+    }
   });
 };
