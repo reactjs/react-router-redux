@@ -25,11 +25,11 @@ module.exports = function (config) {
     reporters: [ 'mocha' ].concat(coverageReporters),
 
     files: [
-      'test/index.js'
+      'tests.webpack.js'
     ],
 
     preprocessors: {
-      'test/index.js': [ 'webpack', 'sourcemap' ]
+      'tests.webpack.js': [ 'webpack', 'sourcemap' ]
     },
 
     singleRun: true,

@@ -13,7 +13,8 @@
   "license": "MIT",
   "scripts": {
     "build": "mkdir -p lib && babel ./src/index.js --out-file ./lib/index.js",
-    "test": "mocha --compilers js:babel-core/register --recursive",
+    "test": "npm run test:node && npm run test:browser",
+    "test:node": "mocha --compilers js:babel-core/register --recursive ./test/node",
     "test:browser": "karma start",
     "test:cov": "npm run test:cov:browser && npm run test:cov:node && npm run test:cov:report",
     "test:cov:node": "babel-node $(npm bin)/isparta cover $(npm bin)/_mocha report --dir ./coverage/node-coverage -- --recursive",
