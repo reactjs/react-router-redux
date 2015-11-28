@@ -116,28 +116,35 @@ describe('syncReduxAndRouter', () => {
     history.pushState(null, '/foo');
     expect(store.getState().routing.path).toEqual('/foo');
     expect(store.getState().routing.state).toBe(null);
+    expect(store.getState().routing.replace).toBe(false);
 
     history.pushState({ bar: 'baz' }, '/foo');
     expect(store.getState().routing.path).toEqual('/foo');
     expect(store.getState().routing.state).toEqual({ bar: 'baz' });
+    expect(store.getState().routing.replace).toBe(true);
 
     history.replaceState(null, '/bar');
     expect(store.getState().routing.path).toEqual('/bar');
     expect(store.getState().routing.state).toBe(null);
+    expect(store.getState().routing.replace).toBe(true);
 
     history.pushState(null, '/bar');
     expect(store.getState().routing.path).toEqual('/bar');
     expect(store.getState().routing.state).toBe(null);
+    expect(store.getState().routing.replace).toBe(true);
 
     history.pushState(null, '/bar?query=1');
     expect(store.getState().routing.path).toEqual('/bar?query=1');
+    expect(store.getState().routing.replace).toBe(false);
 
     history.replaceState({ bar: 'baz' }, '/bar?query=1');
     expect(store.getState().routing.path).toEqual('/bar?query=1');
     expect(store.getState().routing.state).toEqual({ bar: 'baz' });
+    expect(store.getState().routing.replace).toBe(true);
 
-    history.pushState(null, '/bar?query=1#hash=2');
+    history.pushState({ bar: 'baz' }, '/bar?query=1#hash=2');
     expect(store.getState().routing.path).toEqual('/bar?query=1#hash=2');
+    expect(store.getState().routing.replace).toBe(true);
   });
 
   it('syncs redux -> router', () => {
