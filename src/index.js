@@ -7,23 +7,23 @@ const SELECT_STATE = state => state.routing;
 
 // Action creator
 
-function pushPath(path, state, opts = {}) {
+function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
   return {
     type: UPDATE_PATH,
     path: path,
     state: state,
     replace: false,
-    avoidRouterUpdate: !!opts.avoidRouterUpdate
+    avoidRouterUpdate: !!avoidRouterUpdate
   };
 }
 
-function replacePath(path, state, opts = {}) {
+function replacePath(path, state, { avoidRouterUpdate = false } = {}) {
   return {
     type: UPDATE_PATH,
     path: path,
     state: state,
     replace: true,
-    avoidRouterUpdate: !!opts.avoidRouterUpdate
+    avoidRouterUpdate: !!avoidRouterUpdate
   }
 }
 
