@@ -1,5 +1,5 @@
 const { createHashHistory, createHistory } = require('history');
 const createTests = require('../createTests.js');
 
-createTests(createHashHistory, 'Hash History');
-createTests(createHistory, 'Browser History');
+createTests(createHashHistory, 'Hash History', () => window.location = '#/');
+createTests(createHistory, 'Browser History', () => window.history.replaceState(null, null, '/'));

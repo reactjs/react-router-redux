@@ -11,8 +11,13 @@ function createSyncedHistoryAndStore(createHistory) {
   return { history, store };
 }
 
-module.exports = function createTests(createHistory, name) {
+const defaultReset = () => {};
+
+module.exports = function createTests(createHistory, name, reset = defaultReset) {
   describe(name, () => {
+
+    beforeEach(reset);
+
     describe('pushPath', () => {
       it('creates actions', () => {
         expect(pushPath('/foo', { bar: 'baz' })).toEqual({
