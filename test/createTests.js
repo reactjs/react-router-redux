@@ -7,8 +7,8 @@ function createSyncedHistoryAndStore(createHistory) {
     routing: routeReducer
   }));
   const history = createHistory();
-  syncReduxAndRouter(history, store);
-  return { history, store };
+  const unsubscribe = syncReduxAndRouter(history, store);
+  return { history, store, unsubscribe };
 }
 
 const defaultReset = () => {};
@@ -22,18 +22,22 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('creates actions', () => {
         expect(pushPath('/foo', { bar: 'baz' })).toEqual({
           type: UPDATE_PATH,
-          path: '/foo',
-          replace: false,
-          state: { bar: 'baz' },
-          avoidRouterUpdate: false
+            payload: {
+              path: '/foo',
+              replace: false,
+              state: { bar: 'baz' },
+              avoidRouterUpdate: false
+          }
         });
 
         expect(pushPath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
           type: UPDATE_PATH,
-          path: '/foo',
-          state: undefined,
-          replace: false,
-          avoidRouterUpdate: true
+          payload: {
+              path: '/foo',
+              state: undefined,
+              replace: false,
+              avoidRouterUpdate: true
+            }
         });
       });
     });
@@ -42,26 +46,32 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('creates actions', () => {
         expect(replacePath('/foo', { bar: 'baz' })).toEqual({
           type: UPDATE_PATH,
-          path: '/foo',
-          replace: true,
-          state: { bar: 'baz' },
-          avoidRouterUpdate: false
+          payload: {
+              path: '/foo',
+              replace: true,
+              state: { bar: 'baz' },
+              avoidRouterUpdate: false
+            }
         });
 
         expect(replacePath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
           type: UPDATE_PATH,
-          path: '/foo',
-          state: undefined,
-          replace: true,
-          avoidRouterUpdate: true
+          payload: {
+              path: '/foo',
+              state: undefined,
+              replace: true,
+              avoidRouterUpdate: true
+            }
         });
 
         expect(replacePath('/foo', undefined, { avoidRouterUpdate: false })).toEqual({
           type: UPDATE_PATH,
-          path: '/foo',
-          state: undefined,
-          replace: true,
-          avoidRouterUpdate: false
+          payload: {
+              path: '/foo',
+              state: undefined,
+              replace: true,
+              avoidRouterUpdate: false
+            }
         });
       });
     });
@@ -75,8 +85,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('updates the path', () => {
         expect(routeReducer(state, {
           type: UPDATE_PATH,
-          path: '/bar',
-          replace: false
+          payload: {
+              path: '/bar',
+              replace: false
+            }
         })).toEqual({
           path: '/bar',
           replace: false,
@@ -88,9 +100,11 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('respects replace', () => {
         expect(routeReducer(state, {
           type: UPDATE_PATH,
-          path: '/bar',
-          replace: true,
-          avoidRouterUpdate: false
+          payload: {
+              path: '/bar',
+              replace: true,
+              avoidRouterUpdate: false
+            }
         })).toEqual({
           path: '/bar',
           replace: true,
@@ -102,9 +116,11 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('respects `avoidRouterUpdate` flag', () => {
         expect(routeReducer(state, {
           type: UPDATE_PATH,
-          path: '/bar',
-          replace: false,
-          avoidRouterUpdate: true
+          payload: {
+              path: '/bar',
+              replace: false,
+              avoidRouterUpdate: true
+            }
         })).toEqual({
           path: '/bar',
           replace: false,
@@ -115,39 +131,57 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
     });
 
     describe('syncReduxAndRouter', () => {
+      let history, store, unsubscribe;
+
+      beforeEach(() => {
+        let synced = createSyncedHistoryAndStore(createHistory);
+        history = synced.history;
+        store = synced.store;
+        unsubscribe = synced.unsubscribe;
+      });
+
+      afterEach(() => {
+        unsubscribe();
+      });
+
       it('syncs router -> redux', () => {
-        const { history, store } = createSyncedHistoryAndStore(createHistory);
         expect(store.getState().routing.path).toEqual('/');
 
         history.pushState(null, '/foo');
         expect(store.getState().routing.path).toEqual('/foo');
         expect(store.getState().routing.state).toBe(null);
+        expect(store.getState().routing.replace).toBe(false);
 
         history.pushState({ bar: 'baz' }, '/foo');
         expect(store.getState().routing.path).toEqual('/foo');
         expect(store.getState().routing.state).toEqual({ bar: 'baz' });
+        expect(store.getState().routing.replace).toBe(true);
 
         history.replaceState(null, '/bar');
         expect(store.getState().routing.path).toEqual('/bar');
         expect(store.getState().routing.state).toBe(null);
+        expect(store.getState().routing.replace).toBe(true);
 
         history.pushState(null, '/bar');
         expect(store.getState().routing.path).toEqual('/bar');
         expect(store.getState().routing.state).toBe(null);
+        expect(store.getState().routing.replace).toBe(true);
 
         history.pushState(null, '/bar?query=1');
         expect(store.getState().routing.path).toEqual('/bar?query=1');
+        expect(store.getState().routing.replace).toBe(false);
 
         history.replaceState({ bar: 'baz' }, '/bar?query=1');
         expect(store.getState().routing.path).toEqual('/bar?query=1');
         expect(store.getState().routing.state).toEqual({ bar: 'baz' });
+        expect(store.getState().routing.replace).toBe(true);
 
-        history.pushState(null, '/bar?query=1#hash=2');
+        history.pushState({ bar: 'baz' }, '/bar?query=1#hash=2');
         expect(store.getState().routing.path).toEqual('/bar?query=1#hash=2');
+        expect(store.getState().routing.replace).toBe(true);
       });
 
       it('syncs redux -> router', () => {
-        const { history, store } = createSyncedHistoryAndStore(createHistory);
         expect(store.getState().routing).toEqual({
           path: '/',
           changeId: 1,
@@ -205,7 +239,6 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       });
 
       it('updates the router even if path is the same', () => {
-        const { history, store } = createSyncedHistoryAndStore(createHistory);
         expect(store.getState().routing).toEqual({
           path: '/',
           changeId: 1,
@@ -239,10 +272,13 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       });
 
       it('does not update the router for other state changes', () => {
-        const { history, store } = createSyncedHistoryAndStore(createHistory);
         store.dispatch({
           type: 'RANDOM_ACTION',
-          value: 5
+          payload: {
+            payload: {
+              value: 5
+            }
+          }
         });
 
         expect(store.getState().routing).toEqual({
@@ -254,7 +290,6 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       });
 
       it('only updates the router once when dispatching from `listenBefore`', () => {
-        const { history, store } = createSyncedHistoryAndStore(createHistory);
         expect(store.getState().routing).toEqual({
           path: '/',
           changeId: 1,
@@ -266,7 +301,11 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           expect(location.pathname).toEqual('/foo');
           store.dispatch({
             type: 'RANDOM_ACTION',
-            value: 5
+            payload: {
+              payload: {
+                value: 5
+              }
+            }
           });
         });
 
@@ -280,10 +319,9 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       });
 
       it('does not unnecessarily update the store', () => {
-        const { history, store } = createSyncedHistoryAndStore(createHistory);
         const updates = [];
 
-        const unsubscribe = store.subscribe(() => {
+        const unsubscribeFromStore = store.subscribe(() => {
           updates.push(store.getState())
         });
 
@@ -293,7 +331,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         store.dispatch(replacePath('/bar'));
         store.dispatch(replacePath('/bar', { bar: 'foo' }));
 
-        unsubscribe();
+        unsubscribeFromStore();
 
         expect(updates.length).toBe(5);
         expect(updates).toEqual([
@@ -341,7 +379,6 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       });
 
       it('allows updating the route from within `listenBefore`', () => {
-        const { history, store } = createSyncedHistoryAndStore(createHistory);
         expect(store.getState().routing).toEqual({
           path: '/',
           changeId: 1,
