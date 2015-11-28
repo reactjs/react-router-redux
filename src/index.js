@@ -7,8 +7,7 @@ const SELECT_STATE = state => state.routing;
 
 // Action creator
 
-function pushPath(path, state, opts) {
-  opts = opts || {};
+function pushPath(path, state, opts = {}) {
   return {
     type: UPDATE_PATH,
     path: path,
@@ -18,8 +17,7 @@ function pushPath(path, state, opts) {
   };
 }
 
-function replacePath(path, state, opts) {
-  opts = opts || {};
+function replacePath(path, state, opts = {}) {
   return {
     type: UPDATE_PATH,
     path: path,
