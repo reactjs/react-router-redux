@@ -1,6 +1,9 @@
 
 # redux-simple-router
 
+[![npm version](https://img.shields.io/npm/v/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router)
+[![npm downloads](https://img.shields.io/npm/dm/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router)
+
 *Let react-router do all the work.*
 
 [Redux](https://github.com/rackt/redux) is cool.
