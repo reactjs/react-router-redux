@@ -1,6 +1,8 @@
 
 # redux-simple-router
 
+[![build status](https://img.shields.io/travis/glennr/redux-simple-router/master.svg?style=flat-square)](https://travis-ci.org/glennr/redux-simple-router)
+
 *Let react-router do all the work.*
 
 [Redux](https://github.com/rackt/redux) is cool.
