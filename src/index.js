@@ -10,20 +10,24 @@ const SELECT_STATE = state => state.routing;
 function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
   return {
     type: UPDATE_PATH,
-    path: path,
-    state: state,
-    replace: false,
-    avoidRouterUpdate: !!avoidRouterUpdate
+    payload: {
+      path: path,
+      state: state,
+      replace: false,
+      avoidRouterUpdate: !!avoidRouterUpdate
+    }
   };
 }
 
 function replacePath(path, state, { avoidRouterUpdate = false } = {}) {
   return {
     type: UPDATE_PATH,
-    path: path,
-    state: state,
-    replace: true,
-    avoidRouterUpdate: !!avoidRouterUpdate
+    payload: {
+      path: path,
+      state: state,
+      replace: true,
+      avoidRouterUpdate: !!avoidRouterUpdate
+    }
   }
 }
 
@@ -36,13 +40,13 @@ const initialState = {
   replace: false
 };
 
-function update(state=initialState, action) {
-  if(action.type === UPDATE_PATH) {
+function update(state=initialState, { type, payload }) {
+  if(type === UPDATE_PATH) {
     return Object.assign({}, state, {
-      path: action.path,
-      changeId: state.changeId + (action.avoidRouterUpdate ? 0 : 1),
-      state: action.state,
-      replace: action.replace
+      path: payload.path,
+      changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1),
+      state: payload.state,
+      replace: payload.replace
     });
   }
   return state;
