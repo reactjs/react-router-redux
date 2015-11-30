@@ -77,7 +77,11 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
     // even if `history` wouldn't do anything if the location is the same
     if(locationsAreEqual(getRouterState(), route)) return;
 
-    store.dispatch(pushPath(route.path, route.state, { avoidRouterUpdate: true }));
+    const updatePath = location.action === 'REPLACE'
+      ? replacePath
+      : pushPath;
+
+    store.dispatch(updatePath(route.path, route.state, { avoidRouterUpdate: true }));
   });
 
   const unsubscribeStore = store.subscribe(() => {
