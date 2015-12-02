@@ -16,18 +16,22 @@ describe('pushPath', () => {
   it('creates actions', () => {
     expect(pushPath('/foo', { bar: 'baz' })).toEqual({
       type: UPDATE_PATH,
-      path: '/foo',
-      replace: false,
-      state: { bar: 'baz' },
-      avoidRouterUpdate: false
+      payload: {
+        path: '/foo',
+        replace: false,
+        state: { bar: 'baz' },
+        avoidRouterUpdate: false
+      }
     });
 
     expect(pushPath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
       type: UPDATE_PATH,
-      path: '/foo',
-      state: undefined,
-      replace: false,
-      avoidRouterUpdate: true
+      payload: {
+        path: '/foo',
+        state: undefined,
+        replace: false,
+        avoidRouterUpdate: true
+      }
     });
   });
 });
@@ -36,26 +40,32 @@ describe('replacePath', () => {
   it('creates actions', () => {
     expect(replacePath('/foo', { bar: 'baz' })).toEqual({
       type: UPDATE_PATH,
-      path: '/foo',
-      replace: true,
-      state: { bar: 'baz' },
-      avoidRouterUpdate: false
+      payload: {
+        path: '/foo',
+        replace: true,
+        state: { bar: 'baz' },
+        avoidRouterUpdate: false
+      }
     });
 
     expect(replacePath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
       type: UPDATE_PATH,
-      path: '/foo',
-      state: undefined,
-      replace: true,
-      avoidRouterUpdate: true
+      payload: {
+        path: '/foo',
+        state: undefined,
+        replace: true,
+        avoidRouterUpdate: true
+      }
     });
 
     expect(replacePath('/foo', undefined, { avoidRouterUpdate: false })).toEqual({
       type: UPDATE_PATH,
-      path: '/foo',
-      state: undefined,
-      replace: true,
-      avoidRouterUpdate: false
+      payload: {
+        path: '/foo',
+        state: undefined,
+        replace: true,
+        avoidRouterUpdate: false
+      }
     });
   });
 });
@@ -69,8 +79,10 @@ describe('routeReducer', () => {
   it('updates the path', () => {
     expect(routeReducer(state, {
       type: UPDATE_PATH,
-      path: '/bar',
-      replace: false
+      payload: {
+        path: '/bar',
+        replace: false
+      }
     })).toEqual({
       path: '/bar',
       replace: false,
@@ -82,9 +94,11 @@ describe('routeReducer', () => {
   it('respects replace', () => {
     expect(routeReducer(state, {
       type: UPDATE_PATH,
-      path: '/bar',
-      replace: true,
-      avoidRouterUpdate: false
+      payload: {
+        path: '/bar',
+        replace: true,
+        avoidRouterUpdate: false
+      }
     })).toEqual({
       path: '/bar',
       replace: true,
@@ -96,9 +110,11 @@ describe('routeReducer', () => {
   it('respects `avoidRouterUpdate` flag', () => {
     expect(routeReducer(state, {
       type: UPDATE_PATH,
-      path: '/bar',
-      replace: false,
-      avoidRouterUpdate: true
+      payload: {
+        path: '/bar',
+        replace: false,
+        avoidRouterUpdate: true
+      }
     })).toEqual({
       path: '/bar',
       replace: false,
