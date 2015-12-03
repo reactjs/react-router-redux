@@ -1,9 +1,9 @@
 const React = require('react');
 const { Link } = require('react-router');
 const { connect } = require('react-redux');
-const { updatePath } = require('redux-simple-router');
+const { pushPath } = require('redux-simple-router');
 
-function App({ updatePath, children }) {
+function App({ pushPath, children }) {
   return (
     <div>
       <header>
@@ -16,7 +16,7 @@ function App({ updatePath, children }) {
         <Link to="/bar">Bar</Link>
       </header>
       <div>
-        <button onClick={() => updatePath('/foo')}>Go to /foo</button>
+        <button onClick={() => pushPath('/foo')}>Go to /foo</button>
       </div>
       <div style={{marginTop: '1.5em'}}>{children}</div>
     </div>
@@ -25,5 +25,5 @@ function App({ updatePath, children }) {
 
 module.exports = connect(
   null,
-  { updatePath }
+  { pushPath }
 )(App);
