@@ -107,10 +107,8 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   };
 }
 
-module.exports = {
-  UPDATE_PATH,
-  pushPath,
-  replacePath,
-  syncReduxAndRouter,
-  routeReducer: update
-};
+exports.UPDATE_PATH = UPDATE_PATH;
+exports.pushPath = pushPath;
+exports.replacePath = replacePath;
+exports.syncReduxAndRouter = syncReduxAndRouter;
+exports.routeReducer = update
