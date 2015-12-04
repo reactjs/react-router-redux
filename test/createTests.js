@@ -2,6 +2,25 @@ const expect = require('expect');
 const { pushPath, replacePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } = require('../src/index');
 const { createStore, combineReducers } = require('redux');
 
+expect.extend({
+  toContainRoute({
+    path,
+    state = undefined,
+    replace = false,
+    changeId = undefined
+  }) {
+    const routing = this.actual.getState().routing;
+
+    expect(routing.path).toEqual(path);
+    expect(routing.state).toEqual(state);
+    expect(routing.replace).toEqual(replace);
+
+    if (changeId !== undefined) {
+      expect(routing.changeId).toEqual(changeId);
+    }
+  }
+})
+
 function createSyncedHistoryAndStore(createHistory) {
   const store = createStore(combineReducers({
     routing: routeReducer
@@ -145,127 +164,134 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       });
 
       it('syncs router -> redux', () => {
-        expect(store.getState().routing.path).toEqual('/');
+        expect(store).toContainRoute({
+          path: '/'
+        });
 
         history.pushState(null, '/foo');
-        expect(store.getState().routing.path).toEqual('/foo');
-        expect(store.getState().routing.state).toBe(null);
-        expect(store.getState().routing.replace).toBe(false);
+        expect(store).toContainRoute({
+          path: '/foo',
+          replace: false,
+          state: null
+        });
 
         history.pushState({ bar: 'baz' }, '/foo');
-        expect(store.getState().routing.path).toEqual('/foo');
-        expect(store.getState().routing.state).toEqual({ bar: 'baz' });
-        expect(store.getState().routing.replace).toBe(true);
+        expect(store).toContainRoute({
+          path: '/foo',
+          replace: true,
+          state: { bar: 'baz' }
+        });
 
         history.replaceState(null, '/bar');
-        expect(store.getState().routing.path).toEqual('/bar');
-        expect(store.getState().routing.state).toBe(null);
-        expect(store.getState().routing.replace).toBe(true);
+        expect(store).toContainRoute({
+          path: '/bar',
+          replace: true,
+          state: null
+        });
 
         history.pushState(null, '/bar');
-        expect(store.getState().routing.path).toEqual('/bar');
-        expect(store.getState().routing.state).toBe(null);
-        expect(store.getState().routing.replace).toBe(true);
+        expect(store).toContainRoute({
+          path: '/bar',
+          replace: true,
+          state: null
+        });
 
         history.pushState(null, '/bar?query=1');
-        expect(store.getState().routing.path).toEqual('/bar?query=1');
-        expect(store.getState().routing.replace).toBe(false);
+        expect(store).toContainRoute({
+          path: '/bar?query=1',
+          replace: false,
+          state: null
+        });
 
         history.replaceState({ bar: 'baz' }, '/bar?query=1');
-        expect(store.getState().routing.path).toEqual('/bar?query=1');
-        expect(store.getState().routing.state).toEqual({ bar: 'baz' });
-        expect(store.getState().routing.replace).toBe(true);
+        expect(store).toContainRoute({
+          path: '/bar?query=1',
+          replace: true,
+          state: { bar: 'baz' }
+        });
 
         history.pushState({ bar: 'baz' }, '/bar?query=1#hash=2');
-        expect(store.getState().routing.path).toEqual('/bar?query=1#hash=2');
-        expect(store.getState().routing.replace).toBe(true);
+        expect(store).toContainRoute({
+          path: '/bar?query=1#hash=2',
+          replace: true,
+          state: { bar: 'baz' }
+        });
       });
 
       it('syncs redux -> router', () => {
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/',
-          changeId: 1,
           replace: false,
           state: undefined
         });
 
         store.dispatch(pushPath('/foo'));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/foo',
-          changeId: 2,
           replace: false,
           state: undefined
         });
 
         store.dispatch(pushPath('/foo', { bar: 'baz' }));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/foo',
-          changeId: 3,
           replace: false,
           state: { bar: 'baz' }
         });
 
         store.dispatch(replacePath('/bar', { bar: 'foo' }));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/bar',
-          changeId: 4,
           replace: true,
           state: { bar: 'foo' }
         });
 
         store.dispatch(pushPath('/bar'));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/bar',
-          changeId: 5,
           replace: false,
           state: undefined
         });
 
         store.dispatch(pushPath('/bar?query=1'));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/bar?query=1',
-          changeId: 6,
           replace: false,
           state: undefined
         });
 
         store.dispatch(pushPath('/bar?query=1#hash=2'));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/bar?query=1#hash=2',
-          changeId: 7,
           replace: false,
           state: undefined
         });
       });
 
       it('updates the router even if path is the same', () => {
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/',
-          changeId: 1,
           replace: false,
           state: undefined
         });
 
         store.dispatch(pushPath('/foo'));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/foo',
-          changeId: 2,
           replace: false,
           state: undefined
         });
 
         store.dispatch(pushPath('/foo'));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/foo',
-          changeId: 3,
           replace: false,
           state: undefined
         });
 
         store.dispatch(replacePath('/foo'));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/foo',
-          changeId: 4,
           replace: true,
           state: undefined
         });
@@ -281,7 +307,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           }
         });
 
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/',
           changeId: 1,
           replace: false,
@@ -290,7 +316,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       });
 
       it('only updates the router once when dispatching from `listenBefore`', () => {
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/',
           changeId: 1,
           replace: false,
@@ -310,7 +336,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         });
 
         store.dispatch(pushPath('/foo'));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/foo',
           changeId: 2,
           replace: false,
@@ -328,12 +354,13 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         store.dispatch(pushPath('/foo'));
         store.dispatch(pushPath('/foo'));
         store.dispatch(pushPath('/foo', { bar: 'baz' }));
+        history.pushState({ foo: 'bar' }, '/foo');
         store.dispatch(replacePath('/bar'));
         store.dispatch(replacePath('/bar', { bar: 'foo' }));
 
         unsubscribeFromStore();
 
-        expect(updates.length).toBe(5);
+        expect(updates.length).toBe(6);
         expect(updates).toEqual([
           {
             routing: {
@@ -361,6 +388,14 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           },
           {
             routing: {
+              changeId: 4,
+              path: '/foo',
+              state: { foo: 'bar' },
+              replace: true
+            }
+          },
+          {
+            routing: {
               changeId: 5,
               path: '/bar',
               state: undefined,
@@ -379,16 +414,13 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       });
 
       it('allows updating the route from within `listenBefore`', () => {
-        expect(store.getState().routing).toEqual({
-          path: '/',
-          changeId: 1,
-          replace: false,
-          state: undefined
+        expect(store).toContainRoute({
+          path: '/'
         });
 
         history.listenBefore(location => {
           if(location.pathname === '/foo') {
-            expect(store.getState().routing).toEqual({
+            expect(store).toContainRoute({
               path: '/foo',
               changeId: 2,
               replace: false,
@@ -397,7 +429,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
             store.dispatch(pushPath('/bar'));
           }
           else if(location.pathname === '/replace') {
-            expect(store.getState().routing).toEqual({
+            expect(store).toContainRoute({
               path: '/replace',
               changeId: 4,
               replace: false,
@@ -408,7 +440,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         });
 
         store.dispatch(pushPath('/foo'));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/bar',
           changeId: 3,
           replace: false,
@@ -416,7 +448,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         });
 
         store.dispatch(pushPath('/replace', { bar: 'baz' }));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/baz',
           changeId: 5,
           replace: true,
@@ -452,10 +484,12 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         const unsubscribe = syncReduxAndRouter(history, store)
 
         history.pushState(null, '/foo');
-        expect(store.getState().routing.path).toEqual('/foo');
+        expect(store).toContainRoute({
+          path: '/foo'
+        });
 
         store.dispatch(pushPath('/bar'));
-        expect(store.getState().routing).toEqual({
+        expect(store).toContainRoute({
           path: '/bar',
           changeId: 2,
           replace: false,
@@ -465,7 +499,9 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         unsubscribe();
 
         history.pushState(null, '/foo');
-        expect(store.getState().routing.path).toEqual('/bar');
+        expect(store).toContainRoute({
+          path: '/bar'
+        });
 
         history.listenBefore(location => {
           throw new Error()
