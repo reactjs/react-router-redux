@@ -22,22 +22,22 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('creates actions', () => {
         expect(pushPath('/foo', { bar: 'baz' })).toEqual({
           type: UPDATE_PATH,
-            payload: {
-              path: '/foo',
-              replace: false,
-              state: { bar: 'baz' },
-              avoidRouterUpdate: false
+          payload: {
+            path: '/foo',
+            replace: false,
+            state: { bar: 'baz' },
+            avoidRouterUpdate: false
           }
         });
 
         expect(pushPath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
           type: UPDATE_PATH,
           payload: {
-              path: '/foo',
-              state: undefined,
-              replace: false,
-              avoidRouterUpdate: true
-            }
+            path: '/foo',
+            state: undefined,
+            replace: false,
+            avoidRouterUpdate: true
+          }
         });
       });
     });
@@ -47,31 +47,31 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         expect(replacePath('/foo', { bar: 'baz' })).toEqual({
           type: UPDATE_PATH,
           payload: {
-              path: '/foo',
-              replace: true,
-              state: { bar: 'baz' },
-              avoidRouterUpdate: false
-            }
+            path: '/foo',
+            replace: true,
+            state: { bar: 'baz' },
+            avoidRouterUpdate: false
+          }
         });
 
         expect(replacePath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
           type: UPDATE_PATH,
           payload: {
-              path: '/foo',
-              state: undefined,
-              replace: true,
-              avoidRouterUpdate: true
-            }
+            path: '/foo',
+            state: undefined,
+            replace: true,
+            avoidRouterUpdate: true
+          }
         });
 
         expect(replacePath('/foo', undefined, { avoidRouterUpdate: false })).toEqual({
           type: UPDATE_PATH,
           payload: {
-              path: '/foo',
-              state: undefined,
-              replace: true,
-              avoidRouterUpdate: false
-            }
+            path: '/foo',
+            state: undefined,
+            replace: true,
+            avoidRouterUpdate: false
+          }
         });
       });
     });
@@ -86,9 +86,9 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         expect(routeReducer(state, {
           type: UPDATE_PATH,
           payload: {
-              path: '/bar',
-              replace: false
-            }
+            path: '/bar',
+            replace: false
+          }
         })).toEqual({
           path: '/bar',
           replace: false,
@@ -101,10 +101,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         expect(routeReducer(state, {
           type: UPDATE_PATH,
           payload: {
-              path: '/bar',
-              replace: true,
-              avoidRouterUpdate: false
-            }
+            path: '/bar',
+            replace: true,
+            avoidRouterUpdate: false
+          }
         })).toEqual({
           path: '/bar',
           replace: true,
@@ -117,10 +117,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         expect(routeReducer(state, {
           type: UPDATE_PATH,
           payload: {
-              path: '/bar',
-              replace: false,
-              avoidRouterUpdate: true
-            }
+            path: '/bar',
+            replace: false,
+            avoidRouterUpdate: true
+          }
         })).toEqual({
           path: '/bar',
           replace: false,
