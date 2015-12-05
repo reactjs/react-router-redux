@@ -271,6 +271,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('updates the router even if path is the same', () => {
         expect(store).toContainRoute({
           path: '/',
+          changeId: 1,
           replace: false,
           state: undefined
         });
@@ -278,6 +279,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         store.dispatch(pushPath('/foo'));
         expect(store).toContainRoute({
           path: '/foo',
+          changeId: 2,
           replace: false,
           state: undefined
         });
@@ -285,6 +287,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         store.dispatch(pushPath('/foo'));
         expect(store).toContainRoute({
           path: '/foo',
+          changeId: 3,
           replace: false,
           state: undefined
         });
@@ -292,6 +295,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         store.dispatch(replacePath('/foo'));
         expect(store).toContainRoute({
           path: '/foo',
+          changeId: 4,
           replace: true,
           state: undefined
         });
