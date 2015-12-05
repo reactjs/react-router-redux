@@ -53,6 +53,7 @@
     "karma-webpack": "^1.7.0",
     "mocha": "^2.3.4",
     "redux": "^3.0.4",
+    "redux-devtools": "^2.1.5",
     "webpack": "^1.12.9"
   },
   "dependencies": {

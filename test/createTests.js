@@ -1,6 +1,8 @@
 const expect = require('expect');
 const { pushPath, replacePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } = require('../src/index');
-const { createStore, combineReducers } = require('redux');
+const { createStore, combineReducers, compose } = require('redux');
+const { devTools } = require('redux-devtools');
+const { ActionCreators } = require('redux-devtools/lib/devTools');
 
 function createSyncedHistoryAndStore(createHistory) {
   const store = createStore(combineReducers({
@@ -127,6 +129,77 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           state: undefined,
           changeId: 1
         });
+      });
+    });
+
+    describe('devtools', () => {
+      let history, store, devToolsStore, unsubscribe;
+
+      beforeEach(() => {
+        history = createHistory();
+        const finalCreateStore = compose(devTools())(createStore);
+        store = finalCreateStore(combineReducers({
+          routing: routeReducer
+        }));
+        devToolsStore = store.devToolsStore;
+
+        // Set initial URL before syncing
+        history.pushState(null, '/foo');
+
+        unsubscribe = syncReduxAndRouter(history, store);
+      });
+
+      afterEach(() => {
+        unsubscribe();
+      });
+
+      it('resets to the initial url', () => {
+        let lastPath;
+        const historyUnsubscribe = history.listen(location => {
+          lastPath = location.pathname;
+        });
+
+        history.pushState(null, '/bar');
+        store.dispatch(pushPath('/baz'));
+
+        devToolsStore.dispatch(ActionCreators.reset());
+
+        expect(store.getState().routing.path).toEqual('/foo');
+        expect(lastPath).toEqual('/foo');
+      });
+
+      it('handles toggle after store change', () => {
+        let lastPath;
+        const historyUnsubscribe = history.listen(location => {
+          lastPath = location.pathname;
+        });
+
+        // action 2
+        history.pushState(null, '/foo2');
+        // action 3
+        history.pushState(null, '/foo3');
+
+        devToolsStore.dispatch(ActionCreators.toggleAction(3));
+        expect(lastPath).toEqual('/foo2');
+
+        historyUnsubscribe();
+      });
+
+      it('handles toggle after store change', () => {
+        let lastPath;
+        const historyUnsubscribe = history.listen(location => {
+          lastPath = location.pathname;
+        });
+
+        // action 2
+        store.dispatch(pushPath('/foo2'));
+        // action 3
+        store.dispatch(pushPath('/foo3'));
+
+        devToolsStore.dispatch(ActionCreators.toggleAction(3));
+        expect(lastPath).toEqual('/foo2');
+
+        historyUnsubscribe();
       });
     });
 
