@@ -33,14 +33,20 @@ function replacePath(path, state, { avoidRouterUpdate = false } = {}) {
 
 // Reducer
 
-const initialState = {
-  changeId: 1,
-  path: undefined,
-  state: undefined,
-  replace: false
-};
+// The initial path is needed when resetting the state in Devtools but is
+// unknown until the history.listen callback set up in syncReduxAndRouter fires
+let initialRoute;
 
-function update(state=initialState, { type, payload }) {
+function initialState() {
+  return {
+    changeId: 1,
+    state: undefined,
+    replace: false,
+    path: initialRoute && initialRoute.path
+  }
+}
+
+function update(state=initialState(), { type, payload }) {
   if(type === UPDATE_PATH) {
     return Object.assign({}, state, {
       path: payload.path,
@@ -74,6 +80,8 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
       path: history.createPath(location),
       state: location.state
     };
+
+    if(!initialRoute) initialRoute = route;
 
     // Avoid dispatching an action if the store is already up-to-date,
     // even if `history` wouldn't do anything if the location is the same
