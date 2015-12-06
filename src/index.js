@@ -61,19 +61,23 @@ function locationsAreEqual(a, b) {
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   const getRouterState = () => selectRouterState(store.getState());
 
-  // Because we're not able to set the initial path in `initialState` we need a
-  // "hack" to get "Revert" in Redux DevTools to work. We solve this by keeping
-  // the first route so we can revert to this route when the initial state is
-  // replayed to reset the state. Basically, we treat the first route as our
-  // initial state.
+  // `initialState` *sould* represent the current location when the
+  // app loads, but we cannot get the current location when it is
+  // defined. What happens is `history.listen` is called immediately
+  // when it is registered, and it updates the app state with an
+  // action. This causes problems with redux devtools because "revert"
+  // will use `initialState` and it won't revert to the original URL.
+  // Instead, we track the first route and hack it to load when using
+  // the `initialState`.
   let firstRoute = undefined;
 
-  // To properly handle store updates we need to track the last route. This
-  // route contains a `changeId` which is updated on every `pushPath` and
-  // `replacePath`. If this id changes we always trigger a history update.
-  // However, if the id does not change, we check if the location has changed,
-  // and if it is we trigger a history update. (If these are out of sync it's
-  // likely because of React DevTools.)
+  // To properly handle store updates we need to track the last route.
+  // This route contains a `changeId` which is updated on every
+  // `pushPath` and `replacePath`. If this id changes we always
+  // trigger a history update. However, if the id does not change, we
+  // check if the location has changed, and if it is we trigger a
+  // history update. It's possible for this to happen when something
+  // reloads the entire app state such as redux devtools.
   let lastRoute = undefined;
 
   if(!getRouterState()) {
@@ -94,14 +98,12 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
     }
 
     // Avoid dispatching an action if the store is already up-to-date,
-    // even if `history` wouldn't do anything if the location is the same
-    if(locationsAreEqual(getRouterState(), route)) return;
-
-    const updatePath = location.action === 'REPLACE'
-      ? replacePath
-      : pushPath;
-
-    store.dispatch(updatePath(route.path, route.state, { avoidRouterUpdate: true }));
+    // even if `history` wouldn't do anything if the location is the
+    // same
+    if(!locationsAreEqual(getRouterState(), route)) {
+      const method = location.action === 'REPLACE' ? replacePath : pushPath;
+      store.dispatch(method(route.path, route.state, { avoidRouterUpdate: true }));
+    }
   });
 
   const unsubscribeStore = store.subscribe(() => {
@@ -112,19 +114,17 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
       routing = firstRoute;
     }
 
-    // Only trigger history update is this is a new change or the location
-    // has changed.
-    if(lastRoute !== undefined &&
-      lastRoute.changeId === routing.changeId &&
-      locationsAreEqual(lastRoute, routing)) {
-      return;
+    // Only trigger history update is this is a new change or the
+    // location has changed.
+    if(lastRoute === undefined ||
+       lastRoute.changeId !== routing.changeId ||
+       !locationsAreEqual(lastRoute, routing)) {
+
+      lastRoute = routing;
+      const method = routing.replace ? 'replaceState' : 'pushState';
+      history[method](routing.state, routing.path);
     }
 
-    lastRoute = routing;
-
-    const method = routing.replace ? 'replaceState' : 'pushState';
-
-    history[method](routing.state, routing.path);
   });
 
   return function unsubscribe() {
