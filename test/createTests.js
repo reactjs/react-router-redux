@@ -191,6 +191,8 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
         expect(store.getState().routing.path).toEqual('/foo');
         expect(currentPath).toEqual('/foo');
+
+        historyUnsubscribe();
       });
 
       it('handles toggle after store change', () => {
