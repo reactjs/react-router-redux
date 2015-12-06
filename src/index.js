@@ -74,17 +74,6 @@ function locationsAreEqual(a, b) {
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   const getRouterState = () => selectRouterState(store.getState());
 
-  // `initialState` *should* represent the current location when the
-  // app loads, but we cannot get the current location when it is
-  // defined. What happens is `history.listen` is called immediately
-  // when it is registered, and it updates the app state with an
-  // UPDATE_PATH action. This causes problem when users are listening
-  // to UPDATE_PATH actions just for *changes*, and with redux
-  // devtools because "revert" will use `initialState` and it won't
-  // revert to the original URL. Instead, we specialize the first
-  // route notification and do different things based on it.
-  let firstLoad = true;
-
   // To properly handle store updates we need to track the last route.
   // This route contains a `changeId` which is updated on every
   // `pushPath` and `replacePath`. If this id changes we always
@@ -107,16 +96,29 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
       state: location.state
     };
 
-    if (firstLoad) {
-      // See comment above about `firstLoad` as to why we do this.
+    if (!lastRoute) {
+      // `initialState` *should* represent the current location when
+      // the app loads, but we cannot get the current location when it
+      // is defined. What happens is `history.listen` is called
+      // immediately when it is registered, and it updates the app
+      // state with an UPDATE_PATH action. This causes problem when
+      // users are listening to UPDATE_PATH actions just for
+      // *changes*, and with redux devtools because "revert" will use
+      // `initialState` and it won't revert to the original URL.
+      // Instead, we specialize the first route notification and do
+      // different things based on it.
       initialState = {
         changeId: 1,
         path: route.path,
         state: route.state,
         replace: false
       };
+
+      // Also set `lastRoute` so that the store subscriber doesn't
+      // trigger an unnecessary `pushState` on load
+      lastRoute = initialState;
+
       store.dispatch(initPath(route.path, route.state));
-      firstLoad = false;
     } else if(!locationsAreEqual(getRouterState(), route)) {
       // The above check avoids dispatching an action if the store is
       // already up-to-date
@@ -130,8 +132,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
 
     // Only trigger history update is this is a new change or the
     // location has changed.
-    if(lastRoute === undefined ||
-       lastRoute.changeId !== routing.changeId ||
+    if(lastRoute.changeId !== routing.changeId ||
        !locationsAreEqual(lastRoute, routing)) {
 
       lastRoute = routing;
