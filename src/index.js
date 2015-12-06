@@ -114,7 +114,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
 
     // Only trigger history update is this is a new change or the location
     // has changed.
-    if(lastRoute !== undefined &&
+    if(lastRoute === undefined ||
       lastRoute.changeId === routing.changeId &&
       locationsAreEqual(lastRoute, routing)) {
       return;
