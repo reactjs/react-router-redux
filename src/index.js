@@ -55,12 +55,26 @@ function update(state=initialState, { type, payload }) {
 // Syncing
 
 function locationsAreEqual(a, b) {
-  return a.path === b.path && deepEqual(a.state, b.state);
+  return a != null && b != null && a.path === b.path && deepEqual(a.state, b.state);
 }
 
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   const getRouterState = () => selectRouterState(store.getState());
-  let lastChangeId = 0;
+
+  // Because we're not able to set the initial path in `initialState` we need a
+  // "hack" to get "Revert" in Redux DevTools to work. We solve this by keeping
+  // the first route so we can revert to this route when the initial state is
+  // replayed to reset the state. Basically, we treat the first route as our
+  // initial state.
+  let firstRoute = undefined;
+
+  // To properly handle store updates we need to track the last route. This
+  // route contains a `changeId` which is updated on every `pushPath` and
+  // `replacePath`. If this id changes we always trigger a history update.
+  // However, if the id does not change, we check if the location has changed,
+  // and if it is we trigger a history update. (If these are out of sync it's
+  // likely because of React DevTools.)
+  let lastRoute = undefined;
 
   if(!getRouterState()) {
     throw new Error(
@@ -75,6 +89,10 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
       state: location.state
     };
 
+    if (firstRoute === undefined) {
+      firstRoute = route;
+    }
+
     // Avoid dispatching an action if the store is already up-to-date,
     // even if `history` wouldn't do anything if the location is the same
     if(locationsAreEqual(getRouterState(), route)) return;
@@ -87,14 +105,22 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   });
 
   const unsubscribeStore = store.subscribe(() => {
-    const routing = getRouterState();
+    let routing = getRouterState();
 
-    // Only update the router once per `pushPath` call. This is
-    // indicated by the `changeId` state; when that number changes, we
-    // should update the history.
-    if(lastChangeId === routing.changeId) return;
+    // Treat `firstRoute` as our `initialState`
+    if(routing === initialState) {
+      routing = firstRoute;
+    }
 
-    lastChangeId = routing.changeId;
+    // Only trigger history update is this is a new change or the location
+    // has changed.
+    if(lastRoute !== undefined &&
+      lastRoute.changeId === routing.changeId &&
+      locationsAreEqual(lastRoute, routing)) {
+      return;
+    }
+
+    lastRoute = routing;
 
     const method = routing.replace ? 'replaceState' : 'pushState';
 
