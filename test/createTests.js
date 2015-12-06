@@ -151,6 +151,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       });
     });
 
+    // To ensure that "Revert" and toggling actions work as expected in
+    // Redux DevTools we need a couple of tests for it. In these tests we
+    // rely directly on the DevTools, as they implement these actions as
+    // middleware, and we don't want to implement this ourselves.
     describe('devtools', () => {
       let history, store, devToolsStore, unsubscribe;
 
@@ -173,50 +177,58 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       });
 
       it('resets to the initial url', () => {
-        let lastPath;
+        let currentPath;
         const historyUnsubscribe = history.listen(location => {
-          lastPath = location.pathname;
+          currentPath = location.pathname;
         });
 
         history.pushState(null, '/bar');
         store.dispatch(pushPath('/baz'));
 
+        // By calling reset we expect DevTools to re-play the initial state
+        // and the history to update to the initial path
         devToolsStore.dispatch(ActionCreators.reset());
 
         expect(store.getState().routing.path).toEqual('/foo');
-        expect(lastPath).toEqual('/foo');
-      });
-
-      it('handles toggle after store change', () => {
-        let lastPath;
-        const historyUnsubscribe = history.listen(location => {
-          lastPath = location.pathname;
-        });
-
-        // action 2
-        history.pushState(null, '/foo2');
-        // action 3
-        history.pushState(null, '/foo3');
-
-        devToolsStore.dispatch(ActionCreators.toggleAction(3));
-        expect(lastPath).toEqual('/foo2');
+        expect(currentPath).toEqual('/foo');
 
         historyUnsubscribe();
       });
 
       it('handles toggle after store change', () => {
-        let lastPath;
+        let currentPath;
         const historyUnsubscribe = history.listen(location => {
-          lastPath = location.pathname;
+          currentPath = location.pathname;
         });
 
-        // action 2
+        // DevTools action #2
+        history.pushState(null, '/foo2');
+        // DevTools action #3
+        history.pushState(null, '/foo3');
+
+        // When we toggle an action, the devtools will revert the action
+        // and we therefore expect the history to update to the previous path
+        devToolsStore.dispatch(ActionCreators.toggleAction(3));
+        expect(currentPath).toEqual('/foo2');
+
+        historyUnsubscribe();
+      });
+
+      it('handles toggle after store change', () => {
+        let currentPath;
+        const historyUnsubscribe = history.listen(location => {
+          currentPath = location.pathname;
+        });
+
+        // DevTools action #2
         store.dispatch(pushPath('/foo2'));
-        // action 3
+        // DevTools action #3
         store.dispatch(pushPath('/foo3'));
 
+        // When we toggle an action, the devtools will revert the action
+        // and we therefore expect the history to update to the previous path
         devToolsStore.dispatch(ActionCreators.toggleAction(3));
-        expect(lastPath).toEqual('/foo2');
+        expect(currentPath).toEqual('/foo2');
 
         historyUnsubscribe();
       });
