@@ -115,7 +115,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
       };
 
       // Also set `lastRoute` so that the store subscriber doesn't
-      // trigger an unnecessary `pushState` on load
+      // trigger an unnecessary `history.push` on load
       lastRoute = initialState;
 
       store.dispatch(initPath(route.path, route.state));
@@ -136,7 +136,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
        !locationsAreEqual(lastRoute, routing)) {
 
       lastRoute = routing;
-      const method = routing.replace ? 'replaceState' : 'pushState';
+      const method = routing.replace ? 'replaceState' : 'push';
       history[method](routing.state, routing.path);
     }
 
