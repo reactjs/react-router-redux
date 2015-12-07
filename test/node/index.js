@@ -1,4 +1,4 @@
-const { createMemoryHistory } = require('history');
-const createTests = require('../createTests.js');
+const { createMemoryHistory } = require('history')
+const createTests = require('../createTests.js')
 
-createTests(createMemoryHistory, 'Memory History');
+createTests(createMemoryHistory, 'Memory History')
