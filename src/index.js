@@ -2,10 +2,23 @@ const deepEqual = require('deep-equal');
 
 // Constants
 
+const INIT_PATH = "@@router/INIT_PATH";
 const UPDATE_PATH = "@@router/UPDATE_PATH";
 const SELECT_STATE = state => state.routing;
 
-// Action creator
+// Action creators
+
+function initPath(path, state) {
+  return {
+    type: INIT_PATH,
+    payload: {
+      path: path,
+      state: state,
+      replace: false,
+      avoidRouterUpdate: true
+    }
+  };
+}
 
 function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
   return {
@@ -33,7 +46,7 @@ function replacePath(path, state, { avoidRouterUpdate = false } = {}) {
 
 // Reducer
 
-const initialState = {
+let initialState = {
   changeId: 1,
   path: undefined,
   state: undefined,
@@ -41,7 +54,7 @@ const initialState = {
 };
 
 function update(state=initialState, { type, payload }) {
-  if(type === UPDATE_PATH) {
+  if(type === INIT_PATH || type === UPDATE_PATH) {
     return Object.assign({}, state, {
       path: payload.path,
       changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1),
@@ -60,16 +73,6 @@ function locationsAreEqual(a, b) {
 
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   const getRouterState = () => selectRouterState(store.getState());
-
-  // `initialState` *sould* represent the current location when the
-  // app loads, but we cannot get the current location when it is
-  // defined. What happens is `history.listen` is called immediately
-  // when it is registered, and it updates the app state with an
-  // action. This causes problems with redux devtools because "revert"
-  // will use `initialState` and it won't revert to the original URL.
-  // Instead, we track the first route and hack it to load when using
-  // the `initialState`.
-  let firstRoute = undefined;
 
   // To properly handle store updates we need to track the last route.
   // This route contains a `changeId` which is updated on every
@@ -93,14 +96,32 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
       state: location.state
     };
 
-    if (firstRoute === undefined) {
-      firstRoute = route;
-    }
+    if (!lastRoute) {
+      // `initialState` *should* represent the current location when
+      // the app loads, but we cannot get the current location when it
+      // is defined. What happens is `history.listen` is called
+      // immediately when it is registered, and it updates the app
+      // state with an UPDATE_PATH action. This causes problem when
+      // users are listening to UPDATE_PATH actions just for
+      // *changes*, and with redux devtools because "revert" will use
+      // `initialState` and it won't revert to the original URL.
+      // Instead, we specialize the first route notification and do
+      // different things based on it.
+      initialState = {
+        changeId: 1,
+        path: route.path,
+        state: route.state,
+        replace: false
+      };
 
-    // Avoid dispatching an action if the store is already up-to-date,
-    // even if `history` wouldn't do anything if the location is the
-    // same
-    if(!locationsAreEqual(getRouterState(), route)) {
+      // Also set `lastRoute` so that the store subscriber doesn't
+      // trigger an unnecessary `pushState` on load
+      lastRoute = initialState;
+
+      store.dispatch(initPath(route.path, route.state));
+    } else if(!locationsAreEqual(getRouterState(), route)) {
+      // The above check avoids dispatching an action if the store is
+      // already up-to-date
       const method = location.action === 'REPLACE' ? replacePath : pushPath;
       store.dispatch(method(route.path, route.state, { avoidRouterUpdate: true }));
     }
@@ -109,15 +130,9 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   const unsubscribeStore = store.subscribe(() => {
     let routing = getRouterState();
 
-    // Treat `firstRoute` as our `initialState`
-    if(routing === initialState) {
-      routing = firstRoute;
-    }
-
-    // Only trigger history update is this is a new change or the
+    // Only trigger history update if this is a new change or the
     // location has changed.
-    if(lastRoute === undefined ||
-       lastRoute.changeId !== routing.changeId ||
+    if(lastRoute.changeId !== routing.changeId ||
        !locationsAreEqual(lastRoute, routing)) {
 
       lastRoute = routing;
