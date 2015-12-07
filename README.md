@@ -31,7 +31,7 @@ npm install redux-simple-router
 
 [redux-router](https://github.com/rackt/redux-router) is another
 project which solves the same problem. However, it's far more complex.
-Just look at this code: the whole thing is only 68 lines of JS.
+Just look at this code: the whole thing is only a small JS file.
 redux-router is much bigger and more complex.
 
 That said, redux-router is a fine project and has features this
@@ -154,15 +154,26 @@ piece of state must be named `routing`** (unless you provide a custom
 
 ### `UPDATE_PATH`
 
-An action type that you can listen for in your reducers.
+An action type that you can listen for in your reducers to be notified of
+route updates.
 
-### `updatePath(path, noRouterUpdate)`
+### `pushPath(path, state, { avoidRouterUpdate = false } = {})`
 
-An action creator that you can use to update the current URL. Just
-pass it a string like `/foo/bar?param=5`.
+An action creator that you can use to update the current URL and update the
+browser history. Just pass it a string like `/foo/bar?param=5` as the
+`path` argument.
 
-The `noRouterUpdate`, if `true`, will stop react-router from reacting
-to this and all future URL changes. Pass `false` to make it start
-reacting again. This is useful if replaying snapshots while using the
+You can optionally pass a state to this action creator to update the state of the
+current route.
+
+The `avoidRouterUpdate`, if `true`, will stop react-router from reacting
+to this URL change. This is useful if replaying snapshots while using the
 `forceRefresh` option of the browser history which forces full
 reloads. It's a rare edge case.
+
+### `replacePath(path, state, { avoidRouterUpdate = false } = {})`
+
+An action creator that you can use to replace the current URL without updating
+the browser history.
+
+The `state` and the `avoidRouterUpdate` parameters work just like `pushPath`.
