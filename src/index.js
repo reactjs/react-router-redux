@@ -12,8 +12,8 @@ function initPath(path, state) {
   return {
     type: INIT_PATH,
     payload: {
-      path: path,
-      state: state,
+      path,
+      state,
       replace: false,
       avoidRouterUpdate: true
     }
@@ -24,8 +24,8 @@ function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
   return {
     type: UPDATE_PATH,
     payload: {
-      path: path,
-      state: state,
+      path,
+      state,
       replace: false,
       avoidRouterUpdate: !!avoidRouterUpdate
     }
@@ -36,8 +36,8 @@ function replacePath(path, state, { avoidRouterUpdate = false } = {}) {
   return {
     type: UPDATE_PATH,
     payload: {
-      path: path,
-      state: state,
+      path,
+      state,
       replace: true,
       avoidRouterUpdate: !!avoidRouterUpdate
     }
@@ -53,16 +53,14 @@ let initialState = {
   replace: false
 };
 
-function update(state=initialState, { type, payload }) {
+function update(newState = initialState, { type, payload }) {
   if(type === INIT_PATH || type === UPDATE_PATH) {
-    return Object.assign({}, state, {
-      path: payload.path,
-      changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1),
-      state: payload.state,
-      replace: payload.replace
-    });
+    const { path, state, replace, avoidRouterUpdate } = payload;
+    const changeId = newState.changeId + (avoidRouterUpdate ? 0 : 1);
+
+    return Object.assign({}, newState, { path, state, replace, changeId });
   }
-  return state;
+  return newState;
 }
 
 // Syncing
@@ -92,7 +90,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
 
   const unsubscribeHistory = history.listen(location => {
     const route = {
-      path: history.createPath(location),
+      path: history.createHref(location),
       state: location.state
     };
 
@@ -136,8 +134,8 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
        !locationsAreEqual(lastRoute, routing)) {
 
       lastRoute = routing;
-      const method = routing.replace ? 'replaceState' : 'pushState';
-      history[method](routing.state, routing.path);
+      const method = routing.replace ? 'replace' : 'push';
+      history[method]({ state: routing.state, pathname: routing.path});
     }
 
   });
