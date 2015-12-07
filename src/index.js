@@ -53,14 +53,16 @@ let initialState = {
   replace: false
 };
 
-function update(newState = initialState, { type, payload }) {
+function update(state = initialState, { type, payload }) {
   if(type === INIT_PATH || type === UPDATE_PATH) {
-    const { path, state, replace, avoidRouterUpdate } = payload;
-    const changeId = newState.changeId + (avoidRouterUpdate ? 0 : 1);
-
-    return Object.assign({}, newState, { path, state, replace, changeId });
+    return Object.assign({}, state, { 
+      path: payload.path, 
+      state: payload.state, 
+      replace: payload.replace, 
+      changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1)
+    });
   }
-  return newState;
+  return state;
 }
 
 // Syncing
@@ -90,7 +92,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
 
   const unsubscribeHistory = history.listen(location => {
     const route = {
-      path: history.createHref(location),
+      path: history.createPath(location),
       state: location.state
     };
 
@@ -134,6 +136,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
        !locationsAreEqual(lastRoute, routing)) {
 
       lastRoute = routing;
+
       const method = routing.replace ? 'replace' : 'push';
       history[method]({ state: routing.state, pathname: routing.path});
     }

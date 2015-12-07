@@ -1,8 +1,7 @@
 const expect = require('expect');
 const { pushPath, replacePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } = require('../src/index');
 const { createStore, combineReducers, compose } = require('redux');
-const { devTools } = require('redux-devtools');
-const { ActionCreators } = require('redux-devtools/lib/devTools');
+const { instrument, ActionCreators } = require('redux-devtools');
 
 expect.extend({
   toContainRoute({
@@ -160,11 +159,12 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
       beforeEach(() => {
         history = createHistory();
-        const finalCreateStore = compose(devTools())(createStore);
+
+        const finalCreateStore = compose(instrument())(createStore);
         store = finalCreateStore(combineReducers({
           routing: routeReducer
         }));
-        devToolsStore = store.devToolsStore;
+        devToolsStore = store.liftedStore;
 
         // Set initial URL before syncing
         history.push('/foo');

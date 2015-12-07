@@ -1,21 +1,32 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
-const { compose, createStore, combineReducers } = require('redux');
 const { Provider } = require('react-redux');
 const { Router, Route, IndexRoute } = require('react-router');
-const createHistory = require('history/lib/createHashHistory');
+const createHistory = require('history/lib/createBrowserHistory');
 const { syncReduxAndRouter, routeReducer } = require('redux-simple-router');
-import { devTools } from 'redux-devtools';
-const { DevTools, DebugPanel, LogMonitor } = require('redux-devtools/lib/react');
+const { compose, createStore, combineReducers, applyMiddleware } = require('redux');
+const { createDevTools, persistState } = require('redux-devtools');
+const LogMonitor = require('redux-devtools-log-monitor');
+const DockMonitor = require('redux-devtools-dock-monitor');
 
 const reducers = require('./reducers');
 const { App, Home, Foo, Bar } = require('./components');
+
+const DevTools = createDevTools(
+    <DockMonitor 
+      position='right'
+      toggleVisibilityKey='H'
+      changePositionKey='Q'>
+      <LogMonitor />
+    </DockMonitor>
+  );
 
 const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
 }));
 const finalCreateStore = compose(
-  devTools()
+  DevTools.instrument(),
+  persistState(window.location.href.match(/[?&]debug_session=([^&]+)\b/))
 )(createStore);
 const store = finalCreateStore(reducer);
 const history = createHistory();
@@ -32,9 +43,7 @@ ReactDOM.render(
           <Route path="bar" component={Bar}/>
         </Route>
       </Router>
-      <DebugPanel top right bottom>
-        <DevTools store={store} monitor={LogMonitor} />
-      </DebugPanel>
+      <DevTools/>
     </div>
   </Provider>,
   document.getElementById('mount')
