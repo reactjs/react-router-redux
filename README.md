@@ -72,10 +72,12 @@ it, and also change it with an action.
 Here's some code:
 
 ```js
+import React from 'react'
+import ReactDOM from 'react-dom'
 import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route } from 'react-router'
-import createBrowserHistory from 'history/lib/createBrowserHistory'
+import { createHistory } from 'history'
 import { syncReduxAndRouter, routeReducer } from 'redux-simple-router'
 import reducers from '<project-path>/reducers'
 
@@ -83,11 +85,11 @@ const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
 }))
 const store = createStore(reducer)
-const history = createBrowserHistory()
+const history = createHistory()
 
 syncReduxAndRouter(history, store)
 
-React.render(
+ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
       <Route path="/" component={App}>
