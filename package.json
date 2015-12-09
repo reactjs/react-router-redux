@@ -3,6 +3,7 @@
   "version": "0.0.10",
   "description": "Ruthlessly simple bindings to keep react-router and redux in sync",
   "main": "lib/index",
+  "jsnext:main": "src/index",
   "repository": {
     "type": "git",
     "url": "https://github.com/jlongster/redux-simple-router.git"
