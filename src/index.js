@@ -2,8 +2,8 @@ import deepEqual from 'deep-equal';
 
 // Constants
 
-export const UPDATE_PATH = "@@router/UPDATE_PATH";
 const INIT_PATH = "@@router/INIT_PATH";
+export const UPDATE_PATH = "@@router/UPDATE_PATH";
 const SELECT_STATE = state => state.routing;
 
 // Action creators
