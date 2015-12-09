@@ -26,4 +26,9 @@ var fs = require('fs')
 if (fs.existsSync(src)) {
   // Use the latest src
   module.exports.resolve = { alias: { 'redux-simple-router': src } }
+  module.exports.module.loaders.push({
+    test: /\.js$/,
+    loaders: ['babel'],
+    include: src
+  });
 }
