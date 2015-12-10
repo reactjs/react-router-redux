@@ -10,6 +10,12 @@ react-router does a great job of mapping the current URL to a component tree, an
 
 The entire state that we are interested in boils down to one thing: the URL. This is an extremely simple library that just puts the URL in redux state and keeps it in sync with any react-router changes. Additionally, you can change the URL via redux and react-router will change accordingly.
 
+```
+npm install redux-simple-router
+```
+
+Read the [API docs](#api) farther down this page.
+
 ##### _What about redux-router?_
 
 [redux-router](https://github.com/rackt/redux-router) is another project which solves the same problem. However, it's far more complex. Take a quick look at [the code for this library](https://github.com/jlongster/redux-simple-router/blob/master/src/index.js)—it's extremely minimal. redux-router is much bigger and more complex.
@@ -22,20 +28,6 @@ That said, redux-router is a fine project and has features this doesn't provide.
 * We encourage direct access of react-router APIs. Need server-side rendering, or something else advanced? Just read react-router's docs.
 * We only store current URL and state, whereas redux-router stores the entire location object from react-router.
 
-## Documentation
-
-0. [Usage](#how-to-use)
- - [Installation](#installation)
-0. [Tutorial](#tutorial)
-0. [Examples](#examples)
-0. [API](#api)
- - [`syncReduxAndRouter(history, store, selectRouterState?)`](#syncreduxandrouter)
- - [`routeReducer`](#routereducer)
- - [`UPDATE_PATH`](#update-path)
- - [`pushPath(path, state, { avoidRouterUpdate = false } = {})`](#pushpath)
- - [`replacePath(path, state, { avoidRouterUpdate = false } = {})`](#replacepath)
-0. [See also](#see-also)
-
 ### Usage
 
 The idea of this library is to use react-router's functionality exactly like its documentation tells you to. You can access all of its APIs in routing components. Additionally, you can use redux like you normally would, with a single app state and "connected" components. It's even possible for a single component to be both if needed.
@@ -43,14 +35,6 @@ The idea of this library is to use react-router's functionality exactly like its
 [redux](https://github.com/rackt/redux) (`store.routing`) &nbsp;&harr;&nbsp; [**redux-simple-router**](https://github.com/jlongster/redux-simple-router) &nbsp;&harr;&nbsp; [history](https://github.com/rackt/history) (`history.location`) &nbsp;&harr;&nbsp; [react-router](https://github.com/rackt/react-router)
 
 We only store current URL and state, whereas redux-router stores the entire location object from react-router. You can read it, and also change it with an action.
-
-#### Installation
-
-The latest redux-simple-router package can be install via NPM:
-
-```js
-npm install --save redux-simple-router
-```
 
 ### Tutorial
 
