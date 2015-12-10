@@ -357,39 +357,21 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       })
 
       it('updates the router even if path is the same', () => {
-        expect(store).toContainRoute({
-          path: '/',
-          changeId: 1,
-          replace: false,
-          state: undefined
+        const updates = []
+        const historyUnsubscribe = history.listen(location => {
+          updates.push(location.pathname);
         })
 
         store.dispatch(pushPath('/foo'))
-        expect(store).toContainRoute({
-          path: '/foo',
-          changeId: 2,
-          replace: false,
-          state: undefined
-        })
-
         store.dispatch(pushPath('/foo'))
-        expect(store).toContainRoute({
-          path: '/foo',
-          changeId: 3,
-          replace: false,
-          state: undefined
-        })
-
         store.dispatch(replacePath('/foo'))
-        expect(store).toContainRoute({
-          path: '/foo',
-          changeId: 4,
-          replace: true,
-          state: undefined
-        })
+
+        expect(updates).toEqual(['/', '/foo', '/foo', '/foo']);
       })
 
       it('does not update the router for other state changes', () => {
+        const state = store.getState();
+
         store.dispatch({
           type: 'RANDOM_ACTION',
           payload: {
@@ -399,22 +381,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           }
         })
 
-        expect(store).toContainRoute({
-          path: '/',
-          changeId: 1,
-          replace: false,
-          state: undefined
-        })
+        expect(state).toEqual(store.getState());
       })
 
       it('only updates the router once when dispatching from `listenBefore`', () => {
-        expect(store).toContainRoute({
-          path: '/',
-          changeId: 1,
-          replace: false,
-          state: undefined
-        })
-
         history.listenBefore(location => {
           expect(location.pathname).toEqual('/foo')
           store.dispatch({
@@ -427,125 +397,44 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           })
         })
 
-        store.dispatch(pushPath('/foo'))
-        expect(store).toContainRoute({
-          path: '/foo',
-          changeId: 2,
-          replace: false,
-          state: undefined
-        })
-      })
-
-      it('does not unnecessarily update the store', () => {
-        const updates = []
-
-        const unsubscribeFromStore = store.subscribe(() => {
-          updates.push(store.getState())
-        })
+        const updates = [];
+        history.listen(location => {
+          updates.push(location.pathname);
+        });
 
         store.dispatch(pushPath('/foo'))
-        store.dispatch(pushPath('/foo'))
-        store.dispatch(pushPath('/foo', { bar: 'baz' }))
-        history.pushState({ foo: 'bar' }, '/foo')
-        store.dispatch(replacePath('/bar'))
-        store.dispatch(replacePath('/bar', { bar: 'foo' }))
 
-        unsubscribeFromStore()
-
-        expect(updates.length).toBe(6)
-        expect(updates).toEqual([
-          {
-            routing: {
-              changeId: 2,
-              path: '/foo',
-              state: undefined,
-              replace: false
-            }
-          },
-          {
-            routing: {
-              changeId: 3,
-              path: '/foo',
-              state: undefined,
-              replace: false
-            }
-          },
-          {
-            routing: {
-              changeId: 4,
-              path: '/foo',
-              state: { bar: 'baz' },
-              replace: false
-            }
-          },
-          {
-            routing: {
-              changeId: 4,
-              path: '/foo',
-              state: { foo: 'bar' },
-              replace: true
-            }
-          },
-          {
-            routing: {
-              changeId: 5,
-              path: '/bar',
-              state: undefined,
-              replace: true
-            }
-          },
-          {
-            routing: {
-              changeId: 6,
-              path: '/bar',
-              state: { bar: 'foo' },
-              replace: true
-            }
-          }
-        ])
+        expect(updates).toEqual(['/', '/foo'])
       })
 
       it('allows updating the route from within `listenBefore`', () => {
-        expect(store).toContainRoute({
-          path: '/'
-        })
-
         history.listenBefore(location => {
           if(location.pathname === '/foo') {
-            expect(store).toContainRoute({
-              path: '/foo',
-              changeId: 2,
-              replace: false,
-              state: undefined
-            })
             store.dispatch(pushPath('/bar'))
           }
           else if(location.pathname === '/replace') {
-            expect(store).toContainRoute({
-              path: '/replace',
-              changeId: 4,
-              replace: false,
-              state: { bar: 'baz' }
-            })
             store.dispatch(replacePath('/baz', { foo: 'bar' }))
           }
         })
 
+        const updates = [];
+        history.listen(location => {
+          updates.push(location.pathname);
+        });
+
         store.dispatch(pushPath('/foo'))
         expect(store).toContainRoute({
-          path: '/bar',
-          changeId: 3,
-          replace: false,
-          state: undefined
+          path: '/bar'
         })
 
         store.dispatch(pushPath('/replace', { bar: 'baz' }))
         expect(store).toContainRoute({
           path: '/baz',
-          changeId: 5,
-          replace: true,
-          state: { foo: 'bar' }
+          state: { foo: 'bar' },
+          replace: true
         })
+
+        expect(updates).toEqual(['/', '/bar', '/baz']);
       })
 
       it('throws if "routing" key is missing with default selectRouteState', () => {
@@ -582,10 +471,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
         store.dispatch(pushPath('/bar'))
         expect(store).toContainRoute({
-          path: '/bar',
-          changeId: 2,
-          replace: false,
-          state: undefined
+          path: '/bar'
         })
 
         unsubscribe()
@@ -602,6 +488,19 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           () => store.dispatch(pushPath('/foo'))
         ).toNotThrow()
       })
+
+      it('only triggers once when updating path via store', () => {
+        const updates = []
+        const historyUnsubscribe = history.listen(location => {
+          updates.push(location.pathname);
+        })
+
+        store.dispatch(pushPath('/bar'));
+        store.dispatch(pushPath('/baz'));
+        expect(updates).toEqual(['/', '/bar', '/baz'])
+
+        historyUnsubscribe()
+      })
     })
 
     it('handles basename history option', () => {
@@ -613,18 +512,12 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
       store.dispatch(pushPath('/bar'))
       expect(store).toContainRoute({
-        path: '/bar',
-        changeId: 2,
-        replace: false,
-        state: undefined
+        path: '/bar'
       })
 
       history.pushState(undefined, '/baz');
       expect(store).toContainRoute({
-        path: '/baz',
-        changeId: 2,
-        replace: false,
-        state: undefined
+        path: '/baz'
       })
     })
   })
