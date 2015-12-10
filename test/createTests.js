@@ -517,17 +517,13 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       })
 
       it('only triggers once when updating path via history push', () => {
-        let count = 0
+        const updates = []
         const historyUnsubscribe = history.listen(location => {
-          // excluding the inital url
-          if (location.pathname !== '/') {
-            count++
-          }
+          updates.push(location.pathname);
         })
 
         history.pushState(null, '/bar')
-
-        expect(count).toEqual(1)
+        expect(updates).toEqual(['/', '/bar'])
 
         historyUnsubscribe()
       })
