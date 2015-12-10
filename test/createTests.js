@@ -1,8 +1,7 @@
 const expect = require('expect');
 const { pushPath, replacePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } = require('../src/index');
 const { createStore, combineReducers, compose } = require('redux');
-const { devTools } = require('redux-devtools');
-const { ActionCreators } = require('redux-devtools/lib/devTools');
+const { instrument, ActionCreators } = require('redux-devtools');
 
 expect.extend({
   toContainRoute({
@@ -160,14 +159,15 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
       beforeEach(() => {
         history = createHistory();
-        const finalCreateStore = compose(devTools())(createStore);
+
+        const finalCreateStore = compose(instrument())(createStore);
         store = finalCreateStore(combineReducers({
           routing: routeReducer
         }));
-        devToolsStore = store.devToolsStore;
+        devToolsStore = store.liftedStore;
 
         // Set initial URL before syncing
-        history.pushState(null, '/foo');
+        history.push('/foo');
 
         unsubscribe = syncReduxAndRouter(history, store);
       });
@@ -182,7 +182,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           currentPath = location.pathname;
         });
 
-        history.pushState(null, '/bar');
+        history.push('/bar');
         store.dispatch(pushPath('/baz'));
 
         // By calling reset we expect DevTools to re-play the initial state
@@ -202,9 +202,9 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         });
 
         // DevTools action #2
-        history.pushState(null, '/foo2');
+        history.push('/foo2');
         // DevTools action #3
-        history.pushState(null, '/foo3');
+        history.push('/foo3');
 
         // When we toggle an action, the devtools will revert the action
         // and we therefore expect the history to update to the previous path
@@ -253,49 +253,49 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           path: '/'
         });
 
-        history.pushState(null, '/foo');
+        history.push('/foo');
         expect(store).toContainRoute({
           path: '/foo',
           replace: false,
           state: null
         });
 
-        history.pushState({ bar: 'baz' }, '/foo');
+        history.replace({state: { bar: 'baz' }, pathname: '/foo'});
         expect(store).toContainRoute({
           path: '/foo',
           replace: true,
           state: { bar: 'baz' }
         });
 
-        history.replaceState(null, '/bar');
+        history.replace('/bar');
         expect(store).toContainRoute({
           path: '/bar',
           replace: true,
           state: null
         });
 
-        history.pushState(null, '/bar');
+        history.replace('/bar');
         expect(store).toContainRoute({
           path: '/bar',
           replace: true,
           state: null
         });
 
-        history.pushState(null, '/bar?query=1');
+        history.push('/bar?query=1');
         expect(store).toContainRoute({
           path: '/bar?query=1',
           replace: false,
           state: null
         });
 
-        history.replaceState({ bar: 'baz' }, '/bar?query=1');
+        history.replace({ state: { bar: 'baz' }, pathname: '/bar?query=1' });
         expect(store).toContainRoute({
           path: '/bar?query=1',
           replace: true,
           state: { bar: 'baz' }
         });
 
-        history.pushState({ bar: 'baz' }, '/bar?query=1#hash=2');
+        history.replace({state: { bar: 'baz' }, pathname: '/bar?query=1#hash=2'});
         expect(store).toContainRoute({
           path: '/bar?query=1#hash=2',
           replace: true,
@@ -443,7 +443,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         store.dispatch(pushPath('/foo'));
         store.dispatch(pushPath('/foo'));
         store.dispatch(pushPath('/foo', { bar: 'baz' }));
-        history.pushState({ foo: 'bar' }, '/foo');
+        history.push({state: { foo: 'bar' }, pathname: '/foo'});
         store.dispatch(replacePath('/bar'));
         store.dispatch(replacePath('/bar', { bar: 'foo' }));
 
@@ -561,7 +561,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         }));
         const history = createHistory();
         syncReduxAndRouter(history, store, state => state.notRouting)
-        history.pushState(null, '/bar');
+        history.push('/bar');
         expect(store.getState().notRouting.path).toEqual('/bar');
       });
 
@@ -572,7 +572,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         const history = createHistory();
         const unsubscribe = syncReduxAndRouter(history, store)
 
-        history.pushState(null, '/foo');
+        history.push('/foo');
         expect(store).toContainRoute({
           path: '/foo'
         });
@@ -587,7 +587,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
         unsubscribe();
 
-        history.pushState(null, '/foo');
+        history.push('/foo');
         expect(store).toContainRoute({
           path: '/bar'
         });
