@@ -618,6 +618,14 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         replace: false,
         state: undefined
       })
+
+      history.pushState(undefined, '/baz');
+      expect(store).toContainRoute({
+        path: '/baz',
+        changeId: 2,
+        replace: false,
+        state: undefined
+      })
     })
   })
 }
