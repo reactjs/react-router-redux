@@ -3,7 +3,7 @@
 
 * Update to the new history API (#89)
 
-## [1.0.0]
+## [1.0.0](https://github.com/jlongster/redux-simple-router/compare/0.0.10...master)
 > 2015-12-09
 
 This release changes quite a bit so you'll have to update your code.
