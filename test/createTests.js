@@ -1,11 +1,11 @@
 /*eslint-env mocha */
 
-const expect = require('expect')
-const { pushPath, replacePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } = require('../src/index')
-const { createStore, combineReducers, compose } = require('redux')
-const { devTools } = require('redux-devtools')
-const { ActionCreators } = require('redux-devtools/lib/devTools')
-const { useBasename } = require('history')
+import expect from 'expect'
+import { pushPath, replacePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } from '../src/index'
+import { createStore, combineReducers, compose } from 'redux'
+import { devTools } from 'redux-devtools'
+import { ActionCreators } from 'redux-devtools/lib/devTools'
+import { useBasename } from 'history'
 
 expect.extend({
   toContainRoute({
