@@ -113,8 +113,7 @@ export function syncReduxAndRouter(history, store, selectRouterState = SELECT_ST
       // trigger an unnecessary `pushState` on load
       lastRoute = initialState
 
-      const method = location.action === 'REPLACE' ? replacePath : pushPath;
-      store.dispatch(method(route.path, route.state, { avoidRouterUpdate: true }));
+      store.dispatch(pushPath(route.path, route.state, { avoidRouterUpdate: true }));
     } else if(!locationsAreEqual(getRouterState(), route)) {
       // The above check avoids dispatching an action if the store is
       // already up-to-date
