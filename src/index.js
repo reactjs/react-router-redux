@@ -92,6 +92,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   // history update. It's possible for this to happen when something
   // reloads the entire app state such as redux devtools.
   let lastRoute = undefined
+  let historyUpdate = false
 
   if(!getRouterState()) {
     throw new Error(
@@ -132,6 +133,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
     } else if(!locationsAreEqual(getRouterState(), route)) {
       // The above check avoids dispatching an action if the store is
       // already up-to-date
+      historyUpdate = true;
       const method = location.action === 'REPLACE' ? replacePath : pushPath
       store.dispatch(method(route.path, route.state, { avoidRouterUpdate: true }))
     }
@@ -139,6 +141,11 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
 
   const unsubscribeStore = store.subscribe(() => {
     let routing = getRouterState()
+
+    if (historyUpdate) {
+      historyUpdate = false;
+      return;
+    }
 
     // Only trigger history update if this is a new change or the
     // location has changed.
