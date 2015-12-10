@@ -5,6 +5,7 @@ const { pushPath, replacePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } =
 const { createStore, combineReducers, compose } = require('redux')
 const { devTools } = require('redux-devtools')
 const { ActionCreators } = require('redux-devtools/lib/devTools')
+const { useBasename } = require('history')
 
 expect.extend({
   toContainRoute({
@@ -600,6 +601,22 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         expect(
           () => store.dispatch(pushPath('/foo'))
         ).toNotThrow()
+      })
+    })
+
+    it('handles basename history option', () => {
+      const store = createStore(combineReducers({
+        routing: routeReducer
+      }))
+      const history = useBasename(createHistory)({ basename:'/foobar' })
+      syncReduxAndRouter(history, store)
+
+      store.dispatch(pushPath('/bar'))
+      expect(store).toContainRoute({
+        path: '/bar',
+        changeId: 2,
+        replace: false,
+        state: undefined
       })
     })
   })

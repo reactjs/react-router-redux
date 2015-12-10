@@ -71,6 +71,16 @@ function locationsAreEqual(a, b) {
   return a != null && b != null && a.path === b.path && deepEqual(a.state, b.state)
 }
 
+function createPath(location) {
+  const { pathname, search, hash } = location
+  let result = pathname
+  if (search)
+    result += search
+  if (hash)
+    result += hash
+  return result
+}
+
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   const getRouterState = () => selectRouterState(store.getState())
 
@@ -92,7 +102,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
 
   const unsubscribeHistory = history.listen(location => {
     const route = {
-      path: history.createPath(location),
+      path: createPath(location),
       state: location.state
     }
 
