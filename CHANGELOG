@@ -1,0 +1,21 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+
+* Update to the new history API (#89)
+
+## [1.0.0] - 2015-12-07
+
+### Breaking
+
+* The `updatePath` action creator has been removed in favor of `pushPath` and `replacePath` (#38)
+* We have added support for routing state (#38)
+* Our actions are now [FSA compliant](https://github.com/acdlite/flux-standard-action) (#63)
+
+### Other
+
+* Redux DevTools should now work as expected (#73)
+* As we no longer depend on `window.location`, `<base href="...">` should now work (#62)
+* We've done lots of work on finding the right way to stop cycles, so hopefully we shouldn't have any unnecessary location or store updates (#50)
