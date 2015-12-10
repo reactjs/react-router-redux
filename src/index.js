@@ -1,10 +1,10 @@
-const deepEqual = require('deep-equal');
+const deepEqual = require('deep-equal')
 
 // Constants
 
-const INIT_PATH = "@@router/INIT_PATH";
-const UPDATE_PATH = "@@router/UPDATE_PATH";
-const SELECT_STATE = state => state.routing;
+const INIT_PATH = '@@router/INIT_PATH'
+const UPDATE_PATH = '@@router/UPDATE_PATH'
+const SELECT_STATE = state => state.routing
 
 // Action creators
 
@@ -17,7 +17,7 @@ function initPath(path, state) {
       replace: false,
       avoidRouterUpdate: true
     }
-  };
+  }
 }
 
 function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
@@ -29,7 +29,7 @@ function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
       replace: false,
       avoidRouterUpdate: !!avoidRouterUpdate
     }
-  };
+  }
 }
 
 function replacePath(path, state, { avoidRouterUpdate = false } = {}) {
@@ -51,7 +51,7 @@ let initialState = {
   path: undefined,
   state: undefined,
   replace: false
-};
+}
 
 function update(state=initialState, { type, payload }) {
   if(type === INIT_PATH || type === UPDATE_PATH) {
@@ -60,19 +60,19 @@ function update(state=initialState, { type, payload }) {
       changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1),
       state: payload.state,
       replace: payload.replace
-    });
+    })
   }
-  return state;
+  return state
 }
 
 // Syncing
 
 function locationsAreEqual(a, b) {
-  return a != null && b != null && a.path === b.path && deepEqual(a.state, b.state);
+  return a != null && b != null && a.path === b.path && deepEqual(a.state, b.state)
 }
 
 function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
-  const getRouterState = () => selectRouterState(store.getState());
+  const getRouterState = () => selectRouterState(store.getState())
 
   // To properly handle store updates we need to track the last route.
   // This route contains a `changeId` which is updated on every
@@ -81,20 +81,20 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   // check if the location has changed, and if it is we trigger a
   // history update. It's possible for this to happen when something
   // reloads the entire app state such as redux devtools.
-  let lastRoute = undefined;
+  let lastRoute = undefined
 
   if(!getRouterState()) {
     throw new Error(
-      "Cannot sync router: route state does not exist. Did you " +
-      "install the routing reducer?"
-    );
+      'Cannot sync router: route state does not exist. Did you ' +
+      'install the routing reducer?'
+    )
   }
 
   const unsubscribeHistory = history.listen(location => {
     const route = {
       path: history.createPath(location),
       state: location.state
-    };
+    }
 
     if (!lastRoute) {
       // `initialState` *should* represent the current location when
@@ -112,40 +112,40 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
         path: route.path,
         state: route.state,
         replace: false
-      };
+      }
 
       // Also set `lastRoute` so that the store subscriber doesn't
       // trigger an unnecessary `pushState` on load
-      lastRoute = initialState;
+      lastRoute = initialState
 
-      store.dispatch(initPath(route.path, route.state));
+      store.dispatch(initPath(route.path, route.state))
     } else if(!locationsAreEqual(getRouterState(), route)) {
       // The above check avoids dispatching an action if the store is
       // already up-to-date
-      const method = location.action === 'REPLACE' ? replacePath : pushPath;
-      store.dispatch(method(route.path, route.state, { avoidRouterUpdate: true }));
+      const method = location.action === 'REPLACE' ? replacePath : pushPath
+      store.dispatch(method(route.path, route.state, { avoidRouterUpdate: true }))
     }
-  });
+  })
 
   const unsubscribeStore = store.subscribe(() => {
-    let routing = getRouterState();
+    let routing = getRouterState()
 
     // Only trigger history update if this is a new change or the
     // location has changed.
     if(lastRoute.changeId !== routing.changeId ||
        !locationsAreEqual(lastRoute, routing)) {
 
-      lastRoute = routing;
-      const method = routing.replace ? 'replaceState' : 'pushState';
-      history[method](routing.state, routing.path);
+      lastRoute = routing
+      const method = routing.replace ? 'replaceState' : 'pushState'
+      history[method](routing.state, routing.path)
     }
 
-  });
+  })
 
   return function unsubscribe() {
-    unsubscribeHistory();
-    unsubscribeStore();
-  };
+    unsubscribeHistory()
+    unsubscribeStore()
+  }
 }
 
 module.exports = {
@@ -154,4 +154,4 @@ module.exports = {
   replacePath,
   syncReduxAndRouter,
   routeReducer: update
-};
+}
