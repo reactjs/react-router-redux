@@ -489,7 +489,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         ).toNotThrow()
       })
 
-      it('only triggers once when updating path via store', () => {
+      it('only triggers history once when updating path via store', () => {
         const updates = []
         const historyUnsubscribe = history.listen(location => {
           updates.push(location.pathname);
@@ -500,6 +500,20 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         expect(updates).toEqual(['/', '/bar', '/baz'])
 
         historyUnsubscribe()
+      })
+
+      it('only triggers store once when updating path via store', () => {
+        const updates = []
+        const storeUnsubscribe = store.subscribe(() => {
+          updates.push(store.getState().routing.path);
+        })
+
+        store.dispatch(pushPath('/bar'));
+        store.dispatch(pushPath('/baz'));
+        store.dispatch(replacePath('/foo'));
+        expect(updates).toEqual(['/bar', '/baz', '/foo'])
+
+        storeUnsubscribe()
       })
     })
 
