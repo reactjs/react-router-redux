@@ -1,7 +1,7 @@
 
 ## HEAD
 
-* Update to the new history API (#89)
+* Solve problem with `basename` causing infinite redirects (#103)
 
 ## [1.0.0](https://github.com/jlongster/redux-simple-router/compare/0.0.10...1.0.0)
 > 2015-12-09
