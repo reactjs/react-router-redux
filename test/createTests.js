@@ -359,18 +359,20 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('updates the router even if path is the same', () => {
         const updates = []
         const historyUnsubscribe = history.listen(location => {
-          updates.push(location.pathname);
+          updates.push(location.pathname)
         })
 
         store.dispatch(pushPath('/foo'))
         store.dispatch(pushPath('/foo'))
         store.dispatch(replacePath('/foo'))
 
-        expect(updates).toEqual(['/', '/foo', '/foo', '/foo']);
+        expect(updates).toEqual([ '/', '/foo', '/foo', '/foo' ])
+
+        historyUnsubscribe()
       })
 
       it('does not update the router for other state changes', () => {
-        const state = store.getState();
+        const state = store.getState()
 
         store.dispatch({
           type: 'RANDOM_ACTION',
@@ -381,7 +383,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           }
         })
 
-        expect(state).toEqual(store.getState());
+        expect(state).toEqual(store.getState())
       })
 
       it('only updates the router once when dispatching from `listenBefore`', () => {
@@ -397,14 +399,14 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           })
         })
 
-        const updates = [];
+        const updates = []
         history.listen(location => {
-          updates.push(location.pathname);
-        });
+          updates.push(location.pathname)
+        })
 
         store.dispatch(pushPath('/foo'))
 
-        expect(updates).toEqual(['/', '/foo'])
+        expect(updates).toEqual([ '/', '/foo' ])
       })
 
       it('allows updating the route from within `listenBefore`', () => {
@@ -417,10 +419,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           }
         })
 
-        const updates = [];
+        const updates = []
         history.listen(location => {
-          updates.push(location.pathname);
-        });
+          updates.push(location.pathname)
+        })
 
         store.dispatch(pushPath('/foo'))
         expect(store).toContainRoute({
@@ -434,7 +436,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           replace: true
         })
 
-        expect(updates).toEqual(['/', '/bar', '/baz']);
+        expect(updates).toEqual([ '/', '/bar', '/baz' ])
       })
 
       it('throws if "routing" key is missing with default selectRouteState', () => {
@@ -492,12 +494,12 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('only triggers history once when updating path via store', () => {
         const updates = []
         const historyUnsubscribe = history.listen(location => {
-          updates.push(location.pathname);
+          updates.push(location.pathname)
         })
 
-        store.dispatch(pushPath('/bar'));
-        store.dispatch(pushPath('/baz'));
-        expect(updates).toEqual(['/', '/bar', '/baz'])
+        store.dispatch(pushPath('/bar'))
+        store.dispatch(pushPath('/baz'))
+        expect(updates).toEqual([ '/', '/bar', '/baz' ])
 
         historyUnsubscribe()
       })
@@ -505,13 +507,13 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('only triggers store once when updating path via store', () => {
         const updates = []
         const storeUnsubscribe = store.subscribe(() => {
-          updates.push(store.getState().routing.path);
+          updates.push(store.getState().routing.path)
         })
 
-        store.dispatch(pushPath('/bar'));
-        store.dispatch(pushPath('/baz'));
-        store.dispatch(replacePath('/foo'));
-        expect(updates).toEqual(['/bar', '/baz', '/foo'])
+        store.dispatch(pushPath('/bar'))
+        store.dispatch(pushPath('/baz'))
+        store.dispatch(replacePath('/foo'))
+        expect(updates).toEqual([ '/bar', '/baz', '/foo' ])
 
         storeUnsubscribe()
       })
@@ -529,7 +531,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         path: '/bar'
       })
 
-      history.pushState(undefined, '/baz');
+      history.pushState(undefined, '/baz')
       expect(store).toContainRoute({
         path: '/baz'
       })
