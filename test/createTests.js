@@ -356,6 +356,19 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         })
       })
 
+      it('does not sync redux -> router if `avoidRouterUpdate`', () => {
+        const updates = []
+        const historyUnsubscribe = history.listen(location => {
+          updates.push(location.pathname)
+        })
+
+        store.dispatch(pushPath('/foo', null, { avoidRouterUpdate: true }))
+
+        expect(updates).toEqual([ '/' ])
+
+        historyUnsubscribe()
+      });
+
       it('updates the router even if path is the same', () => {
         const updates = []
         const historyUnsubscribe = history.listen(location => {
