@@ -356,7 +356,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         })
       })
 
-      it('does not sync redux -> router if `avoidRouterUpdate`', () => {
+      it('does not update `history` if `avoidRouterUpdate`', () => {
         const updates = []
         const historyUnsubscribe = history.listen(location => {
           updates.push(location.pathname)
