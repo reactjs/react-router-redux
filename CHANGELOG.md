@@ -10,7 +10,7 @@ This release changes quite a bit so you'll have to update your code.
 
 **Breaking Changes:**
 
-* The `updatePath` action creator has been removed in favor of `pushPath` and `replacePath`. Use `pushpath` to get the same behavior as before. (#38)
+* The `updatePath` action creator has been removed in favor of `pushPath` and `replacePath`. Use `pushPath` to get the same behavior as before. (#38)
 * We have added support for routing state (#38)
 * Our actions are now [FSA compliant](https://github.com/acdlite/flux-standard-action). This means if you are listening for the `UPDATE_PATH` action in a reducer you should get properties off the `payload` property. (#63)
 
