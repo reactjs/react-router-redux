@@ -160,6 +160,7 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
 
 module.exports = {
   UPDATE_PATH,
+  INIT_PATH,
   pushPath,
   replacePath,
   syncReduxAndRouter,
