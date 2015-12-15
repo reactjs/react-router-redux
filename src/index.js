@@ -1,9 +1,9 @@
-const deepEqual = require('deep-equal')
+import deepEqual from 'deep-equal'
 
 // Constants
 
 const INIT_PATH = '@@router/INIT_PATH'
-const UPDATE_PATH = '@@router/UPDATE_PATH'
+export const UPDATE_PATH = '@@router/UPDATE_PATH'
 const SELECT_STATE = state => state.routing
 
 // Action creators
@@ -20,7 +20,7 @@ function initPath(path, state) {
   }
 }
 
-function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
+export function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
   return {
     type: UPDATE_PATH,
     payload: {
@@ -32,7 +32,7 @@ function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
   }
 }
 
-function replacePath(path, state, { avoidRouterUpdate = false } = {}) {
+export function replacePath(path, state, { avoidRouterUpdate = false } = {}) {
   return {
     type: UPDATE_PATH,
     payload: {
@@ -81,7 +81,7 @@ function createPath(location) {
   return result
 }
 
-function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
+export function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   const getRouterState = () => selectRouterState(store.getState())
 
   // To properly handle store updates we need to track the last route.
@@ -158,10 +158,4 @@ function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
   }
 }
 
-module.exports = {
-  UPDATE_PATH,
-  pushPath,
-  replacePath,
-  syncReduxAndRouter,
-  routeReducer: update
-}
+export { update as routeReducer }

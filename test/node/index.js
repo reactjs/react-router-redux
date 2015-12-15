@@ -1,4 +1,4 @@
-const { createMemoryHistory } = require('history')
-const createTests = require('../createTests.js')
+import { createMemoryHistory } from 'history'
+import createTests from '../createTests.js'
 
 createTests(createMemoryHistory, 'Memory History')
