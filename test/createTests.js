@@ -49,18 +49,16 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           payload: {
             path: '/foo',
             replace: false,
-            state: { bar: 'baz' },
-            avoidRouterUpdate: false
+            state: { bar: 'baz' }
           }
         })
 
-        expect(pushPath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
+        expect(pushPath('/foo', undefined)).toEqual({
           type: UPDATE_PATH,
           payload: {
             path: '/foo',
             state: undefined,
-            replace: false,
-            avoidRouterUpdate: true
+            replace: false
           }
         })
       })
@@ -73,28 +71,25 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           payload: {
             path: '/foo',
             replace: true,
-            state: { bar: 'baz' },
-            avoidRouterUpdate: false
+            state: { bar: 'baz' }
           }
         })
 
-        expect(replacePath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
+        expect(replacePath('/foo', undefined)).toEqual({
           type: UPDATE_PATH,
           payload: {
             path: '/foo',
             state: undefined,
-            replace: true,
-            avoidRouterUpdate: true
+            replace: true
           }
         })
 
-        expect(replacePath('/foo', undefined, { avoidRouterUpdate: false })).toEqual({
+        expect(replacePath('/foo', undefined)).toEqual({
           type: UPDATE_PATH,
           payload: {
             path: '/foo',
             state: undefined,
-            replace: true,
-            avoidRouterUpdate: false
+            replace: true
           }
         })
       })
@@ -126,30 +121,13 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           type: UPDATE_PATH,
           payload: {
             path: '/bar',
-            replace: true,
-            avoidRouterUpdate: false
+            replace: true
           }
         })).toEqual({
           path: '/bar',
           replace: true,
           state: undefined,
           changeId: 2
-        })
-      })
-
-      it('respects `avoidRouterUpdate` flag', () => {
-        expect(routeReducer(state, {
-          type: UPDATE_PATH,
-          payload: {
-            path: '/bar',
-            replace: false,
-            avoidRouterUpdate: true
-          }
-        })).toEqual({
-          path: '/bar',
-          replace: false,
-          state: undefined,
-          changeId: 1
         })
       })
     })

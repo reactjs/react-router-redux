@@ -14,32 +14,29 @@ function initPath(path, state) {
     payload: {
       path: path,
       state: state,
-      replace: false,
-      avoidRouterUpdate: true
+      replace: false
     }
   }
 }
 
-export function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
+export function pushPath(path, state) {
   return {
     type: UPDATE_PATH,
     payload: {
       path: path,
       state: state,
-      replace: false,
-      avoidRouterUpdate: !!avoidRouterUpdate
+      replace: false
     }
   }
 }
 
-export function replacePath(path, state, { avoidRouterUpdate = false } = {}) {
+export function replacePath(path, state) {
   return {
     type: UPDATE_PATH,
     payload: {
       path: path,
       state: state,
-      replace: true,
-      avoidRouterUpdate: !!avoidRouterUpdate
+      replace: true
     }
   }
 }
@@ -57,7 +54,7 @@ function update(state=initialState, { type, payload }) {
   if(type === INIT_PATH || type === UPDATE_PATH) {
     return Object.assign({}, state, {
       path: payload.path,
-      changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1),
+      changeId: state.changeId + 1,
       state: payload.state,
       replace: payload.replace
     })
@@ -92,6 +89,7 @@ export function syncReduxAndRouter(history, store, selectRouterState = SELECT_ST
   // history update. It's possible for this to happen when something
   // reloads the entire app state such as redux devtools.
   let lastRoute = undefined
+  let avoidRouterUpdate = false;
 
   if(!getRouterState()) {
     throw new Error(
@@ -100,56 +98,50 @@ export function syncReduxAndRouter(history, store, selectRouterState = SELECT_ST
     )
   }
 
+  const unsubscribeStore = store.subscribe(() => {
+    let routing = getRouterState()
+
+    // Only trigger history update if this is a new change or the
+    // location has changed.
+    if(lastRoute !== routing && !avoidRouterUpdate) {
+      lastRoute = routing;
+      const method = routing.replace ? 'replaceState' : 'pushState'
+      history[method](routing.state, routing.path)
+    }
+
+    avoidRouterUpdate = false;
+  })
+
+
   const unsubscribeHistory = history.listen(location => {
     const route = {
       path: createPath(location),
       state: location.state
     }
 
-    if (!lastRoute) {
-      // `initialState` *should* represent the current location when
-      // the app loads, but we cannot get the current location when it
-      // is defined. What happens is `history.listen` is called
-      // immediately when it is registered, and it updates the app
-      // state with an UPDATE_PATH action. This causes problem when
-      // users are listening to UPDATE_PATH actions just for
-      // *changes*, and with redux devtools because "revert" will use
-      // `initialState` and it won't revert to the original URL.
-      // Instead, we specialize the first route notification and do
-      // different things based on it.
-      initialState = {
-        changeId: 1,
-        path: route.path,
-        state: route.state,
-        replace: false
-      }
-
-      // Also set `lastRoute` so that the store subscriber doesn't
-      // trigger an unnecessary `pushState` on load
-      lastRoute = initialState
-
-      store.dispatch(initPath(route.path, route.state))
-    } else if(!locationsAreEqual(getRouterState(), route)) {
+    if(!locationsAreEqual(getRouterState(), route)) {
       // The above check avoids dispatching an action if the store is
       // already up-to-date
+
+      if(!lastRoute) {
+        initialState = {
+          changeId: 1,
+          path: route.path,
+          state: route.state,
+          replace: false
+        }
+
+        // TODO: temporary hack only so that we don't set the
+        // initialState again. This is not needed for anything else.
+        // We should re-think in generate how to solve the initial
+        // state problem.
+        lastRoute = route
+      }
+
+      avoidRouterUpdate = true;
       const method = location.action === 'REPLACE' ? replacePath : pushPath
-      store.dispatch(method(route.path, route.state, { avoidRouterUpdate: true }))
+      store.dispatch(method(route.path, route.state))
     }
-  })
-
-  const unsubscribeStore = store.subscribe(() => {
-    let routing = getRouterState()
-
-    // Only trigger history update if this is a new change or the
-    // location has changed.
-    if(lastRoute.changeId !== routing.changeId ||
-       !locationsAreEqual(lastRoute, routing)) {
-
-      lastRoute = routing
-      const method = routing.replace ? 'replaceState' : 'pushState'
-      history[method](routing.state, routing.path)
-    }
-
   })
 
   return function unsubscribe() {
