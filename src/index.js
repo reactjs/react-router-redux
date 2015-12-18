@@ -2,23 +2,8 @@ import deepEqual from 'deep-equal'
 
 // Constants
 
-const INIT_PATH = '@@router/INIT_PATH'
 export const UPDATE_PATH = '@@router/UPDATE_PATH'
 const SELECT_STATE = state => state.routing
-
-// Action creators
-
-function initPath(path, state) {
-  return {
-    type: INIT_PATH,
-    payload: {
-      path: path,
-      state: state,
-      replace: false,
-      avoidRouterUpdate: true
-    }
-  }
-}
 
 export function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
   return {
@@ -54,7 +39,7 @@ let initialState = {
 }
 
 function update(state=initialState, { type, payload }) {
-  if(type === INIT_PATH || type === UPDATE_PATH) {
+  if(type === UPDATE_PATH) {
     return Object.assign({}, state, {
       path: payload.path,
       changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1),
@@ -128,7 +113,7 @@ export function syncReduxAndRouter(history, store, selectRouterState = SELECT_ST
       // trigger an unnecessary `pushState` on load
       lastRoute = initialState
 
-      store.dispatch(initPath(route.path, route.state))
+      store.dispatch(pushPath(route.path, route.state, { avoidRouterUpdate: true }));
     } else if(!locationsAreEqual(getRouterState(), route)) {
       // The above check avoids dispatching an action if the store is
       // already up-to-date
