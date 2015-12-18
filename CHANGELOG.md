@@ -1,7 +1,10 @@
 
 ## HEAD
 
+## [1.0.0](https://github.com/jlongster/redux-simple-router/compare/1.0.0...1.0.1)
+
 * Solve problem with `basename` causing infinite redirects (#103)
+* Switched to ES6 imports/exports internally, but should not affect outside users
 
 ## [1.0.0](https://github.com/jlongster/redux-simple-router/compare/0.0.10...1.0.0)
 > 2015-12-09
