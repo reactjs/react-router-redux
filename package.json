@@ -3,6 +3,11 @@
   "version": "1.0.1",
   "description": "Ruthlessly simple bindings to keep react-router and redux in sync",
   "main": "lib/index",
+  "files": [
+    "*.md",
+    "LICENSE",
+    "lib"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/jlongster/redux-simple-router.git"
