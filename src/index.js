@@ -80,8 +80,8 @@ export function syncReduxAndRouter(history, store, selectRouterState = SELECT_ST
 
   if(!getRouterState()) {
     throw new Error(
-      'Cannot sync router: route state does not exist. Did you ' +
-      'install the routing reducer?'
+      'Cannot sync router: route state does not exist (`state.routing` by default). ' +
+      'Did you install the routing reducer?'
     )
   }
 
