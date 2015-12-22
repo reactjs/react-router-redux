@@ -517,6 +517,32 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
         storeUnsubscribe()
       })
+
+      it('only triggers history once when updating path via history push', () => {
+        const updates = []
+        const historyUnsubscribe = history.listen(location => {
+          updates.push(location.pathname);
+        })
+
+        history.pushState(null, '/bar')
+        history.pushState(null, '/baz')
+        expect(updates).toEqual(['/', '/bar', '/baz'])
+
+        historyUnsubscribe()
+      })
+
+      it('only triggers store once when updating path via history push', () => {
+        const updates = []
+        const storeUnsubscribe = store.subscribe(() => {
+          updates.push(store.getState().routing.path);
+        })
+
+        history.pushState(null, '/bar')
+        history.pushState(null, '/baz')
+        expect(updates).toEqual(['/bar', '/baz'])
+
+        storeUnsubscribe()
+      })
     })
 
     it('handles basename history option', () => {
