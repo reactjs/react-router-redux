@@ -88,7 +88,7 @@ export function syncReduxAndRouter(history, store, selectRouterState = SELECT_ST
   const unsubscribeHistory = history.listen(location => {
     const route = {
       path: createPath(location),
-      state: location.state === null ? undefined : location.state
+      state: location.state
     }
 
     if (!lastRoute) {

@@ -253,14 +253,15 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
       it('syncs router -> redux', () => {
         expect(store).toContainRoute({
-          path: '/'
+          path: '/',
+          state: null
         })
 
         history.push('/foo')
         expect(store).toContainRoute({
           path: '/foo',
           replace: false,
-          state: undefined
+          state: null
         })
 
         history.push({ state: { bar: 'baz' }, pathname: '/foo' })
@@ -274,21 +275,21 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         expect(store).toContainRoute({
           path: '/bar',
           replace: true,
-          state: undefined
+          state: null
         })
 
         history.push('/bar')
         expect(store).toContainRoute({
           path: '/bar',
           replace: true,
-          state: undefined
+          state: null
         })
 
         history.push('/bar?query=1')
         expect(store).toContainRoute({
           path: '/bar?query=1',
           replace: false,
-          state: undefined
+          state: null
         })
 
         history.replace({ 
@@ -316,7 +317,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         expect(store).toContainRoute({
           path: '/',
           replace: false,
-          state: undefined
+          state: null
         })
 
         store.dispatch(pushPath('/foo'))
@@ -474,7 +475,8 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
         history.push('/foo')
         expect(store).toContainRoute({
-          path: '/foo'
+          path: '/foo',
+          state: null
         })
 
         store.dispatch(pushPath('/bar'))
@@ -539,7 +541,8 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
       history.push('/baz')
       expect(store).toContainRoute({
-        path: '/baz'
+        path: '/baz',
+        state: null
       })
     })
   })
