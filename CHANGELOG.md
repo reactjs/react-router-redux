@@ -1,7 +1,11 @@
 
 ## HEAD
 
-## [1.0.0](https://github.com/jlongster/redux-simple-router/compare/1.0.0...1.0.1)
+## [1.0.2](https://github.com/jlongster/redux-simple-router/compare/1.0.1...1.0.2)
+
+* Only publish relevant files to npm
+
+## [1.0.1](https://github.com/jlongster/redux-simple-router/compare/1.0.0...1.0.1)
 
 * Solve problem with `basename` causing infinite redirects (#103)
 * Switched to ES6 imports/exports internally, but should not affect outside users
