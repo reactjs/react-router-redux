@@ -292,6 +292,13 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           state: null
         })
 
+        history.push('/bar#baz')
+        expect(store).toContainRoute({
+          path: '/bar#baz',
+          replace: false,
+          state: null
+        })
+
         history.replace({ 
           state: { bar: 'baz' }, 
           pathname: '/bar?query=1' 
