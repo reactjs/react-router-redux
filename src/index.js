@@ -131,8 +131,11 @@ export function syncReduxAndRouter(history, store, selectRouterState = SELECT_ST
        !locationsAreEqual(lastRoute, routing)) {
 
       lastRoute = routing
-      const method = routing.replace ? 'replaceState' : 'pushState'
-      history[method](routing.state, routing.path)
+      const method = routing.replace ? 'replace' : 'push'
+      history[method]({ 
+        pathname: routing.path, 
+        state: routing.state 
+      })
     }
 
   })

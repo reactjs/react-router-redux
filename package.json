@@ -47,7 +47,7 @@
     "eslint": "^1.10.3",
     "eslint-config-rackt": "^1.1.1",
     "expect": "^1.13.0",
-    "history": "^1.13.1",
+    "history": "^1.14.0",
     "isparta": "^4.0.0",
     "isparta-loader": "^2.0.0",
     "karma": "^0.13.3",

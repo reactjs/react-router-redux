@@ -170,7 +170,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         devToolsStore = store.devToolsStore
 
         // Set initial URL before syncing
-        history.pushState(null, '/foo')
+        history.push('/foo')
 
         unsubscribe = syncReduxAndRouter(history, store)
       })
@@ -185,7 +185,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           currentPath = location.pathname
         })
 
-        history.pushState(null, '/bar')
+        history.push('/bar')
         store.dispatch(pushPath('/baz'))
 
         // By calling reset we expect DevTools to re-play the initial state
@@ -205,9 +205,9 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         })
 
         // DevTools action #2
-        history.pushState(null, '/foo2')
+        history.push('/foo2')
         // DevTools action #3
-        history.pushState(null, '/foo3')
+        history.push('/foo3')
 
         // When we toggle an action, the devtools will revert the action
         // and we therefore expect the history to update to the previous path
@@ -253,52 +253,66 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
       it('syncs router -> redux', () => {
         expect(store).toContainRoute({
-          path: '/'
+          path: '/',
+          state: null
         })
 
-        history.pushState(null, '/foo')
+        history.push('/foo')
         expect(store).toContainRoute({
           path: '/foo',
           replace: false,
           state: null
         })
 
-        history.pushState({ bar: 'baz' }, '/foo')
+        history.push({ state: { bar: 'baz' }, pathname: '/foo' })
         expect(store).toContainRoute({
           path: '/foo',
           replace: true,
           state: { bar: 'baz' }
         })
 
-        history.replaceState(null, '/bar')
+        history.replace('/bar')
         expect(store).toContainRoute({
           path: '/bar',
           replace: true,
           state: null
         })
 
-        history.pushState(null, '/bar')
+        history.push('/bar')
         expect(store).toContainRoute({
           path: '/bar',
           replace: true,
           state: null
         })
 
-        history.pushState(null, '/bar?query=1')
+        history.push('/bar?query=1')
         expect(store).toContainRoute({
           path: '/bar?query=1',
           replace: false,
           state: null
         })
 
-        history.replaceState({ bar: 'baz' }, '/bar?query=1')
+        history.push('/bar#baz')
+        expect(store).toContainRoute({
+          path: '/bar#baz',
+          replace: false,
+          state: null
+        })
+
+        history.replace({ 
+          state: { bar: 'baz' }, 
+          pathname: '/bar?query=1' 
+        })
         expect(store).toContainRoute({
           path: '/bar?query=1',
           replace: true,
           state: { bar: 'baz' }
         })
 
-        history.pushState({ bar: 'baz' }, '/bar?query=1#hash=2')
+        history.replace({
+          state: { bar: 'baz' }, 
+          pathname: '/bar?query=1#hash=2'
+        })
         expect(store).toContainRoute({
           path: '/bar?query=1#hash=2',
           replace: true,
@@ -310,7 +324,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         expect(store).toContainRoute({
           path: '/',
           replace: false,
-          state: undefined
+          state: null
         })
 
         store.dispatch(pushPath('/foo'))
@@ -455,7 +469,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         }))
         const history = createHistory()
         syncReduxAndRouter(history, store, state => state.notRouting)
-        history.pushState(null, '/bar')
+        history.push('/bar')
         expect(store.getState().notRouting.path).toEqual('/bar')
       })
 
@@ -466,9 +480,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         const history = createHistory()
         const unsubscribe = syncReduxAndRouter(history, store)
 
-        history.pushState(null, '/foo')
+        history.push('/foo')
         expect(store).toContainRoute({
-          path: '/foo'
+          path: '/foo',
+          state: null
         })
 
         store.dispatch(pushPath('/bar'))
@@ -478,7 +493,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
         unsubscribe()
 
-        history.pushState(null, '/foo')
+        history.push('/foo')
         expect(store).toContainRoute({
           path: '/bar'
         })
@@ -523,7 +538,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       const store = createStore(combineReducers({
         routing: routeReducer
       }))
-      const history = useBasename(createHistory)({ basename:'/foobar' })
+      const history = useBasename(createHistory)({ basename: '/foobar' })
       syncReduxAndRouter(history, store)
 
       store.dispatch(pushPath('/bar'))
@@ -531,9 +546,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         path: '/bar'
       })
 
-      history.pushState(undefined, '/baz')
+      history.push('/baz')
       expect(store).toContainRoute({
-        path: '/baz'
+        path: '/baz',
+        state: null
       })
     })
   })
