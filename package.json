@@ -1,12 +1,13 @@
 {
   "name": "redux-simple-router",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Ruthlessly simple bindings to keep react-router and redux in sync",
   "main": "lib/index",
   "files": [
     "*.md",
     "LICENSE",
-    "lib"
+    "lib",
+    "src"
   ],
   "repository": {
     "type": "git",
@@ -42,8 +43,8 @@
     "babel-core": "^6.2.1",
     "babel-eslint": "^4.1.6",
     "babel-loader": "^6.2.0",
-    "babel-plugin-transform-object-assign": "^6.0.14",
     "babel-preset-es2015": "^6.1.2",
+    "babel-preset-stage-2": "^6.3.13",
     "eslint": "^1.10.3",
     "eslint-config-rackt": "^1.1.1",
     "expect": "^1.13.0",
@@ -61,11 +62,11 @@
     "karma-sourcemap-loader": "^0.3.5",
     "karma-webpack": "^1.7.0",
     "mocha": "^2.3.4",
+    "react": "^0.14.3",
     "redux": "^3.0.4",
-    "redux-devtools": "^2.1.5",
+    "redux-devtools": "^3.0.0",
+    "redux-devtools-dock-monitor": "^1.0.1",
+    "redux-devtools-log-monitor": "^1.0.1",
     "webpack": "^1.12.9"
-  },
-  "dependencies": {
-    "deep-equal": "^1.0.1"
   }
 }

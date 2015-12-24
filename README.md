@@ -1,6 +1,6 @@
 # redux-simple-router
 
-[![npm version](https://img.shields.io/npm/v/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router) [![npm downloads](https://img.shields.io/npm/dm/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router)
+[![npm version](https://img.shields.io/npm/v/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router) [![npm downloads](https://img.shields.io/npm/dm/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router) [![build status](https://img.shields.io/travis/rackt/redux-simple-router/master.svg?style=flat-square)](https://travis-ci.org/rackt/redux-simple-router)
 
 **Let react-router do all the work**  :sparkles:
 
@@ -13,6 +13,8 @@ The entire state that we are interested in boils down to one thing: the URL. Thi
 ```
 npm install redux-simple-router
 ```
+
+If you want to install the next major version, use `redux-simple-router@next`. Run `npm dist-tag ls redux-simple-router` to see what `next` is aliased to.
 
 View the [CHANGELOG](https://github.com/jlongster/redux-simple-router/blob/master/CHANGELOG.md) for recent changes.
 
@@ -106,6 +108,8 @@ Examples from the community:
   * **tip**: migrating from redux-router? use [this commit](https://github.com/davezuko/react-redux-starter-kit/commit/db66626ca8a02ecf030a3f7f5a669ac338fd5897) as a reference
 * [freeqaz/redux-simple-router-example](https://github.com/freeqaz/redux-simple-router-example) - example implementation
 * [choonkending/react-webpack-node](https://github.com/choonkending/react-webpack-node) - boilerplate for universal redux and react-router
+* [tj/frontend-boilerplate](https://github.com/tj/frontend-boilerplate)
+* [bdefore/universal-redux](https://github.com/bdefore/universal-redux) - npm package for universally rendered redux applications
 
 _Have an example to add? Send us a PR!_
 
