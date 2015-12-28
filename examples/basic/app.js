@@ -1,26 +1,27 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
-const { compose, createStore, combineReducers } = require('redux');
+const { applyMiddleware, compose, createStore, combineReducers } = require('redux');
 const { Provider } = require('react-redux');
 const { Router, Route, IndexRoute } = require('react-router');
 const createHistory = require('history/lib/createHashHistory');
-const { syncReduxAndRouter, routeReducer } = require('redux-simple-router');
+const { syncHistory, routeReducer } = require('redux-simple-router');
 import { devTools } from 'redux-devtools';
 const { DevTools, DebugPanel, LogMonitor } = require('redux-devtools/lib/react');
 
 const reducers = require('./reducers');
 const { App, Home, Foo, Bar } = require('./components');
 
+const history = createHistory();
+const middleware = syncHistory(history);
 const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
 }));
+
 const finalCreateStore = compose(
+  applyMiddleware(middleware),
   devTools()
 )(createStore);
 const store = finalCreateStore(reducer);
-const history = createHistory();
-
-syncReduxAndRouter(history, store);
 
 ReactDOM.render(
   <Provider store={store}>
