@@ -1,107 +1,95 @@
 // Constants
 
-export const UPDATE_PATH = '@@router/UPDATE_PATH'
+export const TRANSITION = '@@router/TRANSITION'
+export const UPDATE_LOCATION = '@@router/UPDATE_LOCATION'
+
 const SELECT_STATE = state => state.routing
 
-export function pushPath(path, state, key) {
-  return {
-    type: UPDATE_PATH,
-    payload: { path, state, key, replace: false }
-  }
+function transition(method) {
+  return arg => ({
+    type: TRANSITION,
+    method, arg
+  })
 }
 
-export function replacePath(path, state, key) {
+export const push = transition('push')
+export const replace = transition('replace')
+
+// TODO: Add go, goBack, goForward.
+
+function updateLocation(location) {
   return {
-    type: UPDATE_PATH,
-    payload: { path, state, key, replace: true }
+    type: UPDATE_LOCATION,
+    location
   }
 }
 
 // Reducer
 
-let initialState = {
-  path: undefined,
-  state: undefined,
-  replace: false,
-  key: undefined
+const initialState = {
+  location: undefined
 }
 
-export function routeReducer(state=initialState, { type, payload }) {
-  if(type === UPDATE_PATH) {
-    return payload
+export function routeReducer(state = initialState, { type, location }) {
+  if (type !== UPDATE_LOCATION) {
+    return state
   }
 
-  return state
+  return { location }
 }
 
 // Syncing
-function createPath(location) {
-  const { pathname, search, hash } = location
-  let result = pathname
-  if (search)
-    result += search
-  if (hash)
-    result += hash
-  return result
-}
 
 export function syncHistory(history) {
   let unsubscribeHistory, currentKey, unsubscribeStore
-  let connected = false
+  let connected = false, syncing = false
 
   function middleware(store) {
     unsubscribeHistory = history.listen(location => {
-      const path = createPath(location)
-      const { state, key } = location
-      currentKey = key
+      currentKey = location.key
+      if (syncing) {
+        // Don't dispatch a new action if we're replaying location.
+        return
+      }
 
-      const method = location.action === 'REPLACE' ? replacePath : pushPath
-      store.dispatch(method(path, state, key))
+      store.dispatch(updateLocation(location))
     })
 
     connected = true
 
     return next => action => {
-      if (action.type !== UPDATE_PATH) {
+      if (action.type !== TRANSITION || !connected) {
         next(action)
         return
       }
 
-      const { payload } = action
-      if (payload.key || !connected) {
-        // Either this came from the history, or else we're not forwarding
-        // location actions to history.
-        next(action)
-        return
-      }
+      // FIXME: Is it correct to swallow the TRANSITION action here and replace
+      // it with UPDATE_LOCATION instead? We could also use the same type in
+      // both places instead and just set the location on the action.
 
-      const { replace, state, path } = payload
-      // FIXME: ???! `path` and `pathname` are _not_ synonymous.
-      const method = replace ? 'replaceState' : 'pushState'
-
-      history[method](state, path)
+      const { method, arg } = action
+      history[method](arg)
     }
   }
 
   middleware.syncHistoryToStore =
     (store, selectRouterState = SELECT_STATE) => {
       const getRouterState = () => selectRouterState(store.getState())
-      const {
-        key: initialKey, state: initialState, path: initialPath
-      } = getRouterState()
+      const { location: initialLocation } = getRouterState()
 
       unsubscribeStore = store.subscribe(() => {
-        let { key, state, path } = getRouterState()
-
         // If we're resetting to the beginning, use the saved values.
-        if (key === undefined) {
-          key = initialKey
-          state = initialState
-          path = initialPath
-        }
+        const storeLocation = getRouterState().location
+        const location = storeLocation || initialLocation
 
-        if (key !== currentKey) {
-          history.pushState(state, path)
+        if (location.key !== currentKey) {
+          // If there already is a location in the store, then don't dispatch
+          // an action from the history listener; otherwise do so in order to
+          // populate the store.
+          syncing = !!storeLocation
+
+          history.transitionTo(location)
+          syncing = false
         }
       })
     }
