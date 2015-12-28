@@ -22,6 +22,7 @@ const finalCreateStore = compose(
   devTools()
 )(createStore);
 const store = finalCreateStore(reducer);
+middleware.syncHistoryToStore(store);
 
 ReactDOM.render(
   <Provider store={store}>
