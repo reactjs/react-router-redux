@@ -1,6 +1,6 @@
 # redux-simple-router
 
-[![npm version](https://img.shields.io/npm/v/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router) [![npm downloads](https://img.shields.io/npm/dm/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router)
+[![npm version](https://img.shields.io/npm/v/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router) [![npm downloads](https://img.shields.io/npm/dm/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router) [![build status](https://img.shields.io/travis/glennr/redux-simple-router/master.svg?style=flat-square)](https://travis-ci.org/glennr/redux-simple-router)
 
 **Let react-router do all the work**  :sparkles:
 
