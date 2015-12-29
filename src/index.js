@@ -38,8 +38,8 @@ let initialState = {
   replace: false
 }
 
-function update(state=initialState, { type, payload }) {
-  if(type === UPDATE_PATH) {
+function update(state = initialState, { type, payload }) {
+  if (type === UPDATE_PATH) {
     return Object.assign({}, state, {
       path: payload.path,
       changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1),
@@ -78,7 +78,7 @@ export function syncReduxAndRouter(history, store, selectRouterState = SELECT_ST
   // reloads the entire app state such as redux devtools.
   let lastRoute = undefined
 
-  if(!getRouterState()) {
+  if (!getRouterState()) {
     throw new Error(
       'Cannot sync router: route state does not exist (`state.routing` by default). ' +
       'Did you install the routing reducer?'
@@ -114,7 +114,7 @@ export function syncReduxAndRouter(history, store, selectRouterState = SELECT_ST
       lastRoute = initialState
 
       store.dispatch(pushPath(route.path, route.state, { avoidRouterUpdate: true }));
-    } else if(!locationsAreEqual(getRouterState(), route)) {
+    } else if (!locationsAreEqual(getRouterState(), route)) {
       // The above check avoids dispatching an action if the store is
       // already up-to-date
       const method = location.action === 'REPLACE' ? replacePath : pushPath
@@ -127,7 +127,7 @@ export function syncReduxAndRouter(history, store, selectRouterState = SELECT_ST
 
     // Only trigger history update if this is a new change or the
     // location has changed.
-    if(lastRoute.changeId !== routing.changeId ||
+    if (lastRoute.changeId !== routing.changeId ||
        !locationsAreEqual(lastRoute, routing)) {
 
       lastRoute = routing
