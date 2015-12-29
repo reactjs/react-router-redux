@@ -61,8 +61,11 @@
     "karma-sourcemap-loader": "^0.3.5",
     "karma-webpack": "^1.7.0",
     "mocha": "^2.3.4",
+    "react": "^0.14.3",
     "redux": "^3.0.4",
-    "redux-devtools": "^2.1.5",
+    "redux-devtools": "^3.0.0",
+    "redux-devtools-dock-monitor": "^1.0.1",
+    "redux-devtools-log-monitor": "^1.0.1",
     "webpack": "^1.12.9"
   },
   "dependencies": {

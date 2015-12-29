@@ -3,8 +3,7 @@
 import expect from 'expect'
 import { pushPath, replacePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } from '../src/index'
 import { createStore, combineReducers, compose } from 'redux'
-import { devTools } from 'redux-devtools'
-import { ActionCreators } from 'redux-devtools/lib/devTools'
+import { ActionCreators, instrument } from 'redux-devtools'
 import { useBasename } from 'history'
 
 expect.extend({
@@ -163,11 +162,11 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
       beforeEach(() => {
         history = createHistory()
-        const finalCreateStore = compose(devTools())(createStore)
+        const finalCreateStore = compose(instrument())(createStore)
         store = finalCreateStore(combineReducers({
           routing: routeReducer
         }))
-        devToolsStore = store.devToolsStore
+        devToolsStore = store.liftedStore
 
         // Set initial URL before syncing
         history.push('/foo')
