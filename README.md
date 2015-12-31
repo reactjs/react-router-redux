@@ -48,7 +48,7 @@ import ReactDOM from 'react-dom'
 import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route } from 'react-router'
-import { createHistory } from 'history'
+import createHistory from 'history/lib/createHashHistory'
 import { syncReduxAndRouter, routeReducer } from 'redux-simple-router'
 import reducers from '<project-path>/reducers'
 
