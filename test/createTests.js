@@ -1,37 +1,43 @@
 /*eslint-env mocha */
 
 import expect from 'expect'
-import { pushPath, replacePath, UPDATE_PATH, routeReducer, syncReduxAndRouter } from '../src/index'
-import { createStore, combineReducers, compose } from 'redux'
+import {
+  push, replace, TRANSITION, UPDATE_LOCATION, routeReducer, syncHistory
+} from '../src/index'
+import { applyMiddleware, createStore, combineReducers, compose } from 'redux'
 import { devTools } from 'redux-devtools'
 import { ActionCreators } from 'redux-devtools/lib/devTools'
-import { useBasename } from 'history'
+import { useBasename, useQueries } from 'history'
 
 expect.extend({
-  toContainRoute({
-    path,
-    state = undefined,
-    replace = false,
-    changeId = undefined
+  toContainLocation({
+    pathname,
+    search = '',
+    hash = '',
+    state = null,
+    query,
+    action = 'PUSH'
   }) {
-    const routing = this.actual.getState().routing
+    const { location } = this.actual.getState().routing
 
-    expect(routing.path).toEqual(path)
-    expect(routing.state).toEqual(state)
-    expect(routing.replace).toEqual(replace)
-
-    if (changeId !== undefined) {
-      expect(routing.changeId).toEqual(changeId)
-    }
+    expect(location.pathname).toEqual(pathname)
+    expect(location.search).toEqual(search)
+    expect(location.state).toEqual(state)
+    expect(location.query).toEqual(query)
+    expect(location.action).toEqual(action)
   }
 })
 
 function createSyncedHistoryAndStore(createHistory) {
-  const store = createStore(combineReducers({
+  const history = createHistory()
+  const middleware = syncHistory(history)
+  const { unsubscribe } = middleware
+
+  const createStoreWithMiddleware = applyMiddleware(middleware)(createStore)
+  const store = createStoreWithMiddleware(combineReducers({
     routing: routeReducer
   }))
-  const history = createHistory()
-  const unsubscribe = syncReduxAndRouter(history, store)
+
   return { history, store, unsubscribe }
 }
 
@@ -42,59 +48,39 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
     beforeEach(reset)
 
-    describe('pushPath', () => {
+    describe('push', () => {
       it('creates actions', () => {
-        expect(pushPath('/foo', { bar: 'baz' })).toEqual({
-          type: UPDATE_PATH,
-          payload: {
-            path: '/foo',
-            replace: false,
-            state: { bar: 'baz' },
-            avoidRouterUpdate: false
-          }
+        expect(push('/foo')).toEqual({
+          type: TRANSITION,
+          method: 'push',
+          arg: '/foo'
         })
 
-        expect(pushPath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
-          type: UPDATE_PATH,
-          payload: {
-            path: '/foo',
-            state: undefined,
-            replace: false,
-            avoidRouterUpdate: true
+        expect(push({ pathname: '/foo', state: { the: 'state' } })).toEqual({
+          type: TRANSITION,
+          method: 'push',
+          arg: {
+            pathname: '/foo',
+            state: { the: 'state' }
           }
         })
       })
     })
 
-    describe('replacePath', () => {
+    describe('replace', () => {
       it('creates actions', () => {
-        expect(replacePath('/foo', { bar: 'baz' })).toEqual({
-          type: UPDATE_PATH,
-          payload: {
-            path: '/foo',
-            replace: true,
-            state: { bar: 'baz' },
-            avoidRouterUpdate: false
-          }
+        expect(replace('/foo')).toEqual({
+          type: TRANSITION,
+          method: 'replace',
+          arg: '/foo'
         })
 
-        expect(replacePath('/foo', undefined, { avoidRouterUpdate: true })).toEqual({
-          type: UPDATE_PATH,
-          payload: {
-            path: '/foo',
-            state: undefined,
-            replace: true,
-            avoidRouterUpdate: true
-          }
-        })
-
-        expect(replacePath('/foo', undefined, { avoidRouterUpdate: false })).toEqual({
-          type: UPDATE_PATH,
-          payload: {
-            path: '/foo',
-            state: undefined,
-            replace: true,
-            avoidRouterUpdate: false
+        expect(replace({ pathname: '/foo', state: { the: 'state' } })).toEqual({
+          type: TRANSITION,
+          method: 'replace',
+          arg: {
+            pathname: '/foo',
+            state: { the: 'state' }
           }
         })
       })
@@ -102,54 +88,39 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
     describe('routeReducer', () => {
       const state = {
-        path: '/foo',
-        changeId: 1
+        location: {
+          pathname: '/foo',
+          action: 'POP'
+        }
       }
 
       it('updates the path', () => {
         expect(routeReducer(state, {
-          type: UPDATE_PATH,
-          payload: {
+          type: UPDATE_LOCATION,
+          location: {
             path: '/bar',
-            replace: false
+            action: 'PUSH'
           }
         })).toEqual({
-          path: '/bar',
-          replace: false,
-          state: undefined,
-          changeId: 2
+          location: {
+            path: '/bar',
+            action: 'PUSH'
+          }
         })
       })
 
       it('respects replace', () => {
         expect(routeReducer(state, {
-          type: UPDATE_PATH,
-          payload: {
+          type: UPDATE_LOCATION,
+          location: {
             path: '/bar',
-            replace: true,
-            avoidRouterUpdate: false
+            action: 'REPLACE'
           }
         })).toEqual({
-          path: '/bar',
-          replace: true,
-          state: undefined,
-          changeId: 2
-        })
-      })
-
-      it('respects `avoidRouterUpdate` flag', () => {
-        expect(routeReducer(state, {
-          type: UPDATE_PATH,
-          payload: {
+          location: {
             path: '/bar',
-            replace: false,
-            avoidRouterUpdate: true
+            action: 'REPLACE'
           }
-        })).toEqual({
-          path: '/bar',
-          replace: false,
-          state: undefined,
-          changeId: 1
         })
       })
     })
@@ -163,16 +134,23 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
       beforeEach(() => {
         history = createHistory()
-        const finalCreateStore = compose(devTools())(createStore)
+
+        // Set initial URL before syncing
+        history.push('/foo')
+
+        const middleware = syncHistory(history)
+        unsubscribe = middleware.unsubscribe
+
+        const finalCreateStore = compose(
+          applyMiddleware(middleware),
+          devTools()
+        )(createStore)
         store = finalCreateStore(combineReducers({
           routing: routeReducer
         }))
         devToolsStore = store.devToolsStore
 
-        // Set initial URL before syncing
-        history.push('/foo')
-
-        unsubscribe = syncReduxAndRouter(history, store)
+        middleware.syncHistoryToStore(store)
       })
 
       afterEach(() => {
@@ -186,19 +164,19 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         })
 
         history.push('/bar')
-        store.dispatch(pushPath('/baz'))
+        store.dispatch(push('/baz'))
 
         // By calling reset we expect DevTools to re-play the initial state
         // and the history to update to the initial path
         devToolsStore.dispatch(ActionCreators.reset())
 
-        expect(store.getState().routing.path).toEqual('/foo')
+        expect(store.getState().routing.location.pathname).toEqual('/foo')
         expect(currentPath).toEqual('/foo')
 
         historyUnsubscribe()
       })
 
-      it('handles toggle after store change', () => {
+      it('handles toggle after history change', () => {
         let currentPath
         const historyUnsubscribe = history.listen(location => {
           currentPath = location.pathname
@@ -224,9 +202,9 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         })
 
         // DevTools action #2
-        store.dispatch(pushPath('/foo2'))
+        store.dispatch(push('/foo2'))
         // DevTools action #3
-        store.dispatch(pushPath('/foo3'))
+        store.dispatch(push('/foo3'))
 
         // When we toggle an action, the devtools will revert the action
         // and we therefore expect the history to update to the previous path
@@ -252,121 +230,116 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       })
 
       it('syncs router -> redux', () => {
-        expect(store).toContainRoute({
-          path: '/',
-          state: null
+        expect(store).toContainLocation({
+          pathname: '/',
+          action: 'POP'
         })
 
         history.push('/foo')
-        expect(store).toContainRoute({
-          path: '/foo',
-          replace: false,
-          state: null
+        expect(store).toContainLocation({
+          pathname: '/foo'
         })
 
         history.push({ state: { bar: 'baz' }, pathname: '/foo' })
-        expect(store).toContainRoute({
-          path: '/foo',
-          replace: true,
-          state: { bar: 'baz' }
+        expect(store).toContainLocation({
+          pathname: '/foo',
+          state: { bar: 'baz' },
+          action: 'REPLACE' // Converted by history.
         })
 
         history.replace('/bar')
-        expect(store).toContainRoute({
-          path: '/bar',
-          replace: true,
-          state: null
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          action: 'REPLACE'
         })
 
         history.push('/bar')
-        expect(store).toContainRoute({
-          path: '/bar',
-          replace: true,
-          state: null
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          action: 'REPLACE' // Converted by history.
         })
 
         history.push('/bar?query=1')
-        expect(store).toContainRoute({
-          path: '/bar?query=1',
-          replace: false,
-          state: null
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          search: '?query=1'
         })
 
         history.push('/bar#baz')
-        expect(store).toContainRoute({
-          path: '/bar#baz',
-          replace: false,
-          state: null
-        })
-
-        history.replace({ 
-          state: { bar: 'baz' }, 
-          pathname: '/bar?query=1' 
-        })
-        expect(store).toContainRoute({
-          path: '/bar?query=1',
-          replace: true,
-          state: { bar: 'baz' }
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          hash: '#baz'
         })
 
         history.replace({
-          state: { bar: 'baz' }, 
-          pathname: '/bar?query=1#hash=2'
-        })
-        expect(store).toContainRoute({
-          path: '/bar?query=1#hash=2',
-          replace: true,
+          pathname: '/bar',
+          search: '?query=1',
           state: { bar: 'baz' }
+        })
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          search: '?query=1',
+          state: { bar: 'baz' },
+          action: 'REPLACE'
+        })
+
+        history.replace({
+          pathname: '/bar',
+          search: '?query=1',
+          hash: '#hash=2',
+          state: { bar: 'baz' }
+        })
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          search: '?query=1',
+          hash: '#hash=2',
+          state: { bar: 'baz' },
+          action: 'REPLACE'
         })
       })
 
       it('syncs redux -> router', () => {
-        expect(store).toContainRoute({
-          path: '/',
-          replace: false,
-          state: null
+        expect(store).toContainLocation({
+          pathname: '/',
+          action: 'POP'
         })
 
-        store.dispatch(pushPath('/foo'))
-        expect(store).toContainRoute({
-          path: '/foo',
-          replace: false,
-          state: undefined
+        store.dispatch(push('/foo'))
+        expect(store).toContainLocation({
+          pathname: '/foo'
         })
 
-        store.dispatch(pushPath('/foo', { bar: 'baz' }))
-        expect(store).toContainRoute({
-          path: '/foo',
-          replace: false,
-          state: { bar: 'baz' }
+        store.dispatch(push({ pathname: '/foo', state: { bar: 'baz' } }))
+        expect(store).toContainLocation({
+          pathname: '/foo',
+          state: { bar: 'baz' },
+          action: 'REPLACE' // Converted by history.
         })
 
-        store.dispatch(replacePath('/bar', { bar: 'foo' }))
-        expect(store).toContainRoute({
-          path: '/bar',
-          replace: true,
-          state: { bar: 'foo' }
+        store.dispatch(replace({ pathname: '/bar', state: { bar: 'foo' } }))
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          state: { bar: 'foo' },
+          action: 'REPLACE'
         })
 
-        store.dispatch(pushPath('/bar'))
-        expect(store).toContainRoute({
-          path: '/bar',
-          replace: false,
-          state: undefined
+        store.dispatch(push('/bar'))
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          action: 'REPLACE' // Converted by history.
         })
 
-        store.dispatch(pushPath('/bar?query=1'))
-        expect(store).toContainRoute({
-          path: '/bar?query=1',
-          replace: false,
-          state: undefined
+        store.dispatch(push('/bar?query=1'))
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          search: '?query=1'
         })
 
-        store.dispatch(pushPath('/bar?query=1#hash=2'))
-        expect(store).toContainRoute({
-          path: '/bar?query=1#hash=2',
-          replace: false,
-          state: undefined
+        store.dispatch(push('/bar?query=1#hash=2'))
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          search: '?query=1',
+          hash: '#hash=2'
         })
       })
 
@@ -376,9 +349,9 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           updates.push(location.pathname)
         })
 
-        store.dispatch(pushPath('/foo'))
-        store.dispatch(pushPath('/foo'))
-        store.dispatch(replacePath('/foo'))
+        store.dispatch(push('/foo'))
+        store.dispatch(push('/foo'))
+        store.dispatch(replace('/foo'))
 
         expect(updates).toEqual([ '/', '/foo', '/foo', '/foo' ])
 
@@ -418,7 +391,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           updates.push(location.pathname)
         })
 
-        store.dispatch(pushPath('/foo'))
+        store.dispatch(push('/foo'))
 
         expect(updates).toEqual([ '/', '/foo' ])
       })
@@ -426,10 +399,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('allows updating the route from within `listenBefore`', () => {
         history.listenBefore(location => {
           if(location.pathname === '/foo') {
-            store.dispatch(pushPath('/bar'))
+            store.dispatch(push('/bar'))
           }
           else if(location.pathname === '/replace') {
-            store.dispatch(replacePath('/baz', { foo: 'bar' }))
+            store.dispatch(replace({ pathname: '/baz', state: { foo: 'bar' } }))
           }
         })
 
@@ -438,71 +411,47 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           updates.push(location.pathname)
         })
 
-        store.dispatch(pushPath('/foo'))
-        expect(store).toContainRoute({
-          path: '/bar'
+        store.dispatch(push('/foo'))
+        expect(store).toContainLocation({
+          pathname: '/bar'
         })
 
-        store.dispatch(pushPath('/replace', { bar: 'baz' }))
-        expect(store).toContainRoute({
-          path: '/baz',
+        store.dispatch(push({ pathname: '/replace', state: { bar: 'baz' } }))
+        expect(store).toContainLocation({
+          pathname: '/baz',
           state: { foo: 'bar' },
-          replace: true
+          action: 'REPLACE'
         })
 
         expect(updates).toEqual([ '/', '/bar', '/baz' ])
       })
 
-      it('throws if "routing" key is missing with default selectRouteState', () => {
-        const store = createStore(combineReducers({
-          notRouting: routeReducer
-        }))
-        const history = createHistory()
-        expect(
-          () => syncReduxAndRouter(history, store)
-        ).toThrow(/Cannot sync router: route state does not exist/)
-      })
-
-      it('accepts custom selectRouterState', () => {
-        const store = createStore(combineReducers({
-          notRouting: routeReducer
-        }))
-        const history = createHistory()
-        syncReduxAndRouter(history, store, state => state.notRouting)
-        history.push('/bar')
-        expect(store.getState().notRouting.path).toEqual('/bar')
-      })
-
       it('returns unsubscribe to stop listening to history and store', () => {
-        const store = createStore(combineReducers({
-          routing: routeReducer
-        }))
-        const history = createHistory()
-        const unsubscribe = syncReduxAndRouter(history, store)
-
         history.push('/foo')
-        expect(store).toContainRoute({
-          path: '/foo',
-          state: null
+        expect(store).toContainLocation({
+          pathname: '/foo'
         })
 
-        store.dispatch(pushPath('/bar'))
-        expect(store).toContainRoute({
-          path: '/bar'
+        store.dispatch(push('/bar'))
+        expect(store).toContainLocation({
+          pathname: '/bar'
         })
 
         unsubscribe()
 
+        // Make the teardown a no-op.
+        unsubscribe = () => {}
+
         history.push('/foo')
-        expect(store).toContainRoute({
-          path: '/bar'
+        expect(store).toContainLocation({
+          pathname: '/bar'
         })
 
         history.listenBefore(() => {
           throw new Error()
         })
         expect(
-          () => store.dispatch(pushPath('/foo'))
+          () => store.dispatch(push('/foo'))
         ).toNotThrow()
       })
 
@@ -512,8 +461,8 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           updates.push(location.pathname)
         })
 
-        store.dispatch(pushPath('/bar'))
-        store.dispatch(pushPath('/baz'))
+        store.dispatch(push('/bar'))
+        store.dispatch(push('/baz'))
         expect(updates).toEqual([ '/', '/bar', '/baz' ])
 
         historyUnsubscribe()
@@ -522,34 +471,81 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('only triggers store once when updating path via store', () => {
         const updates = []
         const storeUnsubscribe = store.subscribe(() => {
-          updates.push(store.getState().routing.path)
+          updates.push(store.getState().routing.location.pathname)
         })
 
-        store.dispatch(pushPath('/bar'))
-        store.dispatch(pushPath('/baz'))
-        store.dispatch(replacePath('/foo'))
+        store.dispatch(push('/bar'))
+        store.dispatch(push('/baz'))
+        store.dispatch(replace('/foo'))
         expect(updates).toEqual([ '/bar', '/baz', '/foo' ])
 
         storeUnsubscribe()
       })
     })
 
-    it('handles basename history option', () => {
-      const store = createStore(combineReducers({
-        routing: routeReducer
-      }))
-      const history = useBasename(createHistory)({ basename: '/foobar' })
-      syncReduxAndRouter(history, store)
+    describe('query support', () => {
+      let history, store, unsubscribe
 
-      store.dispatch(pushPath('/bar'))
-      expect(store).toContainRoute({
-        path: '/bar'
+      beforeEach(() => {
+        const synced = createSyncedHistoryAndStore(useQueries(createHistory))
+        history = synced.history
+        store = synced.store
+        unsubscribe = synced.unsubscribe
       })
 
-      history.push('/baz')
-      expect(store).toContainRoute({
-        path: '/baz',
-        state: null
+      afterEach(() => {
+        unsubscribe()
+      })
+
+      it('handles location queries', () => {
+        store.dispatch(push({ pathname: '/bar', query: { the: 'query' } }))
+        expect(store).toContainLocation({
+          pathname: '/bar',
+          query: { the: 'query' },
+          search: '?the=query'
+        })
+
+        history.push({ pathname: '/baz', query: { other: 'query' } })
+        expect(store).toContainLocation({
+          pathname: '/baz',
+          query: { other: 'query' },
+          search: '?other=query'
+        })
+
+        store.dispatch(push('/foo'))
+        expect(store).toContainLocation({
+          pathname: '/foo',
+          query: {}
+        })
+      })
+    })
+
+    describe('basename support', () => {
+      let history, store, unsubscribe
+
+      beforeEach(() => {
+        const synced = createSyncedHistoryAndStore(
+          () => useBasename(createHistory)({ basename: '/foobar' })
+        )
+        history = synced.history
+        store = synced.store
+        unsubscribe = synced.unsubscribe
+      })
+
+      afterEach(() => {
+        unsubscribe()
+      })
+
+      it('handles basename history option', () => {
+        store.dispatch(push('/bar'))
+        expect(store).toContainLocation({
+          pathname: '/bar'
+        })
+
+        history.push('/baz')
+        expect(store).toContainLocation({
+          pathname: '/baz'
+        })
       })
     })
   })

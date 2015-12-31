@@ -1,149 +1,112 @@
-import deepEqual from 'deep-equal'
-
 // Constants
 
-export const UPDATE_PATH = '@@router/UPDATE_PATH'
+export const TRANSITION = '@@router/TRANSITION'
+export const UPDATE_LOCATION = '@@router/UPDATE_LOCATION'
+
 const SELECT_STATE = state => state.routing
 
-export function pushPath(path, state, { avoidRouterUpdate = false } = {}) {
-  return {
-    type: UPDATE_PATH,
-    payload: {
-      path: path,
-      state: state,
-      replace: false,
-      avoidRouterUpdate: !!avoidRouterUpdate
-    }
-  }
+function transition(method) {
+  return arg => ({
+    type: TRANSITION,
+    method, arg
+  })
 }
 
-export function replacePath(path, state, { avoidRouterUpdate = false } = {}) {
+export const push = transition('push')
+export const replace = transition('replace')
+
+// TODO: Add go, goBack, goForward.
+
+function updateLocation(location) {
   return {
-    type: UPDATE_PATH,
-    payload: {
-      path: path,
-      state: state,
-      replace: true,
-      avoidRouterUpdate: !!avoidRouterUpdate
-    }
+    type: UPDATE_LOCATION,
+    location
   }
 }
 
 // Reducer
 
-let initialState = {
-  changeId: 1,
-  path: undefined,
-  state: undefined,
-  replace: false
+const initialState = {
+  location: undefined
 }
 
-function update(state=initialState, { type, payload }) {
-  if(type === UPDATE_PATH) {
-    return Object.assign({}, state, {
-      path: payload.path,
-      changeId: state.changeId + (payload.avoidRouterUpdate ? 0 : 1),
-      state: payload.state,
-      replace: payload.replace
-    })
+export function routeReducer(state = initialState, { type, location }) {
+  if (type !== UPDATE_LOCATION) {
+    return state
   }
-  return state
+
+  return { location }
 }
 
 // Syncing
 
-function locationsAreEqual(a, b) {
-  return a != null && b != null && a.path === b.path && deepEqual(a.state, b.state)
-}
+export function syncHistory(history) {
+  let unsubscribeHistory, currentKey, unsubscribeStore
+  let connected = false, syncing = false
 
-function createPath(location) {
-  const { pathname, search, hash } = location
-  let result = pathname
-  if (search)
-    result += search
-  if (hash)
-    result += hash
-  return result
-}
-
-export function syncReduxAndRouter(history, store, selectRouterState = SELECT_STATE) {
-  const getRouterState = () => selectRouterState(store.getState())
-
-  // To properly handle store updates we need to track the last route.
-  // This route contains a `changeId` which is updated on every
-  // `pushPath` and `replacePath`. If this id changes we always
-  // trigger a history update. However, if the id does not change, we
-  // check if the location has changed, and if it is we trigger a
-  // history update. It's possible for this to happen when something
-  // reloads the entire app state such as redux devtools.
-  let lastRoute = undefined
-
-  if(!getRouterState()) {
-    throw new Error(
-      'Cannot sync router: route state does not exist (`state.routing` by default). ' +
-      'Did you install the routing reducer?'
-    )
-  }
-
-  const unsubscribeHistory = history.listen(location => {
-    const route = {
-      path: createPath(location),
-      state: location.state
-    }
-
-    if (!lastRoute) {
-      // `initialState` *should* represent the current location when
-      // the app loads, but we cannot get the current location when it
-      // is defined. What happens is `history.listen` is called
-      // immediately when it is registered, and it updates the app
-      // state with an UPDATE_PATH action. This causes problem when
-      // users are listening to UPDATE_PATH actions just for
-      // *changes*, and with redux devtools because "revert" will use
-      // `initialState` and it won't revert to the original URL.
-      // Instead, we specialize the first route notification and do
-      // different things based on it.
-      initialState = {
-        changeId: 1,
-        path: route.path,
-        state: route.state,
-        replace: false
+  function middleware(store) {
+    unsubscribeHistory = history.listen(location => {
+      currentKey = location.key
+      if (syncing) {
+        // Don't dispatch a new action if we're replaying location.
+        return
       }
 
-      // Also set `lastRoute` so that the store subscriber doesn't
-      // trigger an unnecessary `pushState` on load
-      lastRoute = initialState
+      store.dispatch(updateLocation(location))
+    })
 
-      store.dispatch(pushPath(route.path, route.state, { avoidRouterUpdate: true }));
-    } else if(!locationsAreEqual(getRouterState(), route)) {
-      // The above check avoids dispatching an action if the store is
-      // already up-to-date
-      const method = location.action === 'REPLACE' ? replacePath : pushPath
-      store.dispatch(method(route.path, route.state, { avoidRouterUpdate: true }))
+    connected = true
+
+    return next => action => {
+      if (action.type !== TRANSITION || !connected) {
+        next(action)
+        return
+      }
+
+      // FIXME: Is it correct to swallow the TRANSITION action here and replace
+      // it with UPDATE_LOCATION instead? We could also use the same type in
+      // both places instead and just set the location on the action.
+
+      const { method, arg } = action
+      history[method](arg)
     }
-  })
+  }
 
-  const unsubscribeStore = store.subscribe(() => {
-    let routing = getRouterState()
+  middleware.syncHistoryToStore =
+    (store, selectRouterState = SELECT_STATE) => {
+      const getRouterState = () => selectRouterState(store.getState())
+      const { location: initialLocation } = getRouterState()
 
-    // Only trigger history update if this is a new change or the
-    // location has changed.
-    if(lastRoute.changeId !== routing.changeId ||
-       !locationsAreEqual(lastRoute, routing)) {
+      unsubscribeStore = store.subscribe(() => {
+        const { location } = getRouterState()
 
-      lastRoute = routing
-      const method = routing.replace ? 'replace' : 'push'
-      history[method]({ 
-        pathname: routing.path, 
-        state: routing.state 
+        // If we're resetting to the beginning, use the saved initial value. We
+        // need to dispatch a new action at this point to populate the store
+        // appropriately.
+        if (!location) {
+          history.transitionTo(initialLocation)
+          return
+        }
+
+        // Otherwise, if we need to update the history location, do so without
+        // dispatching a new action, as we're just bringing history in sync
+        // with the store.
+        if (location.key !== currentKey) {
+          syncing = true
+          history.transitionTo(location)
+          syncing = false
+        }
       })
     }
 
-  })
-
-  return function unsubscribe() {
+  middleware.unsubscribe = () => {
     unsubscribeHistory()
-    unsubscribeStore()
-  }
-}
+    if (unsubscribeStore) {
+      unsubscribeStore()
+    }
 
-export { update as routeReducer }
+    connected = false
+  }
+
+  return middleware
+}
