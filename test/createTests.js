@@ -2,7 +2,7 @@
 
 import expect from 'expect'
 import {
-  push, replace, TRANSITION, UPDATE_LOCATION, routeReducer, syncHistory
+  routeActions, TRANSITION, UPDATE_LOCATION, routeReducer, syncHistory
 } from '../src/index'
 import { applyMiddleware, createStore, combineReducers, compose } from 'redux'
 import { devTools } from 'redux-devtools'
@@ -43,47 +43,53 @@ function createSyncedHistoryAndStore(createHistory) {
 
 const defaultReset = () => {}
 
+const { push, replace } = routeActions
+
 module.exports = function createTests(createHistory, name, reset = defaultReset) {
   describe(name, () => {
 
     beforeEach(reset)
 
-    describe('push', () => {
-      it('creates actions', () => {
-        expect(push('/foo')).toEqual({
-          type: TRANSITION,
-          method: 'push',
-          arg: '/foo'
-        })
+    describe('routeActions', () => {
 
-        expect(push({ pathname: '/foo', state: { the: 'state' } })).toEqual({
-          type: TRANSITION,
-          method: 'push',
-          arg: {
-            pathname: '/foo',
-            state: { the: 'state' }
-          }
+      describe('push', () => {
+        it('creates actions', () => {
+          expect(push('/foo')).toEqual({
+            type: TRANSITION,
+            method: 'push',
+            arg: '/foo'
+          })
+
+          expect(push({ pathname: '/foo', state: { the: 'state' } })).toEqual({
+            type: TRANSITION,
+            method: 'push',
+            arg: {
+              pathname: '/foo',
+              state: { the: 'state' }
+            }
+          })
         })
       })
-    })
 
-    describe('replace', () => {
-      it('creates actions', () => {
-        expect(replace('/foo')).toEqual({
-          type: TRANSITION,
-          method: 'replace',
-          arg: '/foo'
-        })
+      describe('replace', () => {
+        it('creates actions', () => {
+          expect(replace('/foo')).toEqual({
+            type: TRANSITION,
+            method: 'replace',
+            arg: '/foo'
+          })
 
-        expect(replace({ pathname: '/foo', state: { the: 'state' } })).toEqual({
-          type: TRANSITION,
-          method: 'replace',
-          arg: {
-            pathname: '/foo',
-            state: { the: 'state' }
-          }
+          expect(replace({ pathname: '/foo', state: { the: 'state' } })).toEqual({
+            type: TRANSITION,
+            method: 'replace',
+            arg: {
+              pathname: '/foo',
+              state: { the: 'state' }
+            }
+          })
         })
       })
+
     })
 
     describe('routeReducer', () => {

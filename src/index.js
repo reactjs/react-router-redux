@@ -12,8 +12,13 @@ function transition(method) {
   })
 }
 
-export const push = transition('push')
-export const replace = transition('replace')
+const push = transition('push')
+const replace = transition('replace')
+
+export const routeActions = {
+  push,
+  replace
+}
 
 // TODO: Add go, goBack, goForward.
 
