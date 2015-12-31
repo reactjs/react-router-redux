@@ -43,7 +43,7 @@ function createSyncedHistoryAndStore(createHistory) {
 
 const defaultReset = () => {}
 
-const { push, replace } = routeActions
+const { push, replace, go, goBack, goForward } = routeActions
 
 module.exports = function createTests(createHistory, name, reset = defaultReset) {
   describe(name, () => {
@@ -86,6 +86,36 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
               pathname: '/foo',
               state: { the: 'state' }
             }
+          })
+        })
+      })
+
+      describe('go', () => {
+        it('creates actions', () => {
+          expect(go(1)).toEqual({
+            type: TRANSITION,
+            method: 'go',
+            arg: 1
+          })
+        })
+      })
+
+      describe('goBack', () => {
+        it('creates actions', () => {
+          expect(goBack()).toEqual({
+            type: TRANSITION,
+            method: 'goBack',
+            arg: undefined
+          })
+        })
+      })
+
+      describe('goForward', () => {
+        it('creates actions', () => {
+          expect(goForward()).toEqual({
+            type: TRANSITION,
+            method: 'goForward',
+            arg: undefined
           })
         })
       })
