@@ -1,6 +1,9 @@
 
 ## HEAD
 
+* New API that uses middleware to trap history calls for a better
+  unidirectional data flow. New docs and updates coming soon (#141)
+
 ## [1.0.2](https://github.com/jlongster/redux-simple-router/compare/1.0.1...1.0.2)
 
 * Only publish relevant files to npm
