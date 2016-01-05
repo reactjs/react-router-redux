@@ -14,6 +14,8 @@ The entire state that we are interested in boils down to one thing: the URL. Thi
 npm install redux-simple-router
 ```
 
+If you want to install the next major version, use `redux-simple-router@next`. Run `npm dist-tag ls redux-simple-router` to see what `next` is aliased to.
+
 View the [CHANGELOG](https://github.com/jlongster/redux-simple-router/blob/master/CHANGELOG.md) for recent changes.
 
 Read the [API docs](#api) farther down this page.
