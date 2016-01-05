@@ -6,7 +6,8 @@
   "files": [
     "*.md",
     "LICENSE",
-    "lib"
+    "lib",
+    "src"
   ],
   "repository": {
     "type": "git",
