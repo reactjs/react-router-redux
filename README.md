@@ -110,6 +110,7 @@ Examples from the community:
 * [choonkending/react-webpack-node](https://github.com/choonkending/react-webpack-node) - boilerplate for universal redux and react-router
 * [tj/frontend-boilerplate](https://github.com/tj/frontend-boilerplate)
 * [bdefore/universal-redux](https://github.com/bdefore/universal-redux) - npm package for universally rendered redux applications
+* [StevenIseki/redux-simple-router-example](https://github.com/StevenIseki/redux-simple-router-example)
 
 _Have an example to add? Send us a PR!_
 
