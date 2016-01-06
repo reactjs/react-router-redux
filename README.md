@@ -36,7 +36,7 @@ That said, redux-router is a fine project and has features this doesn't provide.
 
 The idea of this library is to use react-router's functionality exactly like its documentation tells you to. You can access all of its APIs in routing components. Additionally, you can use redux like you normally would, with a single app state and "connected" components. It's even possible for a single component to be both if needed.
 
-[redux](https://github.com/rackt/redux) (`store.routing`) &nbsp;&harr;&nbsp; [**redux-simple-router**](https://github.com/jlongster/redux-simple-router) &nbsp;&harr;&nbsp; [history](https://github.com/rackt/history) (`history.location`) &nbsp;&harr;&nbsp; [react-router](https://github.com/rackt/react-router)
+[redux](https://github.com/rackt/redux) (`store.routing`) &nbsp;&harr;&nbsp; [**redux-simple-router**](https://github.com/rackt/redux-simple-router) &nbsp;&harr;&nbsp; [history](https://github.com/rackt/history) (`history.location`) &nbsp;&harr;&nbsp; [react-router](https://github.com/rackt/react-router)
 
 We only store current URL and state, whereas redux-router stores the entire location object from react-router. You can read it, and also change it with an action.
 
