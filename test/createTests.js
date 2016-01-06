@@ -5,8 +5,7 @@ import {
   routeActions, TRANSITION, UPDATE_LOCATION, routeReducer, syncHistory
 } from '../src/index'
 import { applyMiddleware, createStore, combineReducers, compose } from 'redux'
-import { devTools } from 'redux-devtools'
-import { ActionCreators } from 'redux-devtools/lib/devTools'
+import { ActionCreators, instrument } from 'redux-devtools'
 import { useBasename, useQueries } from 'history'
 
 expect.extend({
@@ -179,12 +178,12 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
         const finalCreateStore = compose(
           applyMiddleware(middleware),
-          devTools()
+          instrument()
         )(createStore)
         store = finalCreateStore(combineReducers({
           routing: routeReducer
         }))
-        devToolsStore = store.devToolsStore
+        devToolsStore = store.liftedStore
 
         middleware.syncHistoryToStore(store)
       })
