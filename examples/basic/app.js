@@ -24,7 +24,7 @@ const DevTools = createDevTools(
                changePositionKey='ctrl-q'>
     <LogMonitor theme='tomorrow' />
   </DockMonitor>
-)
+);
 
 const finalCreateStore = compose(
   applyMiddleware(middleware),
