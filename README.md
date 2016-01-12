@@ -145,9 +145,14 @@ An action type that you can listen for in your reducers to be notified of route 
 An action creator that you can use to update the current URL and update the browser history.
 The LocationDescriptor parameter can be either as string with the path or a [LocationDescriptorObject](https://github.com/rackt/history/blob/v1.17.0/docs/Glossary.md#locationdescriptor) if you need more detailed control.
 
-#### `replace(nextLocation: LocationDescriptor)`
-#### `go(nextLocation: LocationDescriptor)`
-#### `goBack(nextLocation: LocationDescriptor)`
-#### `goForward(nextLocation: LocationDescriptor)`
+### routeActions
 
-Action creators for manipulating history. These directory call the analogous [history methods](https://github.com/rackt/history/blob/master/docs/GettingStarted.md#navigation).
+An object that contains all the actions creators you can use to manipulate history:
+
+* `push(nextLocation: LocationDescriptor)`
+* `replace(nextLocation: LocationDescriptor)`
+* `go(nextLocation: LocationDescriptor)`
+* `goForward(nextLocation: LocationDescriptor)`
+* `goBack(nextLocation: LocationDescriptor)`
+
+The most common action is to push a new URL via `routeActions.push(...)`. These all directly call the analogous [history methods](https://github.com/rackt/history/blob/master/docs/GettingStarted.md#navigation).
