@@ -140,11 +140,6 @@ A reducer function that keeps track of the router state. You must to add this re
 
 An action type that you can listen for in your reducers to be notified of route updates.
 
-#### `push(nextLocation: LocationDescriptor)`
-
-An action creator that you can use to update the current URL and update the browser history.
-The LocationDescriptor parameter can be either as string with the path or a [LocationDescriptorObject](https://github.com/rackt/history/blob/v1.17.0/docs/Glossary.md#locationdescriptor) if you need more detailed control.
-
 #### `routeActions`
 
 An object that contains all the actions creators you can use to manipulate history:
