@@ -124,11 +124,11 @@ _Have an example to add? Send us a PR!_
 
 #### `syncHistory(history: History) => ReduxMiddleware`
 
-Call this to create a middleware that has to be registered with your Redux store to keep updates to the store in sync with with the history. The middleware will look for route actions created by `push` or `replace` and applies them to the history.
+Call this to create a middleware that can be applied with Redux's `applyMiddleware` to allow actions to call history methods. The middleware will look for route actions created by `push`, `replace`, etc. and applies them to the history.
 
-#### `syncHistoryToStore(store: ReduxStore, selectRouterState?: function)`
+#### `ReduxMiddleware.syncHistoryToStore(store: ReduxStore, selectRouterState?: function)`
 
-Call this on the middleware provided by `syncHistory` to keep changes on the Redux store that don't originate from a dispatched route action (e.g.: from the DevTools) in sync with the history.
+Call this on the middleware returned from `syncHistory` to start the syncing process between the history and store instance.
 
 Supply an optional function `selectRouterState` to customize where to find the router state on your app state. It defaults to `state => state.routing`, so you would install the reducer under the name "routing". Feel free to change this to whatever you like.
 
@@ -146,7 +146,8 @@ An action creator that you can use to update the current URL and update the brow
 The LocationDescriptor parameter can be either as string with the path or a [LocationDescriptorObject](https://github.com/rackt/history/blob/v1.17.0/docs/Glossary.md#locationdescriptor) if you need more detailed control.
 
 #### `replace(nextLocation: LocationDescriptor)`
+#### `go(nextLocation: LocationDescriptor)`
+#### `goBack(nextLocation: LocationDescriptor)`
+#### `goForward(nextLocation: LocationDescriptor)`
 
-An action creator that you can use to replace the current URL without updating the browser history.
-
-The `nextLocation` parameter works just like the parameter for the `push` action creator.
+Action creators for manipulating history. These directory call the analogous [history methods](https://github.com/rackt/history/blob/master/docs/GettingStarted.md#navigation).
