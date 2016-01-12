@@ -38,7 +38,7 @@ export function routeReducer(state = initialState, { type, location }) {
     return state
   }
 
-  return { location }
+  return { ...state, location }
 }
 
 // Syncing
