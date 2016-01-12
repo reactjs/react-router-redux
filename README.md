@@ -145,7 +145,7 @@ An action type that you can listen for in your reducers to be notified of route 
 An action creator that you can use to update the current URL and update the browser history.
 The LocationDescriptor parameter can be either as string with the path or a [LocationDescriptorObject](https://github.com/rackt/history/blob/v1.17.0/docs/Glossary.md#locationdescriptor) if you need more detailed control.
 
-### routeActions
+### `routeActions`
 
 An object that contains all the actions creators you can use to manipulate history:
 
