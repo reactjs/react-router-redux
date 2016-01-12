@@ -146,8 +146,8 @@ An object that contains all the actions creators you can use to manipulate histo
 
 * `push(nextLocation: LocationDescriptor)`
 * `replace(nextLocation: LocationDescriptor)`
-* `go(nextLocation: LocationDescriptor)`
-* `goForward(nextLocation: LocationDescriptor)`
-* `goBack(nextLocation: LocationDescriptor)`
+* `go(n: number)`
+* `goForward()`
+* `goBack()`
 
 The most common action is to push a new URL via `routeActions.push(...)`. These all directly call the analogous [history methods](https://github.com/rackt/history/blob/master/docs/GettingStarted.md#navigation).
