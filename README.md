@@ -132,6 +132,10 @@ Call this on the middleware returned from `syncHistory` to start the syncing pro
 
 Supply an optional function `selectRouterState` to customize where to find the router state on your app state. It defaults to `state => state.routing`, so you would install the reducer under the name "routing". Feel free to change this to whatever you like.
 
+#### `ReduxMiddleware.unsubscribe()`
+
+Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `syncHistoryToStore`. 
+
 #### `routeReducer`
 
 A reducer function that keeps track of the router state. You must to add this reducer to your app reducers when creating the store.
