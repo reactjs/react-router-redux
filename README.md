@@ -47,20 +47,26 @@ Let's take a look at a simple example.
 ```js
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { createStore, combineReducers } from 'redux'
+import { compose, createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route } from 'react-router'
 import { createHistory } from 'history'
-import { syncReduxAndRouter, routeReducer } from 'redux-simple-router'
+import { syncHistory, routeReducer } from 'redux-simple-router'
 import reducers from '<project-path>/reducers'
 
 const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
 }))
-const store = createStore(reducer)
 const history = createHistory()
 
-syncReduxAndRouter(history, store)
+// Sync dispatched route actions to the history
+const reduxRouterMiddleware = syncHistory(history)
+const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(createStore)
+
+const store = createStoreWithMiddleware(reducer)
+
+// Sync store to history
+reduxRouterMiddleware.syncHistoryToStore(store)
 
 ReactDOM.render(
   <Provider store={store}>
@@ -75,24 +81,24 @@ ReactDOM.render(
 )
 ```
 
-Now you can read from `state.routing.path` to get the URL. It's far more likely that you want to change the URL more often, however. You can use the `pushPath` action creator that we provide:
+Now you can read from `state.routing.location.pathname` to get the URL. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
 
 ```js
-import { pushPath } from 'redux-simple-router'
+import { routeActions } from 'redux-simple-router'
 
 function MyComponent({ dispatch }) {
-  return <Button onClick={() => dispatch(pushPath('/foo'))}/>;
+  return <Button onClick={() => dispatch(routeActions.push('/foo'))}/>;
 }
 ```
 
-This will change the state, which will trigger a change in react-router. Additionally, if you want to respond to the path update action, just handle the `UPDATE_PATH` constant that we provide:
+This will change the state, which will trigger a change in react-router. Additionally, if you want to respond to the path update action, just handle the `UPDATE_LOCATION` constant that we provide:
 
 ```js
-import { UPDATE_PATH } from 'redux-simple-router'
+import { UPDATE_LOCATION } from 'redux-simple-router'
 
 function update(state, action) {
   switch(action.type) {
-  case UPDATE_PATH:
+  case UPDATE_LOCATION:
     // do something here
   }
 }
@@ -116,30 +122,31 @@ _Have an example to add? Send us a PR!_
 
 ### API
 
-#### `syncReduxAndRouter(history, store, selectRouterState?)`
+#### `syncHistory(history: History) => ReduxMiddleware`
 
-Call this with a react-router and a redux store instance to install hooks that always keep both of them in sync. When one changes, so will the other.
+Call this to create a middleware that has to be registered with your Redux store to keep updates to the store in sync with with the history. The middleware will look for route actions created by `push` or `replace` and applies them to the history.
+
+#### `syncHistoryToStore(store: ReduxStore, selectRouterState?: function)`
+
+Call this on the middleware provided by `syncHistory` to keep changes on the Redux store that don't originate from a dispatched route action (e.g.: from the DevTools) in sync with the history.
 
 Supply an optional function `selectRouterState` to customize where to find the router state on your app state. It defaults to `state => state.routing`, so you would install the reducer under the name "routing". Feel free to change this to whatever you like.
 
 #### `routeReducer`
 
-A reducer function that keeps track of the router state. You must to add this reducer to your app reducers when creating the store. If you do not provide a custom `selectRouterState` function, the piece of state must be named `routing`.
+A reducer function that keeps track of the router state. You must to add this reducer to your app reducers when creating the store.
 
-#### `UPDATE_PATH`
+#### `UPDATE_LOCATION`
 
 An action type that you can listen for in your reducers to be notified of route updates.
 
-#### `pushPath(path, state, { avoidRouterUpdate = false } = {})`
+#### `push(nextLocation: LocationDescriptor)`
 
-An action creator that you can use to update the current URL and update the browser history. Just pass it a string like `/foo/bar?param=5` as the `path` argument.
+An action creator that you can use to update the current URL and update the browser history.
+The LocationDescriptor parameter can be either as string with the path or a [LocationDescriptorObject](https://github.com/rackt/history/blob/v1.17.0/docs/Glossary.md#locationdescriptor) if you need more detailed control.
 
-You can optionally pass a state to this action creator to update the state of the current route.
-
-The `avoidRouterUpdate`, if `true`, will stop react-router from reacting to this URL change. This is useful if replaying snapshots while using the `forceRefresh` option of the browser history which forces full reloads. It's a rare edge case.
-
-#### `replacePath(path, state, { avoidRouterUpdate = false } = {})`
+#### `replace(nextLocation: LocationDescriptor)`
 
 An action creator that you can use to replace the current URL without updating the browser history.
 
-The `state` and the `avoidRouterUpdate` parameters work just like `pushPath`.
+The `nextLocation` parameter works just like the parameter for the `push` action creator.
