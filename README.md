@@ -136,7 +136,7 @@ Supply an optional function `selectRouterState` to customize where to find the r
 
 #### `ReduxMiddleware.unsubscribe()`
 
-Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `syncHistoryToStore`. 
+Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`. 
 
 #### `routeReducer`
 
