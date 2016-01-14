@@ -65,8 +65,8 @@ const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(createS
 
 const store = createStoreWithMiddleware(reducer)
 
-// Sync store to history
-reduxRouterMiddleware.syncHistoryToStore(store)
+// Required for replaying actions from devtools to work
+reduxRouterMiddleware.listenForReplays(store)
 
 ReactDOM.render(
   <Provider store={store}>
@@ -117,6 +117,7 @@ Examples from the community:
 * [tj/frontend-boilerplate](https://github.com/tj/frontend-boilerplate)
 * [bdefore/universal-redux](https://github.com/bdefore/universal-redux) - npm package for universally rendered redux applications
 * [yangli1990/react-redux-isomorphic](https://github.com/yangli1990/Isomorphic-Universal-React-Template) - boilerplate for universal redux and redux-simple-router
+* [StevenIseki/redux-simple-router-example](https://github.com/StevenIseki/redux-simple-router-example)
 
 _Have an example to add? Send us a PR!_
 
@@ -128,15 +129,15 @@ _Have an example to add? Send us a PR!_
 
 Call this to create a middleware that can be applied with Redux's `applyMiddleware` to allow actions to call history methods. The middleware will look for route actions created by `push`, `replace`, etc. and applies them to the history.
 
-#### `ReduxMiddleware.syncHistoryToStore(store: ReduxStore, selectRouterState?: function)`
+#### `ReduxMiddleware.listenForReplays(store: ReduxStore, selectRouterState?: function)`
 
-Call this on the middleware returned from `syncHistory` to start the syncing process between the history and store instance.
+By default, the syncing logic will not respond to replaying of actions, which means it won't work with projects like redux-devtools. Call this function on the middleware object returned from `syncHistory` and give it the store to listen to, and it will properly work with action replays. Obviously, you would do that after you have created the store and everything else has been set up.
 
 Supply an optional function `selectRouterState` to customize where to find the router state on your app state. It defaults to `state => state.routing`, so you would install the reducer under the name "routing". Feel free to change this to whatever you like.
 
 #### `ReduxMiddleware.unsubscribe()`
 
-Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `syncHistoryToStore`. 
+Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`. 
 
 #### `routeReducer`
 
