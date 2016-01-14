@@ -1,5 +1,5 @@
 
-## [2.0.1](https://github.com/jlongster/redux-simple-router/compare/1.0.2...2.0.1)
+## [2.0.2](https://github.com/jlongster/redux-simple-router/compare/1.0.2...2.0.2)
 
 **A whole new API, with many breaking changes:**
 
