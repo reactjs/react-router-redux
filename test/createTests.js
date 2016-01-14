@@ -185,7 +185,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         }))
         devToolsStore = store.liftedStore
 
-        middleware.syncHistoryToStore(store)
+        middleware.listenForReplays(store)
       })
 
       afterEach(() => {

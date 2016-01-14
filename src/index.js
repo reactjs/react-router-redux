@@ -70,7 +70,7 @@ export function syncHistory(history) {
     }
   }
 
-  middleware.syncHistoryToStore =
+  middleware.listenForReplays =
     (store, selectRouterState = SELECT_STATE) => {
       const getRouterState = () => selectRouterState(store.getState())
       const { location: initialLocation } = getRouterState()
