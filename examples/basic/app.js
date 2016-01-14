@@ -31,7 +31,7 @@ const finalCreateStore = compose(
   DevTools.instrument()
 )(createStore);
 const store = finalCreateStore(reducer);
-middleware.syncHistoryToStore(store);
+middleware.listenForReplays(store);
 
 ReactDOM.render(
   <Provider store={store}>
