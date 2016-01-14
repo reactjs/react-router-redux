@@ -156,4 +156,4 @@ An object that contains all the actions creators you can use to manipulate histo
 * `goForward()`
 * `goBack()`
 
-The most common action is to push a new URL via `routeActions.push(...)`. These all directly call the analogous [history methods](https://github.com/rackt/history/blob/master/docs/GettingStarted.md#navigation).
+A [location descriptor](https://github.com/rackt/history/blob/master/docs/Glossary.md#locationdescriptor) can be a descriptive object (see the link) or a normal URL string. The most common action is to push a new URL via `routeActions.push(...)`. These all directly call the analogous [history methods](https://github.com/rackt/history/blob/master/docs/GettingStarted.md#navigation).
