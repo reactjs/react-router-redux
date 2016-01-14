@@ -123,8 +123,6 @@ _Have an example to add? Send us a PR!_
 
 ### API
 
-**This API is for an unreleased version. To view docs for 1.0.2, [click here](https://github.com/rackt/redux-simple-router/tree/1.0.2#api)**
-
 #### `syncHistory(history: History) => ReduxMiddleware`
 
 Call this to create a middleware that can be applied with Redux's `applyMiddleware` to allow actions to call history methods. The middleware will look for route actions created by `push`, `replace`, etc. and applies them to the history.
