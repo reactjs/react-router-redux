@@ -9,6 +9,8 @@
 * `UPDATE_PATH` is now `UPDATE_LOCATION`.
 * The fully parsed [location object](https://github.com/rackt/history/blob/master/docs/Location.md) is now stored in the state instead of a URL string. To access the path, use `state.routing.location.pathname` instead of `state.routing.path`.
 
+[View the new docs](https://github.com/rackt/redux-simple-router#api)
+
 ## [1.0.2](https://github.com/jlongster/redux-simple-router/compare/1.0.1...1.0.2)
 
 * Only publish relevant files to npm
