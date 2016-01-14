@@ -1,8 +1,13 @@
 
-## HEAD
+## [2.0.1](https://github.com/jlongster/redux-simple-router/compare/1.0.2...2.0.1)
 
-* New API that uses middleware to trap history calls for a better
-  unidirectional data flow. New docs and updates coming soon (#141)
+**A whole new API, with many breaking changes:**
+
+* `syncReduxAndRouter` is gone. Instead, call `syncHistory` with just the `history` object, which returns a middleware that you need to apply. (#141)
+* If you use redux devtools, you need to call `middleware.listenForReplays(store)` on the middleware returned from `syncHistory`. Create the store first with the middleware, then call this function with the store.
+* Action creators are now contained in a single object called `routeActions`. `go`, `goBack`, and `goForward` action creators have been added.
+* `UPDATE_PATH` is now `UPDATE_LOCATION`.
+* The fully parsed [location object](https://github.com/rackt/history/blob/master/docs/Location.md) is now stored in the state instead of a URL string. To access the path, use `state.routing.location.pathname` instead of `state.routing.path`.
 
 ## [1.0.2](https://github.com/jlongster/redux-simple-router/compare/1.0.1...1.0.2)
 
