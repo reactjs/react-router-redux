@@ -1,6 +1,6 @@
 
-## 2.0.3
-
+## [2.0.3](https://github.com/jlongster/redux-simple-router/compare/2.0.2...2.0.3)
+	
 This version is just 2.0.2 re-published with a more recent version of npm to fix an issue where the `history` module was being published with the tarball. See [#133](https://github.com/rackt/redux-simple-router/issues/133).
 
 ## [2.0.2](https://github.com/jlongster/redux-simple-router/compare/1.0.2...2.0.2)
@@ -14,6 +14,8 @@ Versions 2.0.0 and 2.0.1 were test releases for the 2.* series. 2.0.2 is the fir
 * Action creators are now contained in a single object called `routeActions`. `go`, `goBack`, and `goForward` action creators have been added.
 * `UPDATE_PATH` is now `UPDATE_LOCATION`.
 * The fully parsed [location object](https://github.com/rackt/history/blob/master/docs/Location.md) is now stored in the state instead of a URL string. To access the path, use `state.routing.location.pathname` instead of `state.routing.path`.
+
+[View the new docs](https://github.com/rackt/redux-simple-router#api)
 
 ## [1.0.2](https://github.com/jlongster/redux-simple-router/compare/1.0.1...1.0.2)
 

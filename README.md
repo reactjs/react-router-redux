@@ -49,18 +49,16 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { compose, createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
-import { Router, Route } from 'react-router'
-import { createHistory } from 'history'
+import { Router, Route, browserHistory } from 'react-router'
 import { syncHistory, routeReducer } from 'redux-simple-router'
 import reducers from '<project-path>/reducers'
 
 const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
 }))
-const history = createHistory()
 
 // Sync dispatched route actions to the history
-const reduxRouterMiddleware = syncHistory(history)
+const reduxRouterMiddleware = syncHistory(browserHistory)
 const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(createStore)
 
 const store = createStoreWithMiddleware(reducer)
@@ -70,7 +68,7 @@ reduxRouterMiddleware.listenForReplays(store)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={history}>
+    <Router history={browserHistory}>
       <Route path="/" component={App}>
         <Route path="foo" component={Foo}/>
         <Route path="bar" component={Bar}/>
@@ -123,8 +121,6 @@ _Have an example to add? Send us a PR!_
 
 ### API
 
-**This API is for an unreleased version. To view docs for 1.0.2, [click here](https://github.com/rackt/redux-simple-router/tree/1.0.2#api)**
-
 #### `syncHistory(history: History) => ReduxMiddleware`
 
 Call this to create a middleware that can be applied with Redux's `applyMiddleware` to allow actions to call history methods. The middleware will look for route actions created by `push`, `replace`, etc. and applies them to the history.
@@ -137,7 +133,7 @@ Supply an optional function `selectRouterState` to customize where to find the r
 
 #### `ReduxMiddleware.unsubscribe()`
 
-Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`. 
+Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`.
 
 #### `routeReducer`
 
