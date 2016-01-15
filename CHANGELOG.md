@@ -1,5 +1,11 @@
 
-## [2.0.1](https://github.com/jlongster/redux-simple-router/compare/1.0.2...2.0.1)
+## 2.0.3
+
+This version is just 2.0.2 re-published with a more recent version of npm to fix an issue where the `history` module was being published with the tarball. See [#133](https://github.com/rackt/redux-simple-router/issues/133).
+
+## [2.0.2](https://github.com/jlongster/redux-simple-router/compare/1.0.2...2.0.2)
+
+Versions 2.0.0 and 2.0.1 were test releases for the 2.* series. 2.0.2 is the first public release.
 
 **A whole new API, with many breaking changes:**
 
