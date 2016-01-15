@@ -49,8 +49,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { compose, createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
-import { Router, Route } from 'react-router'
-import { createHistory } from 'history'
+import { Router, Route, browserHistory } from 'react-router'
 import { syncHistory, routeReducer } from 'redux-simple-router'
 import reducers from '<project-path>/reducers'
 
@@ -60,7 +59,7 @@ const reducer = combineReducers(Object.assign({}, reducers, {
 const history = createHistory()
 
 // Sync dispatched route actions to the history
-const reduxRouterMiddleware = syncHistory(history)
+const reduxRouterMiddleware = syncHistory(browserHistory)
 const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(createStore)
 
 const store = createStoreWithMiddleware(reducer)
@@ -70,7 +69,7 @@ reduxRouterMiddleware.listenForReplays(store)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={history}>
+    <Router history={browserHistory}>
       <Route path="/" component={App}>
         <Route path="foo" component={Foo}/>
         <Route path="bar" component={Bar}/>
