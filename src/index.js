@@ -12,13 +12,13 @@ function transition(method) {
   })
 }
 
-export const routeActions = {
-  push: transition('push'),
-  replace: transition('replace'),
-  go: transition('go'),
-  goBack: transition('goBack'),
-  goForward: transition('goForward')
-}
+export const push = transition('push')
+export const replace = transition('replace')
+export const go = transition('go')
+export const goBack = transition('goBack')
+export const goForward = transition('goForward')
+
+export const routeActions = { push, replace, go, goBack, goForward }
 
 function updateLocation(location) {
   return {
