@@ -47,9 +47,10 @@ Let's take a look at a simple example.
 ```js
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { compose, createStore, combineReducers, applyMiddleware } from 'redux'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
-import { Router, Route, browserHistory } from 'react-router'
+import { createHistory } from 'history'
+import { Router, Route, useRouterHistory } from 'react-router'
 import { syncHistory, routeReducer } from 'redux-simple-router'
 import reducers from '<project-path>/reducers'
 
@@ -57,18 +58,22 @@ const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
 }))
 
+// Create and sync history with react-router's useRouterHistory enhancer
+const history = useRouterHistory(createHistory)({ queryKey: false })
+
 // Sync dispatched route actions to the history
-const reduxRouterMiddleware = syncHistory(browserHistory)
+const reduxRouterMiddleware = syncHistory(history)
 const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(createStore)
 
 const store = createStoreWithMiddleware(reducer)
 
-// Required for replaying actions from devtools to work
+// Required for replaying actions 
+// ie. redux-devtools support (not included in this example)
 reduxRouterMiddleware.listenForReplays(store)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={browserHistory}>
+    <Router history={history}>
       <Route path="/" component={App}>
         <Route path="foo" component={Foo}/>
         <Route path="bar" component={Bar}/>
@@ -133,7 +138,7 @@ Supply an optional function `selectRouterState` to customize where to find the r
 
 #### `ReduxMiddleware.unsubscribe()`
 
-Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`.
+Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`. 
 
 #### `routeReducer`
 
