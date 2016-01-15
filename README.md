@@ -56,7 +56,6 @@ import reducers from '<project-path>/reducers'
 const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
 }))
-const history = createHistory()
 
 // Sync dispatched route actions to the history
 const reduxRouterMiddleware = syncHistory(browserHistory)
@@ -134,7 +133,7 @@ Supply an optional function `selectRouterState` to customize where to find the r
 
 #### `ReduxMiddleware.unsubscribe()`
 
-Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`. 
+Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`.
 
 #### `routeReducer`
 
