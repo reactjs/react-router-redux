@@ -55,16 +55,20 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         it('creates actions', () => {
           expect(push('/foo')).toEqual({
             type: TRANSITION,
-            method: 'push',
-            arg: '/foo'
+            payload: {
+              method: 'push',
+              arg: '/foo'
+            }
           })
 
           expect(push({ pathname: '/foo', state: { the: 'state' } })).toEqual({
             type: TRANSITION,
-            method: 'push',
-            arg: {
-              pathname: '/foo',
-              state: { the: 'state' }
+            payload: {
+              method: 'push',
+              arg: {
+                pathname: '/foo',
+                state: { the: 'state' }
+              }
             }
           })
         })
@@ -74,16 +78,20 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         it('creates actions', () => {
           expect(replace('/foo')).toEqual({
             type: TRANSITION,
-            method: 'replace',
-            arg: '/foo'
+            payload: {
+              method: 'replace',
+              arg: '/foo'
+            }
           })
 
           expect(replace({ pathname: '/foo', state: { the: 'state' } })).toEqual({
             type: TRANSITION,
-            method: 'replace',
-            arg: {
-              pathname: '/foo',
-              state: { the: 'state' }
+            payload: {
+              method: 'replace',
+              arg: {
+                pathname: '/foo',
+                state: { the: 'state' }
+              }
             }
           })
         })
@@ -93,8 +101,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         it('creates actions', () => {
           expect(go(1)).toEqual({
             type: TRANSITION,
-            method: 'go',
-            arg: 1
+            payload: {
+              method: 'go',
+              arg: 1
+            }
           })
         })
       })
@@ -103,8 +113,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         it('creates actions', () => {
           expect(goBack()).toEqual({
             type: TRANSITION,
-            method: 'goBack',
-            arg: undefined
+            payload: {
+              method: 'goBack',
+              arg: undefined
+            }
           })
         })
       })
@@ -113,8 +125,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         it('creates actions', () => {
           expect(goForward()).toEqual({
             type: TRANSITION,
-            method: 'goForward',
-            arg: undefined
+            payload: {
+              method: 'goForward',
+              arg: undefined
+            }
           })
         })
       })
@@ -132,7 +146,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('updates the path', () => {
         expect(routeReducer(state, {
           type: UPDATE_LOCATION,
-          location: {
+          payload: {
             path: '/bar',
             action: 'PUSH'
           }
@@ -147,7 +161,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       it('respects replace', () => {
         expect(routeReducer(state, {
           type: UPDATE_LOCATION,
-          location: {
+          payload: {
             path: '/bar',
             action: 'REPLACE'
           }

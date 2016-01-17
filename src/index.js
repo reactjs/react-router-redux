@@ -8,7 +8,7 @@ const SELECT_STATE = state => state.routing
 function transition(method) {
   return arg => ({
     type: TRANSITION,
-    method, arg
+    payload: { method, arg }
   })
 }
 
@@ -23,7 +23,7 @@ export const routeActions = {
 function updateLocation(location) {
   return {
     type: UPDATE_LOCATION,
-    location
+    payload: location
   }
 }
 
@@ -33,7 +33,7 @@ const initialState = {
   location: undefined
 }
 
-export function routeReducer(state = initialState, { type, location }) {
+export function routeReducer(state = initialState, { type, payload: location }) {
   if (type !== UPDATE_LOCATION) {
     return state
   }
@@ -65,7 +65,7 @@ export function syncHistory(history) {
         return next(action)
       }
 
-      const { method, arg } = action
+      const { payload: { method, arg } } = action
       history[method](arg)
     }
   }
