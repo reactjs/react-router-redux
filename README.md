@@ -34,7 +34,7 @@ That said, redux-router is a fine project and has features this doesn't provide.
 
 ### Usage
 
-The idea of this library is to use react-router's functionality exactly like its documentation tells you to. You can access all of its APIs in routing components. Additionally, you can use redux like you normally would, with a single app state and "connected" components. It's even possible for a single component to be both if needed.
+The idea of this library is to use react-router's functionality exactly like its documentation tells you to. You can access all of its APIs in routing components. Additionally, you can use redux like you normally would, with a single app state.
 
 [redux](https://github.com/rackt/redux) (`store.routing`) &nbsp;&harr;&nbsp; [**redux-simple-router**](https://github.com/jlongster/redux-simple-router) &nbsp;&harr;&nbsp; [history](https://github.com/rackt/history) (`history.location`) &nbsp;&harr;&nbsp; [react-router](https://github.com/rackt/react-router)
 
@@ -138,7 +138,9 @@ Call this on the middleware returned from `syncHistory` to stop the syncing proc
 
 #### `routeReducer`
 
-A reducer function that keeps track of the router state. You must to add this reducer to your app reducers when creating the store.
+A reducer function that keeps track of the router state. You must to add this reducer to your app reducers when creating the store. It will return a `location` property in state. If you use `combineReducers`, it will be nested under wherever you property you add it to (`state.routing` in the example above).
+
+**Warning:** It is a bad pattern to use `react-redux`'s `connect` decorator to map the state from this reducer to props on your `Route` components. This can lead to infinite loops and performance problems. `react-router` already provides this for you via `this.props.location`.
 
 #### `UPDATE_LOCATION`
 
