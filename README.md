@@ -30,7 +30,7 @@ That said, redux-router is a fine project and has features this doesn't provide.
 
 * Much smaller and simpler. You don't need to learn another library on top of everything else.
 * We encourage direct access of react-router APIs. Need server-side rendering, or something else advanced? Just read react-router's docs.
-* We only store current URL and state, whereas redux-router stores the entire location object from react-router.
+* We only put the current location in state, whereas redux-router stores the entire router state, which includes router-specific things like params.
 
 ### Usage
 
