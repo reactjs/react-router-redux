@@ -3,7 +3,7 @@
 export const TRANSITION = '@@router/TRANSITION'
 export const UPDATE_LOCATION = '@@router/UPDATE_LOCATION'
 
-const SELECT_STATE = state => state.routing
+const SELECT_LOCATION = state => state.routing.location
 
 function transition(method) {
   return arg => ({
@@ -71,12 +71,12 @@ export function syncHistory(history) {
   }
 
   middleware.listenForReplays =
-    (store, selectRouterState = SELECT_STATE) => {
-      const getRouterState = () => selectRouterState(store.getState())
-      const { location: initialLocation } = getRouterState()
+    (store, selectLocationState = SELECT_LOCATION) => {
+      const getLocationState = () => selectLocationState(store.getState())
+      const initialLocation = getLocationState()
 
       unsubscribeStore = store.subscribe(() => {
-        const { location } = getRouterState()
+        const location = getLocationState()
 
         // If we're resetting to the beginning, use the saved initial value. We
         // need to dispatch a new action at this point to populate the store
