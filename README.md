@@ -117,6 +117,8 @@ Examples from the community:
 * [yangli1990/react-redux-isomorphic](https://github.com/yangli1990/Isomorphic-Universal-React-Template) - boilerplate for universal redux and redux-simple-router
 * [StevenIseki/redux-simple-router-example](https://github.com/StevenIseki/redux-simple-router-example)
 * [mattkrick/meatier](https://github.com/mattkrick/meatier) - SSR, dual dev/prod client builds
+* [mxstbr/react-boilerplate](https://github.com/mxstbr/react-boilerplate/tree/v3.0.0) - :fire: Quick setup for performance orientated, offline first React.js applications
+  * **Tip**: Upgrading from react-router w/o redux-simple-router? Use [this PR](https://github.com/mxstbr/react-boilerplate/pull/98/files) as a reference!
 
 _Have an example to add? Send us a PR!_
 
