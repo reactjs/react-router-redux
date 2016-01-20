@@ -9,10 +9,7 @@
     "lib",
     "src"
   ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/jlongster/redux-simple-router.git"
-  },
+  "repository": "rackt/redux-simple-router",
   "authors": [
     "James Long"
   ],
