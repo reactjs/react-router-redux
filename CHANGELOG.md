@@ -1,7 +1,8 @@
 
-## [2.0.3](https://github.com/rackt/redux-simple-router/compare/2.0.2...2.0.3)
+## [2.0.4](https://github.com/rackt/redux-simple-router/compare/2.0.2...2.0.4)
 
-This version is just 2.0.2 re-published with a more recent version of npm to fix an issue where the `history` module was being published with the tarball. See [#133](https://github.com/rackt/redux-simple-router/issues/133).
+- Remove `history` module published within the tarball. [#133](https://github.com/rackt/redux-simple-router/issues/133)
+- Make actions conform to [Flux Standard Action](https://github.com/acdlite/flux-standard-action). [#208](https://github.com/rackt/redux-simple-router/pull/208)
 
 ## [2.0.2](https://github.com/rackt/redux-simple-router/compare/1.0.2...2.0.2)
 
