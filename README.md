@@ -140,7 +140,7 @@ Call this on the middleware returned from `syncHistory` to stop the syncing proc
 
 #### `routeReducer`
 
-A reducer function that keeps track of the router state. You must to add this reducer to your app reducers when creating the store. It will return a `location` property in state. If you use `combineReducers`, it will be nested under wherever you property you add it to (`state.routing` in the example above).
+A reducer function that keeps track of the router state. You must add this reducer to your app reducers when creating the store. It will return a `location` property in state. If you use `combineReducers`, it will be nested under wherever property you add it to (`state.routing` in the example above).
 
 **Warning:** It is a bad pattern to use `react-redux`'s `connect` decorator to map the state from this reducer to props on your `Route` components. This can lead to infinite loops and performance problems. `react-router` already provides this for you via `this.props.location`.
 
