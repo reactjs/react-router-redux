@@ -1,3 +1,6 @@
+## [HEAD](https://github.com/rackt/redux-simple-router/compare/2.0.4...master)
+
+- Export action creators as individual functions. [#225](https://github.com/rackt/redux-simple-router/pull/225)
 
 ## [2.0.4](https://github.com/rackt/redux-simple-router/compare/2.0.2...2.0.4)
 
