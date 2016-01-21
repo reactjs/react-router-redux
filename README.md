@@ -47,7 +47,7 @@ Let's take a look at a simple example.
 ```js
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { compose, createStore, combineReducers, applyMiddleware } from 'redux'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, browserHistory } from 'react-router'
 import { syncHistory, routeReducer } from 'redux-simple-router'
