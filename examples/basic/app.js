@@ -1,37 +1,38 @@
-import { createDevTools } from 'redux-devtools';
-import LogMonitor from 'redux-devtools-log-monitor';
-import DockMonitor from 'redux-devtools-dock-monitor';
+import { createDevTools } from 'redux-devtools'
+import LogMonitor from 'redux-devtools-log-monitor'
+import DockMonitor from 'redux-devtools-dock-monitor'
 
-const React = require('react');
-const ReactDOM = require('react-dom');
-const { applyMiddleware, compose, createStore, combineReducers } = require('redux');
-const { Provider } = require('react-redux');
-const { Router, Route, IndexRoute } = require('react-router');
-const createHistory = require('history/lib/createHashHistory');
-const { syncHistory, routeReducer } = require('redux-simple-router');
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
+import { Provider } from 'react-redux'
+import { Router, Route, IndexRoute } from 'react-router'
+import createHistory from 'history/lib/createHashHistory'
+import { syncHistory, routeReducer } from 'redux-simple-router'
 
-const reducers = require('./reducers');
-const { App, Home, Foo, Bar } = require('./components');
+import * as reducers from './reducers'
+import { App, Home, Foo, Bar } from './components'
 
-const history = createHistory();
-const middleware = syncHistory(history);
-const reducer = combineReducers(Object.assign({}, reducers, {
+const history = createHistory()
+const middleware = syncHistory(history)
+const reducer = combineReducers({
+  ...reducers,
   routing: routeReducer
-}));
+})
 
 const DevTools = createDevTools(
-  <DockMonitor toggleVisibilityKey='ctrl-h'
-               changePositionKey='ctrl-q'>
-    <LogMonitor theme='tomorrow' />
+  <DockMonitor toggleVisibilityKey="ctrl-h"
+               changePositionKey="ctrl-q">
+    <LogMonitor theme="tomorrow" />
   </DockMonitor>
-);
+)
 
 const finalCreateStore = compose(
   applyMiddleware(middleware),
   DevTools.instrument()
-)(createStore);
-const store = finalCreateStore(reducer);
-middleware.listenForReplays(store);
+)(createStore)
+const store = finalCreateStore(reducer)
+middleware.listenForReplays(store)
 
 ReactDOM.render(
   <Provider store={store}>
@@ -47,4 +48,4 @@ ReactDOM.render(
     </div>
   </Provider>,
   document.getElementById('mount')
-);
+)

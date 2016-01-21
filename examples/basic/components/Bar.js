@@ -1,5 +1,5 @@
-const React = require('react');
+import React from 'react'
 
-module.exports = function Bar() {
-  return <div>And I am Bar!</div>;
+export default function Bar() {
+  return <div>And I am Bar!</div>
 }

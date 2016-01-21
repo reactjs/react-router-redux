@@ -1,3 +1,1 @@
-const count = require('./count');
-
-module.exports = { count };
+export count from './count'

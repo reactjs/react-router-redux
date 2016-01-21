@@ -1,17 +1,15 @@
-const constants = require('../constants');
+import { INCREASE, DECREASE } from '../constants'
 
-function increase(n) {
+export function increase(n) {
   return {
-    type: constants.INCREASE,
+    type: INCREASE,
     amount: n
-  };
+  }
 }
 
-function decrease(n) {
+export function decrease(n) {
   return {
-    type: constants.DECREASE,
+    type: DECREASE,
     amount: n
-  };
+  }
 }
-
-module.exports = { increase, decrease };
