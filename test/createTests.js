@@ -21,6 +21,7 @@ expect.extend({
 
     expect(location.pathname).toEqual(pathname)
     expect(location.search).toEqual(search)
+    expect(location.hash).toEqual(hash)
     expect(location.state).toEqual(state)
     expect(location.query).toEqual(query)
     expect(location.action).toEqual(action)
