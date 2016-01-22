@@ -44,6 +44,8 @@ We only store current URL and state, whereas redux-router stores the entire loca
 
 Let's take a look at a simple example.
 
+**Note:** This example uses `react-router`'s 2.0 API, which is currently released under version 2.0.0-rc5.
+
 ```js
 import React from 'react'
 import ReactDOM from 'react-dom'
