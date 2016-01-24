@@ -116,6 +116,7 @@ Examples from the community:
 * [choonkending/react-webpack-node](https://github.com/choonkending/react-webpack-node) - boilerplate for universal redux and react-router
 * [tj/frontend-boilerplate](https://github.com/tj/frontend-boilerplate)
 * [bdefore/universal-redux](https://github.com/bdefore/universal-redux) - npm package for universally rendered redux applications
+* [tomatau/breko-hub](https://github.com/tomatau/breko-hub) - Babel, React & Koa, Hot Universal Boilerplate - focused on developer experience.
 * [yangli1990/react-redux-isomorphic](https://github.com/yangli1990/Isomorphic-Universal-React-Template) - boilerplate for universal redux and redux-simple-router
 * [StevenIseki/redux-simple-router-example](https://github.com/StevenIseki/redux-simple-router-example)
 * [mattkrick/meatier](https://github.com/mattkrick/meatier) - SSR, dual dev/prod client builds
