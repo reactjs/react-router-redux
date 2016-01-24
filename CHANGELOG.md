@@ -1,6 +1,12 @@
-## [HEAD](https://github.com/rackt/react-router-redux/compare/2.0.4...master)
+## [HEAD](https://github.com/rackt/react-router-redux/compare/2.1.0...master)
 
-- Export action creators as individual functions. [#225](https://github.com/rackt/react-router-redux/pull/225)
+- Nothing yet!
+
+## [2.1.0](https://github.com/rackt/react-router-redux/compare/2.0.4...2.1.0)
+
+- `listenForReplays` has a `selectLocationState` selector. [#218](https://github.com/rackt/react-router-redux/pull/218)
+- Provide unscoped action creators. [#225](https://github.com/rackt/react-router-redux/pull/225)
+- Example updated to use fully ES2015 syntax.
 
 ## [2.0.4](https://github.com/rackt/react-router-redux/compare/2.0.2...2.0.4)
 
