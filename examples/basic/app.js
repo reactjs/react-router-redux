@@ -8,7 +8,7 @@ import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, IndexRoute } from 'react-router'
 import createHistory from 'history/lib/createHashHistory'
-import { syncHistory, routeReducer } from 'redux-simple-router'
+import { syncHistory, routeReducer } from 'react-router-redux'
 
 import * as reducers from './reducers'
 import { App, Home, Foo, Bar } from './components'

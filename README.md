@@ -1,6 +1,6 @@
-# redux-simple-router
+# react-router-redux
 
-[![npm version](https://img.shields.io/npm/v/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router) [![npm downloads](https://img.shields.io/npm/dm/redux-simple-router.svg?style=flat-square)](https://www.npmjs.com/package/redux-simple-router) [![build status](https://img.shields.io/travis/rackt/redux-simple-router/master.svg?style=flat-square)](https://travis-ci.org/rackt/redux-simple-router)
+[![npm version](https://img.shields.io/npm/v/react-router-redux.svg?style=flat-square)](https://www.npmjs.com/package/react-router-redux) [![npm downloads](https://img.shields.io/npm/dm/react-router-redux.svg?style=flat-square)](https://www.npmjs.com/package/react-router-redux) [![build status](https://img.shields.io/travis/rackt/react-router-redux/master.svg?style=flat-square)](https://travis-ci.org/rackt/react-router-redux)
 
 **Let react-router do all the work**  :sparkles:
 
@@ -11,18 +11,18 @@ react-router does a great job of mapping the current URL to a component tree, an
 The entire state that we are interested in boils down to one thing: the URL. This is an extremely simple library that just puts the URL in redux state and keeps it in sync with any react-router changes. Additionally, you can change the URL via redux and react-router will change accordingly.
 
 ```
-npm install redux-simple-router
+npm install react-router-redux
 ```
 
-If you want to install the next major version, use `redux-simple-router@next`. Run `npm dist-tag ls redux-simple-router` to see what `next` is aliased to.
+If you want to install the next major version, use `react-router-redux@next`. Run `npm dist-tag ls react-router-redux` to see what `next` is aliased to.
 
-View the [CHANGELOG](https://github.com/rackt/redux-simple-router/blob/master/CHANGELOG.md) for recent changes.
+View the [CHANGELOG](https://github.com/rackt/react-router-redux/blob/master/CHANGELOG.md) for recent changes.
 
 Read the [API docs](#api) farther down this page.
 
 ##### _What about redux-router?_
 
-[redux-router](https://github.com/rackt/redux-router) is another project which solves the same problem. However, it's far more complex. Take a quick look at [the code for this library](https://github.com/rackt/redux-simple-router/blob/master/src/index.js)—it's extremely minimal. redux-router is much bigger and more complex.
+[redux-router](https://github.com/rackt/redux-router) is another project which solves the same problem. However, it's far more complex. Take a quick look at [the code for this library](https://github.com/rackt/react-router-redux/blob/master/src/index.js)—it's extremely minimal. redux-router is much bigger and more complex.
 
 That said, redux-router is a fine project and has features this doesn't provide. Use it if you like it better.
 
@@ -36,7 +36,7 @@ That said, redux-router is a fine project and has features this doesn't provide.
 
 The idea of this library is to use react-router's functionality exactly like its documentation tells you to. You can access all of its APIs in routing components. Additionally, you can use redux like you normally would, with a single app state.
 
-[redux](https://github.com/rackt/redux) (`store.routing`) &nbsp;&harr;&nbsp; [**redux-simple-router**](https://github.com/rackt/redux-simple-router) &nbsp;&harr;&nbsp; [history](https://github.com/rackt/history) (`history.location`) &nbsp;&harr;&nbsp; [react-router](https://github.com/rackt/react-router)
+[redux](https://github.com/rackt/redux) (`store.routing`) &nbsp;&harr;&nbsp; [**react-router-redux**](https://github.com/rackt/react-router-redux) &nbsp;&harr;&nbsp; [history](https://github.com/rackt/history) (`history.location`) &nbsp;&harr;&nbsp; [react-router](https://github.com/rackt/react-router)
 
 We only store current URL and state, whereas redux-router stores the entire location object from react-router. You can read it, and also change it with an action.
 
@@ -52,7 +52,7 @@ import ReactDOM from 'react-dom'
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, browserHistory } from 'react-router'
-import { syncHistory, routeReducer } from 'redux-simple-router'
+import { syncHistory, routeReducer } from 'react-router-redux'
 import reducers from '<project-path>/reducers'
 
 const reducer = combineReducers(Object.assign({}, reducers, {
@@ -84,7 +84,7 @@ ReactDOM.render(
 Now you can read from `state.routing.location.pathname` to get the URL. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
 
 ```js
-import { routeActions } from 'redux-simple-router'
+import { routeActions } from 'react-router-redux'
 
 function MyComponent({ dispatch }) {
   return <Button onClick={() => dispatch(routeActions.push('/foo'))}/>;
@@ -94,7 +94,7 @@ function MyComponent({ dispatch }) {
 This will change the state, which will trigger a change in react-router. Additionally, if you want to respond to the path update action, just handle the `UPDATE_LOCATION` constant that we provide:
 
 ```js
-import { UPDATE_LOCATION } from 'redux-simple-router'
+import { UPDATE_LOCATION } from 'react-router-redux'
 
 function update(state, action) {
   switch(action.type) {
@@ -106,7 +106,7 @@ function update(state, action) {
 
 ### Examples
 
-* [examples/basic](https://github.com/rackt/redux-simple-router/blob/master/examples/basic) - basic reference implementation
+* [examples/basic](https://github.com/rackt/react-router-redux/blob/master/examples/basic) - basic reference implementation
 
 Examples from the community:
 
@@ -121,7 +121,7 @@ Examples from the community:
 * [StevenIseki/redux-simple-router-example](https://github.com/StevenIseki/redux-simple-router-example)
 * [mattkrick/meatier](https://github.com/mattkrick/meatier) - SSR, dual dev/prod client builds
 * [mxstbr/react-boilerplate](https://github.com/mxstbr/react-boilerplate/tree/v3.0.0) - :fire: Quick setup for performance orientated, offline first React.js applications
-  * **Tip**: Upgrading from react-router w/o redux-simple-router? Use [this PR](https://github.com/mxstbr/react-boilerplate/pull/98/files) as a reference!
+  * **Tip**: Upgrading from react-router w/o react-router-redux? Use [this PR](https://github.com/mxstbr/react-boilerplate/pull/98/files) as a reference!
 
 _Have an example to add? Send us a PR!_
 

@@ -1,7 +1,7 @@
 {
   "name": "rsr-basic-example",
   "version": "0.0.0",
-  "repository": "rackt/redux-simple-router",
+  "repository": "rackt/react-router-redux",
   "license": "MIT",
   "dependencies": {
     "history": "^1.14.0",
@@ -10,7 +10,7 @@
     "react-redux": "^4.0.0",
     "react-router": "^1.0.0",
     "redux": "^3.0.4",
-    "redux-simple-router": "^2.0.3"
+    "react-router-redux": "^2.1.0"
   },
   "devDependencies": {
     "babel-core": "^6.1.21",

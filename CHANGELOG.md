@@ -1,13 +1,13 @@
-## [HEAD](https://github.com/rackt/redux-simple-router/compare/2.0.4...master)
+## [HEAD](https://github.com/rackt/react-router-redux/compare/2.0.4...master)
 
-- Export action creators as individual functions. [#225](https://github.com/rackt/redux-simple-router/pull/225)
+- Export action creators as individual functions. [#225](https://github.com/rackt/react-router-redux/pull/225)
 
-## [2.0.4](https://github.com/rackt/redux-simple-router/compare/2.0.2...2.0.4)
+## [2.0.4](https://github.com/rackt/react-router-redux/compare/2.0.2...2.0.4)
 
-- Remove `history` module published within the tarball. [#133](https://github.com/rackt/redux-simple-router/issues/133)
-- Make actions conform to [Flux Standard Action](https://github.com/acdlite/flux-standard-action). [#208](https://github.com/rackt/redux-simple-router/pull/208)
+- Remove `history` module published within the tarball. [#133](https://github.com/rackt/react-router-redux/issues/133)
+- Make actions conform to [Flux Standard Action](https://github.com/acdlite/flux-standard-action). [#208](https://github.com/rackt/react-router-redux/pull/208)
 
-## [2.0.2](https://github.com/rackt/redux-simple-router/compare/1.0.2...2.0.2)
+## [2.0.2](https://github.com/rackt/react-router-redux/compare/1.0.2...2.0.2)
 
 Versions 2.0.0 and 2.0.1 were test releases for the 2.* series. 2.0.2 is the first public release.
 
@@ -19,18 +19,18 @@ Versions 2.0.0 and 2.0.1 were test releases for the 2.* series. 2.0.2 is the fir
 * `UPDATE_PATH` is now `UPDATE_LOCATION`.
 * The fully parsed [location object](https://github.com/rackt/history/blob/master/docs/Location.md) is now stored in the state instead of a URL string. To access the path, use `state.routing.location.pathname` instead of `state.routing.path`.
 
-[View the new docs](https://github.com/rackt/redux-simple-router#api)
+[View the new docs](https://github.com/rackt/react-router-redux#api)
 
-## [1.0.2](https://github.com/rackt/redux-simple-router/compare/1.0.1...1.0.2)
+## [1.0.2](https://github.com/rackt/react-router-redux/compare/1.0.1...1.0.2)
 
 * Only publish relevant files to npm
 
-## [1.0.1](https://github.com/rackt/redux-simple-router/compare/1.0.0...1.0.1)
+## [1.0.1](https://github.com/rackt/react-router-redux/compare/1.0.0...1.0.1)
 
 * Solve problem with `basename` causing infinite redirects (#103)
 * Switched to ES6 imports/exports internally, but should not affect outside users
 
-## [1.0.0](https://github.com/rackt/redux-simple-router/compare/0.0.10...1.0.0)
+## [1.0.0](https://github.com/rackt/react-router-redux/compare/0.0.10...1.0.0)
 > 2015-12-09
 
 This release changes quite a bit so you'll have to update your code.
