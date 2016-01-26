@@ -103,6 +103,19 @@ function update(state, action) {
   }
 }
 ```
+**But how do I access router props in a Container component?**
+
+react-router [injects route information via a child component's props](https://github.com/rackt/react-router/blob/latest/docs/Introduction.md#getting-url-parameters). This makes accessing them from a simple component easy. When using a react-redux Container to connect simple components to the store state and dispatch you can access these injected route information from the [2nd argument of `mapStateToProps`](https://github.com/rackt/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options) as follows:
+
+```js
+function mapStateToProps(state, ownProps) {
+  return {
+    id: ownProps.params.id,
+    filter: ownProps.location.query.filter
+  };
+}
+```
+
 
 ### Examples
 
