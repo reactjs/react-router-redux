@@ -6,9 +6,9 @@ export const UPDATE_LOCATION = '@@router/UPDATE_LOCATION'
 const SELECT_LOCATION = state => state.routing.location
 
 function transition(method) {
-  return arg => ({
+  return (...args) => ({
     type: TRANSITION,
-    payload: { method, arg }
+    payload: { method, args }
   })
 }
 
@@ -65,8 +65,8 @@ export function syncHistory(history) {
         return next(action)
       }
 
-      const { payload: { method, arg } } = action
-      history[method](arg)
+      const { payload: { method, args } } = action
+      history[method](...args)
     }
   }
 

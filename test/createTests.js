@@ -58,7 +58,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
             type: TRANSITION,
             payload: {
               method: 'push',
-              arg: '/foo'
+              args: [ '/foo' ]
             }
           })
 
@@ -66,10 +66,18 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
             type: TRANSITION,
             payload: {
               method: 'push',
-              arg: {
+              args: [ {
                 pathname: '/foo',
                 state: { the: 'state' }
-              }
+              } ]
+            }
+          })
+
+          expect(push('/foo', 'baz', 123)).toEqual({
+            type: TRANSITION,
+            payload: {
+              method: 'push',
+              args: [ '/foo' , 'baz', 123 ]
             }
           })
         })
@@ -81,7 +89,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
             type: TRANSITION,
             payload: {
               method: 'replace',
-              arg: '/foo'
+              args: [ '/foo' ]
             }
           })
 
@@ -89,10 +97,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
             type: TRANSITION,
             payload: {
               method: 'replace',
-              arg: {
+              args: [ {
                 pathname: '/foo',
                 state: { the: 'state' }
-              }
+              } ]
             }
           })
         })
@@ -104,7 +112,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
             type: TRANSITION,
             payload: {
               method: 'go',
-              arg: 1
+              args: [ 1 ]
             }
           })
         })
@@ -116,7 +124,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
             type: TRANSITION,
             payload: {
               method: 'goBack',
-              arg: undefined
+              args: []
             }
           })
         })
@@ -128,7 +136,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
             type: TRANSITION,
             payload: {
               method: 'goForward',
-              arg: undefined
+              args: []
             }
           })
         })
