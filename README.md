@@ -4,6 +4,8 @@
 
 **Let react-router do all the work**  :sparkles:
 
+_Formerly known as redux-simple-router_
+
 [Redux](https://github.com/rackt/redux) is awesome. [React Router](https://github.com/rackt/react-router) is cool. The problem is that react-router manages an important piece of your application state: the URL. If you are using redux, you want your app state to fully represent your UI; if you snapshotted the app state, you should be able to load it up later and see the same thing.
 
 react-router does a great job of mapping the current URL to a component tree, and continually does so with any URL changes. This is very useful, but we really want to store this state in redux as well.
