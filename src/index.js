@@ -50,17 +50,15 @@ export function syncHistory(history) {
   history.listen(location => { initialState.location = location })()
 
   function middleware(store) {
-    setTimeout(() => {
-      unsubscribeHistory = history.listen(location => {
-        currentKey = location.key
-        if (syncing) {
-          // Don't dispatch a new action if we're replaying location.
-          return
-        }
+    unsubscribeHistory = history.listen(location => {
+      currentKey = location.key
+      if (syncing) {
+        // Don't dispatch a new action if we're replaying location.
+        return
+      }
 
-        store.dispatch(updateLocation(location))
-      })
-    }, 0)
+      store.dispatch(updateLocation(location))
+    })
 
     connected = true
 
