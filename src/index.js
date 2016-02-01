@@ -47,6 +47,8 @@ export function syncHistory(history) {
   let unsubscribeHistory, currentKey, unsubscribeStore
   let connected = false, syncing = false
 
+  history.listen(location => { initialState.location = location })()
+
   function middleware(store) {
     setTimeout(() => {
       unsubscribeHistory = history.listen(location => {
