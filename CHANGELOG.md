@@ -4,7 +4,7 @@
 
 ## [3.0.0](https://github.com/rackt/react-router-redux/compare/2.1.0...3.0.0)
 
-Techincally, 2.1.0 broke semver. The appropriate @timdorr's have been flogged. So, we're bumping the major version to catch up.
+Technically, 2.1.0 broke semver. The appropriate @timdorr's have been flogged. So, we're bumping the major version to catch up.
 
 - Fixed Resets in Redux Dev Tools. [3ae8110f](https://github.com/rackt/react-router-redux/commit/3ae8110f)
 - Ensure the initialState is set properly. [a00acfd4](https://github.com/rackt/react-router-redux/commit/a00acfd4)
