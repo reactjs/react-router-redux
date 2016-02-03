@@ -49,19 +49,7 @@ export function syncHistory(history) {
 
   history.listen(location => { initialState.location = location })()
 
-  function middleware(store) {
-    unsubscribeHistory = history.listen(location => {
-      currentKey = location.key
-      if (syncing) {
-        // Don't dispatch a new action if we're replaying location.
-        return
-      }
-
-      store.dispatch(updateLocation(location))
-    })
-
-    connected = true
-
+  function middleware() {
     return next => action => {
       if (action.type !== TRANSITION || !connected) {
         return next(action)
@@ -72,41 +60,72 @@ export function syncHistory(history) {
     }
   }
 
-  middleware.listenForReplays =
-    (store, selectLocationState = SELECT_LOCATION) => {
-      const getLocationState = () => selectLocationState(store.getState())
-      const initialLocation = getLocationState()
+  middleware.syncWith =
+    (store, {
+      urlToState = false,
+      stateToUrl = false,
+      selectLocationState = SELECT_LOCATION
+    } = {}) => {
+      if (!urlToState && !stateToUrl) {
+        throw new Error(
+          'At least one of "urlToState" and "stateToUrl" options must be true.'
+        )
+      }
 
-      unsubscribeStore = store.subscribe(() => {
-        const location = getLocationState()
+      if (stateToUrl) {
+        const getLocationState = () => selectLocationState(store.getState())
+        const initialLocation = getLocationState()
 
-        // If we're resetting to the beginning, use the saved initial value. We
-        // need to dispatch a new action at this point to populate the store
-        // appropriately.
-        if (location.key === initialLocation.key) {
-          history.replace(initialLocation)
-          return
+        const reconcileLocationWithState = () => {
+          const location = getLocationState()
+
+          // If we're resetting to the beginning, use the saved initial value. We
+          // need to dispatch a new action at this point to populate the store
+          // appropriately.
+          if (location.key === initialLocation.key) {
+            history.replace(initialLocation)
+            return
+          }
+
+          // Otherwise, if we need to update the history location, do so without
+          // dispatching a new action, as we're just bringing history in sync
+          // with the store.
+          if (location.key !== currentKey) {
+            syncing = true
+            history.transitionTo(location)
+            syncing = false
+          }
         }
 
-        // Otherwise, if we need to update the history location, do so without
-        // dispatching a new action, as we're just bringing history in sync
-        // with the store.
-        if (location.key !== currentKey) {
-          syncing = true
-          history.transitionTo(location)
-          syncing = false
+        unsubscribeStore = store.subscribe(reconcileLocationWithState)
+        reconcileLocationWithState()
+      }
+
+      if (urlToState) {
+        unsubscribeHistory = history.listen(location => {
+          currentKey = location.key
+          if (syncing) {
+            // Don't dispatch a new action if we're replaying location.
+            return
+          }
+
+          store.dispatch(updateLocation(location))
+        })
+
+        connected = true
+      }
+
+      return () => {
+        if (stateToUrl) {
+          unsubscribeStore()
         }
-      })
-    }
 
-  middleware.unsubscribe = () => {
-    unsubscribeHistory()
-    if (unsubscribeStore) {
-      unsubscribeStore()
+        if (urlToState) {
+          unsubscribeHistory()
+          connected = false
+        }
+      }
     }
-
-    connected = false
-  }
 
   return middleware
 }

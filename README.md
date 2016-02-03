@@ -61,14 +61,18 @@ const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
 }))
 
-// Sync dispatched route actions to the history
+// specify the history to listen to
 const reduxRouterMiddleware = syncHistory(browserHistory)
-const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(createStore)
+const store = createStore(
+  reducer,
+  applyMiddleware(reduxRouterMiddleware)
+)
 
-const store = createStoreWithMiddleware(reducer)
-
-// Required for replaying actions from devtools to work
-reduxRouterMiddleware.listenForReplays(store)
+// begin syncing
+reduxRouterMiddleware.syncWith(store, {
+  urlToState: true, // route changes will appear in state
+  stateToUrl: false // set to true for time travel in DevTools
+})
 
 ReactDOM.render(
   <Provider store={store}>
@@ -140,7 +144,7 @@ Examples from the community:
 
 _Have an example to add? Send us a PR!_
 
-### API
+### API (TODO)
 
 #### `syncHistory(history: History) => ReduxMiddleware`
 

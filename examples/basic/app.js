@@ -27,12 +27,18 @@ const DevTools = createDevTools(
   </DockMonitor>
 )
 
-const finalCreateStore = compose(
-  applyMiddleware(middleware),
-  DevTools.instrument()
-)(createStore)
-const store = finalCreateStore(reducer)
-middleware.listenForReplays(store)
+const store = createStore(
+  reducer,
+  compose(
+    applyMiddleware(middleware),
+    DevTools.instrument()
+  )
+)
+
+middleware.syncWith(store, {
+  urlToState: true,
+  stateToUrl: true
+})
 
 ReactDOM.render(
   <Provider store={store}>

@@ -28,15 +28,18 @@ expect.extend({
   }
 })
 
-function createSyncedHistoryAndStore(createHistory) {
+function createSyncedHistoryAndStore(createHistory, syncOptions, initialState) {
   const history = createHistory()
   const middleware = syncHistory(history)
-  const { unsubscribe } = middleware
-
-  const createStoreWithMiddleware = applyMiddleware(middleware)(createStore)
-  const store = createStoreWithMiddleware(combineReducers({
+  const reducer = combineReducers({
     routing: routeReducer
-  }))
+  })
+  const store = createStore(
+    reducer,
+    initialState,
+    applyMiddleware(middleware)
+  )
+  const unsubscribe = middleware.syncWith(store, syncOptions)
 
   return { history, store, unsubscribe }
 }
@@ -197,18 +200,17 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         history.push('/foo')
 
         const middleware = syncHistory(history)
-        unsubscribe = middleware.unsubscribe
-
-        const finalCreateStore = compose(
+        store = createStore(combineReducers({
+          routing: routeReducer
+        }), compose(
           applyMiddleware(middleware),
           instrument()
-        )(createStore)
-        store = finalCreateStore(combineReducers({
-          routing: routeReducer
-        }))
+        ))
         devToolsStore = store.liftedStore
-
-        middleware.listenForReplays(store)
+        unsubscribe = middleware.syncWith(store, {
+          stateToUrl: true,
+          urlToState: true
+        })
       })
 
       afterEach(() => {
@@ -273,11 +275,103 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       })
     })
 
+    describe('initialState', () => {
+      it('does not respect initialState when syncing url to state', () => {
+        let synced = createSyncedHistoryAndStore(createHistory, {
+          urlToState: true
+        }, {
+          routing: {
+            location: {
+              pathname: '/init',
+              search: '',
+              hash: '',
+              state: null,
+              action: 'PUSH',
+              key: 'abcde'
+            }
+          }
+        })
+
+        let history = synced.history
+        let unsubscribe = synced.unsubscribe
+
+        let currentPath
+        const historyUnsubscribe = history.listen(location => {
+          currentPath = location.pathname
+        })
+
+        expect(currentPath).toEqual('/')
+        historyUnsubscribe()
+        unsubscribe()
+      })
+
+      it('respects initialState when syncing state to url', () => {
+        let synced = createSyncedHistoryAndStore(createHistory, {
+          stateToUrl: true
+        }, {
+          routing: {
+            location: {
+              pathname: '/init',
+              search: '',
+              hash: '',
+              state: null,
+              action: 'PUSH',
+              key: 'abcde'
+            }
+          }
+        })
+
+        let history = synced.history
+        let unsubscribe = synced.unsubscribe
+
+        let currentPath
+        const historyUnsubscribe = history.listen(location => {
+          currentPath = location.pathname
+        })
+
+        expect(currentPath).toEqual('/init')
+        historyUnsubscribe()
+        unsubscribe()
+      })
+
+      it('respects initialState when syncing both ways', () => {
+        let synced = createSyncedHistoryAndStore(createHistory, {
+          stateToUrl: true,
+          urlToState: true
+        }, {
+          routing: {
+            location: {
+              pathname: '/init',
+              search: '',
+              hash: '',
+              state: null,
+              action: 'PUSH',
+              key: 'abcde'
+            }
+          }
+        })
+
+        let history = synced.history
+        let unsubscribe = synced.unsubscribe
+
+        let currentPath
+        const historyUnsubscribe = history.listen(location => {
+          currentPath = location.pathname
+        })
+
+        expect(currentPath).toEqual('/init')
+        historyUnsubscribe()
+        unsubscribe()
+      })
+    })
+
     describe('syncReduxAndRouter', () => {
       let history, store, unsubscribe
 
       beforeEach(() => {
-        let synced = createSyncedHistoryAndStore(createHistory)
+        let synced = createSyncedHistoryAndStore(createHistory, {
+          urlToState: true
+        })
         history = synced.history
         store = synced.store
         unsubscribe = synced.unsubscribe
@@ -545,7 +639,9 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
       let history, store, unsubscribe
 
       beforeEach(() => {
-        const synced = createSyncedHistoryAndStore(useQueries(createHistory))
+        const synced = createSyncedHistoryAndStore(useQueries(createHistory), {
+          urlToState: true
+        })
         history = synced.history
         store = synced.store
         unsubscribe = synced.unsubscribe
@@ -583,7 +679,8 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
       beforeEach(() => {
         const synced = createSyncedHistoryAndStore(
-          () => useBasename(createHistory)({ basename: '/foobar' })
+          () => useBasename(createHistory)({ basename: '/foobar' }),
+          { urlToState: true }
         )
         history = synced.history
         store = synced.store
