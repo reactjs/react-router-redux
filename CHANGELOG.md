@@ -1,6 +1,8 @@
 ## [HEAD](https://github.com/rackt/react-router-redux/compare/2.1.0...master)
 
-- Nothing yet!
+- Fixed Resets in Redux Dev Tools. [3ae8110f](https://github.com/rackt/react-router-redux/commit/3ae8110f)
+- Ensure the initialState is set properly. [a00acfd4](https://github.com/rackt/react-router-redux/commit/a00acfd4)
+- Support any number of args on action creators [524898b5](https://github.com/rackt/react-router-redux/commit/524898b5)
 
 ## [2.1.0](https://github.com/rackt/react-router-redux/compare/2.0.4...2.1.0)
 
