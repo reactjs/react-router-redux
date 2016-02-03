@@ -1,6 +1,6 @@
 {
   "name": "react-router-redux",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "Ruthlessly simple bindings to keep react-router and redux in sync",
   "main": "lib/index",
   "files": [
@@ -11,7 +11,8 @@
   ],
   "repository": "rackt/react-router-redux",
   "authors": [
-    "James Long"
+    "James Long",
+    "Tim Dorr"
   ],
   "license": "MIT",
   "scripts": {
