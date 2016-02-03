@@ -4,7 +4,7 @@ import expect from 'expect'
 import {
   routeActions, TRANSITION, UPDATE_LOCATION, routeReducer, syncHistory
 } from '../src/index'
-import { applyMiddleware, createStore, combineReducers, compose } from 'redux'
+import { createStore, combineReducers, compose } from 'redux'
 import { ActionCreators, instrument } from 'redux-devtools'
 import { useBasename, useQueries } from 'history'
 
@@ -30,18 +30,14 @@ expect.extend({
 
 function createSyncedHistoryAndStore(createHistory, syncOptions, initialState) {
   const history = createHistory()
-  const middleware = syncHistory(history)
+  const enhancer = syncHistory(history, syncOptions)
   const reducer = combineReducers({
     routing: routeReducer
   })
-  const store = createStore(
-    reducer,
-    initialState,
-    applyMiddleware(middleware)
-  )
-  const unsubscribe = middleware.syncWith(store, syncOptions)
+  const store = createStore(reducer, initialState, enhancer)
+  const { dispose } = enhancer
 
-  return { history, store, unsubscribe }
+  return { history, store, dispose }
 }
 
 const defaultReset = () => {}
@@ -191,7 +187,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
     // rely directly on the DevTools, as they implement these actions as
     // middleware, and we don't want to implement this ourselves.
     describe('devtools', () => {
-      let history, store, devToolsStore, unsubscribe
+      let history, store, devToolsStore, dispose
 
       beforeEach(() => {
         history = createHistory()
@@ -199,22 +195,22 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         // Set initial URL before syncing
         history.push('/foo')
 
-        const middleware = syncHistory(history)
+        const enhancer = syncHistory(history, {
+          stateToUrl: true,
+          urlToState: true          
+        })
         store = createStore(combineReducers({
           routing: routeReducer
         }), compose(
-          applyMiddleware(middleware),
+          enhancer,
           instrument()
         ))
         devToolsStore = store.liftedStore
-        unsubscribe = middleware.syncWith(store, {
-          stateToUrl: true,
-          urlToState: true
-        })
+        dispose = enhancer.dispose
       })
 
       afterEach(() => {
-        unsubscribe()
+        dispose()
       })
 
       it('resets to the initial url', () => {
@@ -293,7 +289,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         })
 
         let history = synced.history
-        let unsubscribe = synced.unsubscribe
+        let dispose = synced.dispose
 
         let currentPath
         const historyUnsubscribe = history.listen(location => {
@@ -302,7 +298,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
         expect(currentPath).toEqual('/')
         historyUnsubscribe()
-        unsubscribe()
+        dispose()
       })
 
       it('respects initialState when syncing state to url', () => {
@@ -322,7 +318,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         })
 
         let history = synced.history
-        let unsubscribe = synced.unsubscribe
+        let dispose = synced.dispose
 
         let currentPath
         const historyUnsubscribe = history.listen(location => {
@@ -331,7 +327,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
         expect(currentPath).toEqual('/init')
         historyUnsubscribe()
-        unsubscribe()
+        dispose()
       })
 
       it('respects initialState when syncing both ways', () => {
@@ -352,7 +348,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         })
 
         let history = synced.history
-        let unsubscribe = synced.unsubscribe
+        let dispose = synced.dispose
 
         let currentPath
         const historyUnsubscribe = history.listen(location => {
@@ -361,12 +357,12 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
 
         expect(currentPath).toEqual('/init')
         historyUnsubscribe()
-        unsubscribe()
+        dispose()
       })
     })
 
     describe('syncReduxAndRouter', () => {
-      let history, store, unsubscribe
+      let history, store, dispose
 
       beforeEach(() => {
         let synced = createSyncedHistoryAndStore(createHistory, {
@@ -374,11 +370,11 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         })
         history = synced.history
         store = synced.store
-        unsubscribe = synced.unsubscribe
+        dispose = synced.dispose
       })
 
       afterEach(() => {
-        unsubscribe()
+        dispose()
       })
 
       it('syncs router -> redux', () => {
@@ -578,7 +574,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         expect(updates).toEqual([ '/', '/bar', '/baz' ])
       })
 
-      it('returns unsubscribe to stop listening to history and store', () => {
+      it('returns dispose to stop listening to history and store', () => {
         history.push('/foo')
         expect(store).toContainLocation({
           pathname: '/foo'
@@ -589,10 +585,10 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
           pathname: '/bar'
         })
 
-        unsubscribe()
+        dispose()
 
         // Make the teardown a no-op.
-        unsubscribe = () => {}
+        dispose = () => {}
 
         history.push('/foo')
         expect(store).toContainLocation({
@@ -636,7 +632,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
     })
 
     describe('query support', () => {
-      let history, store, unsubscribe
+      let history, store, dispose
 
       beforeEach(() => {
         const synced = createSyncedHistoryAndStore(useQueries(createHistory), {
@@ -644,11 +640,11 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         })
         history = synced.history
         store = synced.store
-        unsubscribe = synced.unsubscribe
+        dispose = synced.dispose
       })
 
       afterEach(() => {
-        unsubscribe()
+        dispose()
       })
 
       it('handles location queries', () => {
@@ -675,7 +671,7 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
     })
 
     describe('basename support', () => {
-      let history, store, unsubscribe
+      let history, store, dispose
 
       beforeEach(() => {
         const synced = createSyncedHistoryAndStore(
@@ -684,11 +680,11 @@ module.exports = function createTests(createHistory, name, reset = defaultReset)
         )
         history = synced.history
         store = synced.store
-        unsubscribe = synced.unsubscribe
+        dispose = synced.dispose
       })
 
       afterEach(() => {
-        unsubscribe()
+        dispose()
       })
 
       it('handles basename history option', () => {
