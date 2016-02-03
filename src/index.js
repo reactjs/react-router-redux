@@ -83,8 +83,8 @@ export function syncHistory(history) {
         // If we're resetting to the beginning, use the saved initial value. We
         // need to dispatch a new action at this point to populate the store
         // appropriately.
-        if (!location) {
-          history.transitionTo(initialLocation)
+        if (location.key === initialLocation.key) {
+          history.replace(initialLocation)
           return
         }
 
