@@ -22,17 +22,7 @@ View the [CHANGELOG](https://github.com/rackt/react-router-redux/blob/master/CHA
 
 Read the [API docs](#api) farther down this page.
 
-##### _What about redux-router?_
-
-[redux-router](https://github.com/rackt/redux-router) is another project which solves the same problem. However, it's far more complex. Take a quick look at [the code for this library](https://github.com/rackt/react-router-redux/blob/master/src/index.js)—it's extremely minimal. redux-router is much bigger and more complex.
-
-That said, redux-router is a fine project and has features this doesn't provide. Use it if you like it better.
-
-**Compared with redux-router:**
-
-* Much smaller and simpler. You don't need to learn another library on top of everything else.
-* We encourage direct access of react-router APIs. Need server-side rendering, or something else advanced? Just read react-router's docs.
-* We only put the current location in state, whereas redux-router stores the entire router state, which includes router-specific things like params.
+**Note:** We are [currently discussing some major changes](https://github.com/rackt/react-router-redux/issues/257) to the library. [React Router's API in 2.0](https://github.com/rackt/react-router/blob/master/upgrade-guides/v2.0.0.md) is significantly improved and obseletes the need for things like action creators and reading location state from the Redux. This library is still critical to enable things like time traveling and persisting state, so we're not going anywhere. But in many cases, you may not need this library and can simply use the provided React Router APIs. Go check them out and drop some technical debt. :smile:
 
 ### Usage
 
