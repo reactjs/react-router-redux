@@ -1,28 +1,6 @@
-/**
- * This action type will be dispatched when your history
- * receives a location change.
- */
-export const LOCATION_CHANGE = '@@router/LOCATION_CHANGE'
-
-const initialState = {
-  locationBeforeTransitions: null
-}
+import { LOCATION_CHANGE } from './reducer'
 
 const defaultSelectLocationState = state => state.routing
-
-/**
- * This reducer will update the state with the most recent location history
- * has transitioned to. This may not be in sync with the router, particularly
- * if you have asynchronously-loaded routes, so reading from and relying on
- * this state it is discouraged.
- */
-export function routerReducer(state = initialState, { type, locationBeforeTransitions }) {
-  if (type === LOCATION_CHANGE) {
-    return { ...state, locationBeforeTransitions }
-  }
-
-  return state
-}
 
 /**
  * This function synchronizes your history state with the Redux store.
@@ -36,7 +14,7 @@ export function routerReducer(state = initialState, { type, locationBeforeTransi
  * event, the router will be updated appropriately and can transition to the
  * correct router state.
  */
-export function syncHistoryWithStore(history, store, {
+export default function syncHistoryWithStore(history, store, {
   selectLocationState = defaultSelectLocationState,
   adjustUrlOnReplay = true
 } = {}) {
