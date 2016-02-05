@@ -16,7 +16,7 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "mkdir -p lib && babel ./src/index.js --out-file ./lib/index.js",
+    "build": "mkdir -p lib && babel ./src -d lib",
     "lint": "eslint examples src test",
     "test": "npm run lint && npm run test:node && npm run test:browser",
     "test:node": "mocha --compilers js:babel-core/register --recursive ./test/node",
