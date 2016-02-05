@@ -1,3 +1,5 @@
+import 'babel-polyfill'
+
 import { hashHistory, browserHistory } from 'react-router'
 import createTests from '../createTests.js'
 

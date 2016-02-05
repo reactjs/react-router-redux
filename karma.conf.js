@@ -1,12 +1,13 @@
-var path = require('path');
-var webpack = require('webpack');
+'use strict'
+
+const path = require('path')
 
 module.exports = function (config) {
 
-  var runCoverage = process.env.COVERAGE === 'true';
+  let runCoverage = process.env.COVERAGE === 'true'
 
-  var coverageLoaders = [];
-  var coverageReporters = [];
+  let coverageLoaders = []
+  let coverageReporters = []
 
   if (runCoverage) {
     coverageLoaders.push({
@@ -15,7 +16,7 @@ module.exports = function (config) {
       loader: 'isparta'
     }),
 
-    coverageReporters.push('coverage');
+    coverageReporters.push('coverage')
   }
 
   config.set({
@@ -39,12 +40,14 @@ module.exports = function (config) {
       module: {
         preLoaders: [
           {
+            loader: 'babel',
             test: /\.js$/,
-            exclude: [
-              path.resolve('node_modules/')
-            ],
-            loader: 'babel'
-          },
+            include: [
+              path.resolve('src/'),
+              path.resolve('test/')
+            ]
+
+          }
         ].concat(coverageLoaders)
       }
     },
@@ -59,5 +62,5 @@ module.exports = function (config) {
         { type: 'json', subdir: 'browser-coverage', file: 'coverage.json' }
       ]
     }
-  });
-};
+  })
+}
