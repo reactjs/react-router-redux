@@ -1,5 +1,5 @@
-import { createHashHistory, createHistory } from 'history'
+import { hashHistory, browserHistory } from 'react-router'
 import createTests from '../createTests.js'
 
-createTests(createHashHistory, 'Hash History', () => window.location = '#/')
-createTests(createHistory, 'Browser History', () => window.history.replaceState(null, null, '/'))
+createTests(hashHistory, 'Hash History', () => window.location = '#/')
+createTests(browserHistory, 'Browser History', () => window.history.replaceState(null, null, '/'))

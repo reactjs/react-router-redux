@@ -118,7 +118,7 @@ export default function syncHistoryWithStore(history, store, {
     },
 
     // It also provides a way to destroy internal listeners
-    dispose() {
+    unsubscribe() {
       if (adjustUrlOnReplay) {
         unsubscribeFromStore()
       }
