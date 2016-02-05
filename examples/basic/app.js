@@ -6,18 +6,15 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
-import { Router, Route, IndexRoute } from 'react-router'
-import createHistory from 'history/lib/createHashHistory'
-import { syncHistory, routeReducer } from 'react-router-redux'
+import { Router, Route, IndexRoute, hashHistory } from 'react-router'
+import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 
 import * as reducers from './reducers'
 import { App, Home, Foo, Bar } from './components'
 
-const history = createHistory()
-const middleware = syncHistory(history)
 const reducer = combineReducers({
   ...reducers,
-  routing: routeReducer
+  routing: routerReducer
 })
 
 const DevTools = createDevTools(
@@ -27,12 +24,11 @@ const DevTools = createDevTools(
   </DockMonitor>
 )
 
-const finalCreateStore = compose(
-  applyMiddleware(middleware),
+const store = createStore(
+  reducer,
   DevTools.instrument()
-)(createStore)
-const store = finalCreateStore(reducer)
-middleware.listenForReplays(store)
+)
+const history = syncHistoryWithStore(hashHistory, store)
 
 ReactDOM.render(
   <Provider store={store}>
