@@ -4,7 +4,7 @@ import DockMonitor from 'redux-devtools-dock-monitor'
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
+import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, IndexRoute, hashHistory } from 'react-router'
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
