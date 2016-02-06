@@ -57,9 +57,6 @@ const store = createStore(reducer)
 // Sync dispatched route actions to the history
 const history = syncHistoryWithStore(browserHistory, store)
 
-// Required for replaying actions from devtools to work
-reduxRouterMiddleware.listenForReplays(store)
-
 ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
