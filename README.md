@@ -54,11 +54,9 @@ const reducer = combineReducers(Object.assign({}, reducers, {
 
 const store = createStore(reducer)
 
-// Sync dispatched route actions to the history
+// Sync store with history. Optionally defaults to syncing history on store changes.
+// We are routing history changes through the store and optionally updating history when the store changes (DevTools replay/reset).
 const history = syncHistoryWithStore(browserHistory, store)
-
-// Required for replaying actions from devtools to work
-reduxRouterMiddleware.listenForReplays(store)
 
 ReactDOM.render(
   <Provider store={store}>
@@ -73,7 +71,7 @@ ReactDOM.render(
 )
 ```
 
-Now you can read from `state.routing.locationBeforeTransitions.pathname` to get the URL. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
+Now you can read from `state.routing.locationBeforeTransitions.pathname` to get the last location sent from history. **Note** that it may not reflect the current UI state, and we don't recommend reading it from the UI of the user if the app uses async transitions. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
 
 ```js
 import { routeActions } from 'react-router-redux'
@@ -83,14 +81,14 @@ function MyComponent({ dispatch }) {
 }
 ```
 
-This will change the state, which will trigger a change in react-router. Additionally, if you want to respond to the path update action, just handle the `UPDATE_LOCATION` constant that we provide:
+This will change the state, which will trigger a change in react-router. Additionally, if you want to respond to the path update action, just handle the `CALL_HISTORY_METHOD` constant that we provide:
 
 ```js
-import { UPDATE_LOCATION } from 'react-router-redux'
+import { CALL_HISTORY_METHOD } from 'react-router-redux'
 
 function update(state, action) {
   switch(action.type) {
-  case UPDATE_LOCATION:
+  case CALL_HISTORY_METHOD:
     // do something here
   }
 }
@@ -132,9 +130,17 @@ _Have an example to add? Send us a PR!_
 
 ### API
 
-#### `history = syncHistoryWithStore(history: History, store)`
+#### `history = syncHistoryWithStore(history: History, store, [options])`
 
 We now sync by enhancing the history instance to listen for navigation events and dispatch those into the store. The enhanced history has its listen method overridden to respond to store changes, rather than directly to navigation events. When this history is provided to <Router>, the router will listen to it and receive these store changes. This means if we time travel with the store, the router will receive those store changes and update based on the location in the store, instead of what the browser says. Normal navigation events (hitting your browser back/forward buttons, telling a history singleton to push a location) flow through the history's listener like normal, so all the usual stuff works A-OK.
+
+#### Arguments
+
+* `history` *(Object)* History object that will have its `listen` method enhanced. This can be the result of `createHistory()` or simply the `hashHistory` or `browserHistory` import from `react-router`.
+* `store ` *(Object)* Fully formed Redux store.
+* [`options`] *(Object)* If specified, further customizes the behavior of the sync.
+  * [`selectLocationState = defaultSelectLocationState`] *(Function)*: Returns state slice where routing reducer is mounted. Default function returns `state.routing`.
+  * [`adjustUrlOnReplay = true`] *(Boolean)*: If true, store changes (or its initialState) to `locationBeforeTransitions` will be synced with history via the `push` method. *Defaults to `true`.*
 
 #### `routerReducer`
 
@@ -142,7 +148,7 @@ A reducer function that keeps track of the router state. You must add this reduc
 
 **Warning:** It is a bad pattern to use `react-redux`'s `connect` decorator to map the state from this reducer to props on your `Route` components. This can lead to infinite loops and performance problems. `react-router` already provides this for you via `this.props.location`.
 
-#### `UPDATE_LOCATION`
+#### `CALL_HISTORY_METHOD`
 
 An action type that you can listen for in your reducers to be notified of route updates.
 
