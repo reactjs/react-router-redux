@@ -54,10 +54,10 @@ export default function syncHistoryWithStore(history, store, {
       // Update address bar to reflect store state
       isTimeTraveling = true
       currentLocation = locationInStore
-      history.transitionTo(Object.assign({},
-        locationInStore,
-        { action: 'PUSH' }
-      ))
+      history.transitionTo({
+        ...locationInStore,
+        action: 'PUSH'
+      })
       isTimeTraveling = false
     }
 
@@ -95,7 +95,8 @@ export default function syncHistoryWithStore(history, store, {
   unsubscribeFromHistory = history.listen(handleLocationChange)
 
   // The enhanced history uses store as source of truth
-  return Object.assign({}, history, {
+  return {
+    ...history,
     // The listeners are subscribed to the store instead of history
     listen(listener) {
       // History listeners expect a synchronous call
@@ -124,5 +125,5 @@ export default function syncHistoryWithStore(history, store, {
       }
       unsubscribeFromHistory()
     }
-  })
+  }
 }
