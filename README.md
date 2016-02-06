@@ -71,7 +71,7 @@ ReactDOM.render(
 )
 ```
 
-Now you can read from `state.routing.locationBeforeTransitions.pathname` to the last location send from history. **Note** that it may not reflect the current UI state, and we don't recommend reading it from the UI of the user if the app uses async transitions. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
+Now you can read from `state.routing.locationBeforeTransitions.pathname` to get the last location sent from history. **Note** that it may not reflect the current UI state, and we don't recommend reading it from the UI of the user if the app uses async transitions. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
 
 ```js
 import { routeActions } from 'react-router-redux'
