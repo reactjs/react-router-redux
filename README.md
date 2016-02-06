@@ -140,7 +140,7 @@ We now sync by enhancing the history instance to listen for navigation events an
 * `store ` *(Object)* Fully formed Redux store.
 * [`options`] *(Object)* If specified, further customizes the behavior of the sync.
   * [`selectLocationState = defaultSelectLocationState`] *(Function)*: Returns state slice where routing reducer is mounted. Default function returns `state.routing`.
-  * [`adjustUrlOnReplay = true`] *(Boolean)*: If true, store changes to `locationBeforeTransitions` will be synced with history via the `push` method. *Defaults to `true`.*
+  * [`adjustUrlOnReplay = true`] *(Boolean)*: If true, store changes (or its initialState) to `locationBeforeTransitions` will be synced with history via the `push` method. *Defaults to `true`.*
 
 #### `routerReducer`
 
