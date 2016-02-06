@@ -1,4 +1,4 @@
-import UPDATE_LOCATION from './actions'
+import { UPDATE_LOCATION } from './actions'
 
 /**
  * This middleware captures UPDATE_LOCATION actions to redirect to the

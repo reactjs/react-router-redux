@@ -1,8 +1,6 @@
-/* eslint-env mocha */
-
 import expect from 'expect'
 
-import { LOCATION_CHANGE, routerReducer } from '../../src/reducer'
+import { LOCATION_CHANGE, routerReducer } from '../src/reducer'
 
 describe('routerReducer', () => {
   const state = {
