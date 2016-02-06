@@ -22,7 +22,7 @@ View the [CHANGELOG](https://github.com/rackt/react-router-redux/blob/master/CHA
 
 Read the [API docs](#api) farther down this page.
 
-**Note:** We are [currently discussing some major changes](https://github.com/rackt/react-router-redux/issues/257) to the library. [React Router's API in 2.0](https://github.com/rackt/react-router/blob/master/upgrade-guides/v2.0.0.md) is significantly improved and obseletes the need for things like action creators and reading location state from the Redux. This library is still critical to enable things like time traveling and persisting state, so we're not going anywhere. But in many cases, you may not need this library and can simply use the provided React Router APIs. Go check them out and drop some technical debt. :smile:
+**Note:** We are [currently discussing some major changes](https://github.com/rackt/react-router-redux/issues/257) to the library. [React Router's API in 2.0](https://github.com/rackt/react-router/blob/master/upgrade-guides/v2.0.0.md) is significantly improved and makes things like action creators and reading location state from Redux obsolete. This library is still critical to enable things like time traveling and persisting state, so we're not going anywhere. But in many cases, you may not need this library and can simply use the provided React Router APIs. Go check them out and drop some technical debt. :smile:
 
 ### Usage
 
@@ -44,25 +44,25 @@ import ReactDOM from 'react-dom'
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, browserHistory } from 'react-router'
-import { syncHistory, routeReducer } from 'react-router-redux'
+import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
+
 import reducers from '<project-path>/reducers'
 
 const reducer = combineReducers(Object.assign({}, reducers, {
-  routing: routeReducer
+  routing: routerReducer
 }))
 
-// Sync dispatched route actions to the history
-const reduxRouterMiddleware = syncHistory(browserHistory)
-const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(createStore)
+const store = createStore(reducer)
 
-const store = createStoreWithMiddleware(reducer)
+// Sync dispatched route actions to the history
+const history = syncHistoryWithStore(browserHistory, store)
 
 // Required for replaying actions from devtools to work
 reduxRouterMiddleware.listenForReplays(store)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={browserHistory}>
+    <Router history={history}>
       <Route path="/" component={App}>
         <Route path="foo" component={Foo}/>
         <Route path="bar" component={Bar}/>
@@ -73,7 +73,7 @@ ReactDOM.render(
 )
 ```
 
-Now you can read from `state.routing.location.pathname` to get the URL. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
+Now you can read from `state.routing.locationBeforeTransitions.pathname` to get the URL. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
 
 ```js
 import { routeActions } from 'react-router-redux'
@@ -132,21 +132,11 @@ _Have an example to add? Send us a PR!_
 
 ### API
 
-#### `syncHistory(history: History) => ReduxMiddleware`
+#### `history = syncHistoryWithStore(history: History, store)`
 
-Call this to create a middleware that can be applied with Redux's `applyMiddleware` to allow actions to call history methods. The middleware will look for route actions created by `push`, `replace`, etc. and applies them to the history.
+We now sync by enhancing the history instance to listen for navigation events and dispatch those into the store. The enhanced history has its listen method overridden to respond to store changes, rather than directly to navigation events. When this history is provided to <Router>, the router will listen to it and receive these store changes. This means if we time travel with the store, the router will receive those store changes and update based on the location in the store, instead of what the browser says. Normal navigation events (hitting your browser back/forward buttons, telling a history singleton to push a location) flow through the history's listener like normal, so all the usual stuff works A-OK.
 
-#### `ReduxMiddleware.listenForReplays(store: ReduxStore, selectLocationState?: function)`
-
-By default, the syncing logic will not respond to replaying of actions, which means it won't work with projects like redux-devtools. Call this function on the middleware object returned from `syncHistory` and give it the store to listen to, and it will properly work with action replays. Obviously, you would do that after you have created the store and everything else has been set up.
-
-Supply an optional function `selectLocationState` to customize where to find the location state on your app state. It defaults to `state => state.routing.location`, so you would install the reducer under the name "routing". Feel free to change this to whatever you like.
-
-#### `ReduxMiddleware.unsubscribe()`
-
-Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`.
-
-#### `routeReducer`
+#### `routerReducer`
 
 A reducer function that keeps track of the router state. You must add this reducer to your app reducers when creating the store. It will return a `location` property in state. If you use `combineReducers`, it will be nested under wherever property you add it to (`state.routing` in the example above).
 

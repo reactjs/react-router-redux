@@ -54,10 +54,10 @@ export default function syncHistoryWithStore(history, store, {
       // Update address bar to reflect store state
       isTimeTraveling = true
       currentLocation = locationInStore
-      history.transitionTo(Object.assign({},
-        locationInStore,
-        { action: 'PUSH' }
-      ))
+      history.transitionTo({
+        ...locationInStore,
+        action: 'PUSH'
+      })
       isTimeTraveling = false
     }
 
@@ -95,18 +95,26 @@ export default function syncHistoryWithStore(history, store, {
   unsubscribeFromHistory = history.listen(handleLocationChange)
 
   // The enhanced history uses store as source of truth
-  return Object.assign({}, history, {
+  return {
+    ...history,
     // The listeners are subscribed to the store instead of history
     listen(listener) {
+      // Copy of last location.
+      let lastPublishedLocation = getLocationInStore(true)
       // History listeners expect a synchronous call
-      listener(getLocationInStore(true))
+      listener(lastPublishedLocation)
 
       // Keep track of whether we unsubscribed, as Redux store
       // only applies changes in subscriptions on next dispatch
       let unsubscribed = false
       const unsubscribeFromStore = store.subscribe(() => {
+        const currentLocation = getLocationInStore(true)
+        if (currentLocation === lastPublishedLocation) {
+          return
+        }
+        lastPublishedLocation = currentLocation
         if (!unsubscribed) {
-          listener(getLocationInStore(true))
+          listener(lastPublishedLocation)
         }
       })
 
@@ -124,5 +132,5 @@ export default function syncHistoryWithStore(history, store, {
       }
       unsubscribeFromHistory()
     }
-  })
+  }
 }
