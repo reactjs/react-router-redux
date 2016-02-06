@@ -1,2 +1,2 @@
-const browserContext = require.context('./test/browser', true, /\.js$/);
-browserContext.keys().forEach(browserContext);
+const browserContext = require.context('./test/browser')
+browserContext.keys().forEach(browserContext)

@@ -1,11 +1,9 @@
-/* eslint-env mocha */
-
 import expect from 'expect'
 
 import {
   CALL_HISTORY_METHOD,
   push, replace, go, goBack, goForward
-} from '../../src/actions'
+} from '../src/actions'
 
 describe('routeActions', () => {
 

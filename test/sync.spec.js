@@ -1,4 +1,4 @@
 import { createMemoryHistory } from 'react-router'
-import createTests from '../createTests.js'
+import createTests from './_createSyncTest'
 
 createTests(createMemoryHistory(), 'Memory History')
