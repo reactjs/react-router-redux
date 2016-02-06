@@ -1,5 +1,3 @@
-/*eslint-env mocha */
-
 import expect from 'expect'
 
 import { createStore, combineReducers } from 'redux'
