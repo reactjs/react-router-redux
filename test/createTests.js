@@ -8,11 +8,6 @@ import { createStore, combineReducers } from 'redux'
 
 import syncHistoryWithStore from '../src/sync'
 import { routerReducer } from '../src/reducer'
-// import {
-//   UPDATE_LOCATION,
-//   push, replace, go, goBack, goForward,
-//   routeActions
-// } from '../src/actions'
 // import routerMiddleware from '../src/middleware'
 
 expect.extend({
