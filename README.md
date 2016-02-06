@@ -132,21 +132,11 @@ _Have an example to add? Send us a PR!_
 
 ### API
 
-#### `syncHistory(history: History) => ReduxMiddleware`
+#### `history = syncHistoryWithStore(history: History, store)`
 
-Call this to create a middleware that can be applied with Redux's `applyMiddleware` to allow actions to call history methods. The middleware will look for route actions created by `push`, `replace`, etc. and applies them to the history.
+We now sync by enhancing the history instance to listen for navigation events and dispatch those into the store. The enhanced history has its listen method overridden to respond to store changes, rather than directly to navigation events. When this history is provided to <Router>, the router will listen to it and receive these store changes. This means if we time travel with the store, the router will receive those store changes and update based on the location in the store, instead of what the browser says. Normal navigation events (hitting your browser back/forward buttons, telling a history singleton to push a location) flow through the history's listener like normal, so all the usual stuff works A-OK.
 
-#### `ReduxMiddleware.listenForReplays(store: ReduxStore, selectLocationState?: function)`
-
-By default, the syncing logic will not respond to replaying of actions, which means it won't work with projects like redux-devtools. Call this function on the middleware object returned from `syncHistory` and give it the store to listen to, and it will properly work with action replays. Obviously, you would do that after you have created the store and everything else has been set up.
-
-Supply an optional function `selectLocationState` to customize where to find the location state on your app state. It defaults to `state => state.routing.location`, so you would install the reducer under the name "routing". Feel free to change this to whatever you like.
-
-#### `ReduxMiddleware.unsubscribe()`
-
-Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`.
-
-#### `routeReducer`
+#### `routerReducer`
 
 A reducer function that keeps track of the router state. You must add this reducer to your app reducers when creating the store. It will return a `location` property in state. If you use `combineReducers`, it will be nested under wherever property you add it to (`state.routing` in the example above).
 
