@@ -89,7 +89,7 @@ export default function syncHistoryWithStore(history, store, {
     // Tell the store to update by dispatching an action
     store.dispatch({
       type: LOCATION_CHANGE,
-      locationBeforeTransitions: location
+      payload: location
     })
   }
   unsubscribeFromHistory = history.listen(handleLocationChange)
