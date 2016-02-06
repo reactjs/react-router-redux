@@ -3,7 +3,7 @@
 import expect from 'expect'
 
 import {
-  UPDATE_LOCATION,
+  CALL_HISTORY_METHOD,
   push, replace, go, goBack, goForward
 } from '../../src/actions'
 
@@ -12,7 +12,7 @@ describe('routeActions', () => {
   describe('push', () => {
     it('creates actions', () => {
       expect(push('/foo')).toEqual({
-        type: UPDATE_LOCATION,
+        type: CALL_HISTORY_METHOD,
         payload: {
           method: 'push',
           args: [ '/foo' ]
@@ -20,7 +20,7 @@ describe('routeActions', () => {
       })
 
       expect(push({ pathname: '/foo', state: { the: 'state' } })).toEqual({
-        type: UPDATE_LOCATION,
+        type: CALL_HISTORY_METHOD,
         payload: {
           method: 'push',
           args: [ {
@@ -31,7 +31,7 @@ describe('routeActions', () => {
       })
 
       expect(push('/foo', 'baz', 123)).toEqual({
-        type: UPDATE_LOCATION,
+        type: CALL_HISTORY_METHOD,
         payload: {
           method: 'push',
           args: [ '/foo' , 'baz', 123 ]
@@ -43,7 +43,7 @@ describe('routeActions', () => {
   describe('replace', () => {
     it('creates actions', () => {
       expect(replace('/foo')).toEqual({
-        type: UPDATE_LOCATION,
+        type: CALL_HISTORY_METHOD,
         payload: {
           method: 'replace',
           args: [ '/foo' ]
@@ -51,7 +51,7 @@ describe('routeActions', () => {
       })
 
       expect(replace({ pathname: '/foo', state: { the: 'state' } })).toEqual({
-        type: UPDATE_LOCATION,
+        type: CALL_HISTORY_METHOD,
         payload: {
           method: 'replace',
           args: [ {
@@ -66,7 +66,7 @@ describe('routeActions', () => {
   describe('go', () => {
     it('creates actions', () => {
       expect(go(1)).toEqual({
-        type: UPDATE_LOCATION,
+        type: CALL_HISTORY_METHOD,
         payload: {
           method: 'go',
           args: [ 1 ]
@@ -78,7 +78,7 @@ describe('routeActions', () => {
   describe('goBack', () => {
     it('creates actions', () => {
       expect(goBack()).toEqual({
-        type: UPDATE_LOCATION,
+        type: CALL_HISTORY_METHOD,
         payload: {
           method: 'goBack',
           args: []
@@ -90,7 +90,7 @@ describe('routeActions', () => {
   describe('goForward', () => {
     it('creates actions', () => {
       expect(goForward()).toEqual({
-        type: UPDATE_LOCATION,
+        type: CALL_HISTORY_METHOD,
         payload: {
           method: 'goForward',
           args: []

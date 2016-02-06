@@ -81,14 +81,14 @@ function MyComponent({ dispatch }) {
 }
 ```
 
-This will change the state, which will trigger a change in react-router. Additionally, if you want to respond to the path update action, just handle the `UPDATE_LOCATION` constant that we provide:
+This will change the state, which will trigger a change in react-router. Additionally, if you want to respond to the path update action, just handle the `CALL_HISTORY_METHOD` constant that we provide:
 
 ```js
-import { UPDATE_LOCATION } from 'react-router-redux'
+import { CALL_HISTORY_METHOD } from 'react-router-redux'
 
 function update(state, action) {
   switch(action.type) {
-  case UPDATE_LOCATION:
+  case CALL_HISTORY_METHOD:
     // do something here
   }
 }
@@ -148,7 +148,7 @@ A reducer function that keeps track of the router state. You must add this reduc
 
 **Warning:** It is a bad pattern to use `react-redux`'s `connect` decorator to map the state from this reducer to props on your `Route` components. This can lead to infinite loops and performance problems. `react-router` already provides this for you via `this.props.location`.
 
-#### `UPDATE_LOCATION`
+#### `CALL_HISTORY_METHOD`
 
 An action type that you can listen for in your reducers to be notified of route updates.
 
