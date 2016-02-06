@@ -1,6 +1,8 @@
 ## [HEAD](https://github.com/rackt/react-router-redux/compare/3.0.0...master)
 
-- Nothing yet!
+**A whole new API, with many breaking changes:**
+
+* `UPDATE_LOCATION` is now `CALL_HISTORY_METHOD`.
 
 ## [3.0.0](https://github.com/rackt/react-router-redux/compare/2.1.0...3.0.0)
 
