@@ -1,6 +1,9 @@
 ## [HEAD](https://github.com/rackt/react-router-redux/compare/3.0.0...master)
 
-- Nothing yet!
+**A whole new API, with many breaking changes:**
+
+- `UPDATE_LOCATION` is now `CALL_HISTORY_METHOD`.
+- `middleware.listenForReplays(store)` is gone. Its functionality is covered by the `adjustUrlOnReplay` boolean option on `syncHistoryWithStore().` The default is true so you can just remove this from your code.
 
 ## [3.0.0](https://github.com/rackt/react-router-redux/compare/2.1.0...3.0.0)
 
