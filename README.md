@@ -132,9 +132,17 @@ _Have an example to add? Send us a PR!_
 
 ### API
 
-#### `history = syncHistoryWithStore(history: History, store)`
+#### `history = syncHistoryWithStore(history: History, store, [options])`
 
 We now sync by enhancing the history instance to listen for navigation events and dispatch those into the store. The enhanced history has its listen method overridden to respond to store changes, rather than directly to navigation events. When this history is provided to <Router>, the router will listen to it and receive these store changes. This means if we time travel with the store, the router will receive those store changes and update based on the location in the store, instead of what the browser says. Normal navigation events (hitting your browser back/forward buttons, telling a history singleton to push a location) flow through the history's listener like normal, so all the usual stuff works A-OK.
+
+#### Arguments
+
+* `history` *(Object)* History object that will have its `listen` method enhanced. This can be the result of `createHistory()` or simply the `hashHistory` or `browserHistory` import from `react-router`.
+* `store ` *(Object)* Fully formed Redux store.
+* [`options`] *(Object)* If specified, further customizes the behavior of the sync.
+  * [`selectLocationState = defaultSelectLocationState`] *(Function)*: Returns state slice where routing reducer is mounted. Default function returns `state.routing`.
+  * [`adjustUrlOnReplay = true`] *(Boolean)*: If true, store changes to `locationBeforeTransitions` will be synced with history via the `push` method. *Defaults to `true`.*
 
 #### `routerReducer`
 
