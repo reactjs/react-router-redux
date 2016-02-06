@@ -54,7 +54,8 @@ const reducer = combineReducers(Object.assign({}, reducers, {
 
 const store = createStore(reducer)
 
-// Sync dispatched route actions to the history
+// Sync store with history. Optionally defaults to syncing history on store changes.
+// We are routing history changes through the store and optionally updating history when the store changes (DevTools replay/reset).
 const history = syncHistoryWithStore(browserHistory, store)
 
 ReactDOM.render(
