@@ -22,7 +22,7 @@ View the [CHANGELOG](https://github.com/rackt/react-router-redux/blob/master/CHA
 
 Read the [API docs](#api) farther down this page.
 
-**Note:** We are [currently discussing some major changes](https://github.com/rackt/react-router-redux/issues/257) to the library. [React Router's API in 2.0](https://github.com/rackt/react-router/blob/master/upgrade-guides/v2.0.0.md) is significantly improved and obseletes the need for things like action creators and reading location state from the Redux. This library is still critical to enable things like time traveling and persisting state, so we're not going anywhere. But in many cases, you may not need this library and can simply use the provided React Router APIs. Go check them out and drop some technical debt. :smile:
+**Note:** We are [currently discussing some major changes](https://github.com/rackt/react-router-redux/issues/257) to the library. [React Router's API in 2.0](https://github.com/rackt/react-router/blob/master/upgrade-guides/v2.0.0.md) is significantly improved and makes things like action creators and reading location state from Redux obsolete. This library is still critical to enable things like time traveling and persisting state, so we're not going anywhere. But in many cases, you may not need this library and can simply use the provided React Router APIs. Go check them out and drop some technical debt. :smile:
 
 ### Usage
 
@@ -44,25 +44,25 @@ import ReactDOM from 'react-dom'
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, browserHistory } from 'react-router'
-import { syncHistory, routeReducer } from 'react-router-redux'
+import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
+
 import reducers from '<project-path>/reducers'
 
 const reducer = combineReducers(Object.assign({}, reducers, {
-  routing: routeReducer
+  routing: routerReducer
 }))
 
-// Sync dispatched route actions to the history
-const reduxRouterMiddleware = syncHistory(browserHistory)
-const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(createStore)
+const store = createStore(reducer)
 
-const store = createStoreWithMiddleware(reducer)
+// Sync dispatched route actions to the history
+const history = syncHistoryWithStore(browserHistory, store)
 
 // Required for replaying actions from devtools to work
 reduxRouterMiddleware.listenForReplays(store)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={browserHistory}>
+    <Router history={history}>
       <Route path="/" component={App}>
         <Route path="foo" component={Foo}/>
         <Route path="bar" component={Bar}/>
@@ -73,7 +73,7 @@ ReactDOM.render(
 )
 ```
 
-Now you can read from `state.routing.location.pathname` to get the URL. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
+Now you can read from `state.routing.locationBeforeTransitions.pathname` to get the URL. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
 
 ```js
 import { routeActions } from 'react-router-redux'
