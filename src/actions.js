@@ -3,11 +3,11 @@
  * If you're writing a middleware to watch for navigation events, be sure to
  * look for actions of this type.
  */
-export const UPDATE_LOCATION = '@@router/UPDATE_LOCATION'
+export const CALL_HISTORY_METHOD = '@@router/CALL_HISTORY_METHOD'
 
 function updateLocation(method) {
   return (...args) => ({
-    type: UPDATE_LOCATION,
+    type: CALL_HISTORY_METHOD,
     payload: { method, args }
   })
 }
