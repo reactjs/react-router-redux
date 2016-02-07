@@ -5,7 +5,7 @@ import {
   push, replace, go, goBack, goForward
 } from '../src/actions'
 
-describe('routeActions', () => {
+describe('routerActions', () => {
 
   describe('push', () => {
     it('creates actions', () => {

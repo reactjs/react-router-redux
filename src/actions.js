@@ -23,4 +23,4 @@ export const go = updateLocation('go')
 export const goBack = updateLocation('goBack')
 export const goForward = updateLocation('goForward')
 
-export const routeActions = { push, replace, go, goBack, goForward }
+export const routerActions = { push, replace, go, goBack, goForward }
