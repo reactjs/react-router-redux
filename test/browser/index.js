@@ -1,7 +1,7 @@
 import 'babel-polyfill'
 
-import { hashHistory, browserHistory } from 'react-router'
+import { createHashHistory, createHistory } from 'history'
 import createTests from '../_createSyncTest'
 
-createTests(hashHistory, 'Hash History', () => window.location = '#/')
-createTests(browserHistory, 'Browser History', () => window.history.replaceState(null, null, '/'))
+createTests(createHashHistory, 'Hash History', () => window.location = '#/')
+createTests(createHistory, 'Browser History', () => window.history.replaceState(null, null, '/'))

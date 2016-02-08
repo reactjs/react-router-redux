@@ -12,7 +12,7 @@ expect.extend({
     search = '',
     hash = '',
     state = null,
-    query = {},
+    query,
     action = 'PUSH'
   }) {
     const { locationBeforeTransitions } = this.actual.getState().routing
@@ -28,19 +28,19 @@ expect.extend({
 })
 
 
-function createSyncedHistoryAndStore(testHistory) {
+function createSyncedHistoryAndStore(originalHistory) {
 
   const store = createStore(combineReducers({
     routing: routerReducer
   }))
-  const history = syncHistoryWithStore(testHistory, store)
+  const history = syncHistoryWithStore(originalHistory, store)
 
   return { history, store }
 }
 
 const defaultReset = () => {}
 
-export default function createTests(testHistory, name, reset = defaultReset) {
+export default function createTests(createHistory, name, reset = defaultReset) {
   describe(name, () => {
 
     beforeEach(reset)
@@ -49,7 +49,7 @@ export default function createTests(testHistory, name, reset = defaultReset) {
       let history, store
 
       beforeEach(() => {
-        let synced = createSyncedHistoryAndStore(testHistory)
+        let synced = createSyncedHistoryAndStore(createHistory())
         history = synced.history
         store = synced.store
       })
@@ -58,7 +58,7 @@ export default function createTests(testHistory, name, reset = defaultReset) {
         history.unsubscribe()
       })
 
-      it('syncs router -> redux', () => {
+      it('syncs history -> redux', () => {
         expect(store).toContainLocation({
           pathname: '/',
           action: 'POP'
@@ -91,8 +91,7 @@ export default function createTests(testHistory, name, reset = defaultReset) {
         history.push('/bar?query=1')
         expect(store).toContainLocation({
           pathname: '/bar',
-          search: '?query=1',
-          query: { query: '1' }
+          search: '?query=1'
         })
 
         history.push('/bar#baz')
@@ -109,7 +108,6 @@ export default function createTests(testHistory, name, reset = defaultReset) {
         expect(store).toContainLocation({
           pathname: '/bar',
           search: '?query=1',
-          query: { query: '1' },
           state: { bar: 'baz' },
           action: 'REPLACE'
         })
@@ -123,7 +121,6 @@ export default function createTests(testHistory, name, reset = defaultReset) {
         expect(store).toContainLocation({
           pathname: '/bar',
           search: '?query=1',
-          query: { query: '1' },
           hash: '#hash=2',
           state: { bar: 'baz' },
           action: 'REPLACE'
@@ -163,11 +160,13 @@ export default function createTests(testHistory, name, reset = defaultReset) {
     })
 
     describe('Redux DevTools', () => {
-      let history, store, devToolsStore
+      let originalHistory, history, store, devToolsStore
 
       beforeEach(() => {
+        originalHistory = createHistory()
+
         // Set initial URL before syncing
-        testHistory.push('/foo')
+        originalHistory.push('/foo')
 
         store = createStore(
           combineReducers({
@@ -177,7 +176,7 @@ export default function createTests(testHistory, name, reset = defaultReset) {
         )
         devToolsStore = store.liftedStore
 
-        history = syncHistoryWithStore(testHistory, store)
+        history = syncHistoryWithStore(originalHistory, store)
       })
 
       afterEach(() => {
