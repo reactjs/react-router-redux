@@ -79,6 +79,15 @@ history.listen(location => analyticsService.track(location.pathname))
 
 For other kinds of events in your system, you can use middleware on your Redux store like normal to watch any action that is dispatched to the store.
 
+#### What if I use Immutable.js with my Redux store?
+
+When using a wrapper for your store's state, such as Immutable.js, you will need to change two things from the standard setup:
+
+1. Provide your own reducer function that will receive actions of type  `LOCATION_CHANGE` and return the payload merged into state.
+2. Pass a selector to access the payload state via the `selectLocationState` option on `syncHistoryWithStore`.
+
+These two hooks will allow you to store the state that this library uses in whatever format or wrapper you would like.
+
 #### How do I access router state in a container component?
 
 React Router [provides route information via a route component's props](https://github.com/rackt/react-router/blob/latest/docs/Introduction.md#getting-url-parameters). This makes it easy to access them from a container component. When using [react-redux](https://github.com/rackt/react-redux) to `connect()` your components to state, you can access the router's props from the [2nd argument of `mapStateToProps`](https://github.com/rackt/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options):
@@ -92,7 +101,7 @@ function mapStateToProps(state, ownProps) {
 }
 ```
 
-You should not read the location state directly from the Redux store. This is because React Router operates asynchronously (to handle things such as dynamically-loaded components) and your component tree may not yet be updated in sync with your Redux state. You should rely on the props passed by React Router, as they are only updated after it has processed all asynchronous code. 
+You should not read the location state directly from the Redux store. This is because React Router operates asynchronously (to handle things such as dynamically-loaded components) and your component tree may not yet be updated in sync with your Redux state. You should rely on the props passed by React Router, as they are only updated after it has processed all asynchronous code.
 
 #### What if I want to issue navigation events via Redux actions?
 
@@ -130,11 +139,16 @@ Examples from the community:
 
 A reducer function that stores location updates from `history`. If you use `combineReducers`, it should be nested under the `routing` key.
 
-#### `history = syncHistoryWithStore(history, store)`
+#### `history = syncHistoryWithStore(history, store, [options])`
 
 Creates an enhanced history from the provided history. This history changes `history.listen` to pass all location updates through the provided store first. This ensures if the store is updated either from a navigation event or from a time travel action, such as a replay, the listeners of the enhanced history will stay in sync.
 
 **You must provide the enhanced history to your `<Router>` component.** This ensures your routes stay in sync with your location and your store at the same time.
+
+The `options` object takes in the following optional keys:
+
+- `selectLocationState` - (default `state => state.routing`) A selector function to obtain the history state from your store. Useful when not using the provided `routerReducer` to store history state. Allows you to use wrappers, such as Immutable.js.
+- `adjustUrlOnReplay` - (default `true`) When `false`, the URL will not be kept in sync during time travel. This is useful when using `persistState` from Redux DevTools and not wanting to maintain the URL state when restoring state.
 
 #### `push(location)`, `replace(location)`, `go(number)`, `goBack()`, `goForward()`
 
