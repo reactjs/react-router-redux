@@ -22,7 +22,7 @@ View the [CHANGELOG](https://github.com/rackt/react-router-redux/blob/master/CHA
 
 Read the [API docs](#api) farther down this page.
 
-**Note:** We are [currently discussing some major changes](https://github.com/rackt/react-router-redux/issues/257) to the library. [React Router's API in 2.0](https://github.com/rackt/react-router/blob/master/upgrade-guides/v2.0.0.md) is significantly improved and obseletes the need for things like action creators and reading location state from the Redux. This library is still critical to enable things like time traveling and persisting state, so we're not going anywhere. But in many cases, you may not need this library and can simply use the provided React Router APIs. Go check them out and drop some technical debt. :smile:
+**Note:** We are [currently working on some major changes/improvements](https://github.com/rackt/react-router-redux/issues/259) to the library. [React Router's API in 2.0](https://github.com/rackt/react-router/blob/master/upgrade-guides/v2.0.0.md) is significantly improved and obseletes the need for things like action creators and reading location state from the Redux. This library is still critical to enable things like time traveling and persisting state, so we're not going anywhere. But in many cases, you may not need this library and can simply use the provided React Router APIs. Go check them out and drop some technical debt. :smile:
 
 ### Usage
 
