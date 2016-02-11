@@ -80,18 +80,20 @@ export function syncHistory(history) {
       unsubscribeStore = store.subscribe(() => {
         const location = getLocationState()
 
-        // If we're resetting to the beginning, use the saved initial value. We
-        // need to dispatch a new action at this point to populate the store
-        // appropriately.
-        if (location.key === initialLocation.key) {
-          history.replace(initialLocation)
-          return
-        }
-
-        // Otherwise, if we need to update the history location, do so without
-        // dispatching a new action, as we're just bringing history in sync
-        // with the store.
+        // Only update on location changes
         if (location.key !== currentKey) {
+
+          // If we're resetting to the beginning, use the saved initial value. We
+          // need to dispatch a new action at this point to populate the store
+          // appropriately.
+          if (location.key === initialLocation.key) {
+            history.replace(initialLocation)
+            return
+          }
+
+          // Otherwise, if we need to update the history location, do so without
+          // dispatching a new action, as we're just bringing history in sync
+          // with the store.
           syncing = true
           history.transitionTo(location)
           syncing = false
