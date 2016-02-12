@@ -127,7 +127,8 @@ store.dispatch(push('/foo'))
 
 Examples from the community:
 
-- None yet, since we just released a new version :smile:
+* [davezuko/react-redux-starter-kit](https://github.com/davezuko/react-redux-starter-kit) - popular redux starter kit
+  * **tip**: migrating from react-router-redux `^3.0.0`? use [this commit](https://github.com/davezuko/react-redux-starter-kit/commit/0df26907dce6b2cf52f4f3d63fdce092188de139) as a reference
 
 &rarr; _Have an example to add? Send us a PR!_ &larr;
 
