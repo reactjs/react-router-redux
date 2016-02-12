@@ -1,7 +1,7 @@
 {
   "name": "rrr-basic-example",
   "version": "0.0.0",
-  "repository": "rackt/react-router-redux",
+  "repository": "reactjs/react-router-redux",
   "license": "MIT",
   "dependencies": {
     "react": "^0.14.7",

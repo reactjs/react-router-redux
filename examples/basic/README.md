@@ -19,9 +19,9 @@ This example also demonstrates integration with
 -
 
 If you want to run the example from the npm published version of
-**react-router-redux**, remove the alias in `webpack.config` 
+**react-router-redux**, remove the alias in `webpack.config`
 to the source from line 21.
 
 This example uses the latest version, switch to a specific tag to use a stable version:
 
-e.g. [react-router-redux tag 1.0.2](https://github.com/rackt/react-router-redux/tree/1.0.2/examples/basic)
+e.g. [react-router-redux tag 1.0.2](https://github.com/reactjs/react-router-redux/tree/1.0.2/examples/basic)

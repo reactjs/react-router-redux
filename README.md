@@ -1,12 +1,12 @@
 # react-router-redux
 
-[![npm version](https://img.shields.io/npm/v/react-router-redux.svg?style=flat-square)](https://www.npmjs.com/package/react-router-redux) [![npm downloads](https://img.shields.io/npm/dm/react-router-redux.svg?style=flat-square)](https://www.npmjs.com/package/react-router-redux) [![build status](https://img.shields.io/travis/rackt/react-router-redux/master.svg?style=flat-square)](https://travis-ci.org/rackt/react-router-redux)
+[![npm version](https://img.shields.io/npm/v/react-router-redux.svg?style=flat-square)](https://www.npmjs.com/package/react-router-redux) [![npm downloads](https://img.shields.io/npm/dm/react-router-redux.svg?style=flat-square)](https://www.npmjs.com/package/react-router-redux) [![build status](https://img.shields.io/travis/reactjs/react-router-redux/master.svg?style=flat-square)](https://travis-ci.org/reactjs/react-router-redux)
 
 > **Keep your router in sync with application state** :sparkles:
 
 _Formerly known as redux-simple-router_
 
-You're a smart person. You use [Redux](https://github.com/rackt/redux) to manage your application state. You use [React Router](https://github.com/rackt/react-router) to do routing. All is good.
+You're a smart person. You use [Redux](https://github.com/rackt/redux) to manage your application state. You use [React Router](https://github.com/reactjs/react-router) to do routing. All is good.
 
 But the two libraries don't coordinate. You want to do time travel with your application state, but React Router doesn't navigate between pages when you replay actions. It controls an important part of application state: the URL.
 
@@ -24,7 +24,7 @@ If you want to install the next major version, use `react-router-redux@next`. Ru
 
 This library allows you to use React Router's APIs as they are documented. And, you can use redux like you normally would, with a single app state. The library simply enhances a history instance to allow it to synchronize any changes it receives into application state.
 
-[history](https://github.com/rackt/history) + `store` ([redux](https://github.com/rackt/redux)) &rarr; [**react-router-redux**](https://github.com/rackt/react-router-redux) &rarr; enhanced [history](https://github.com/rackt/history) &rarr; [react-router](https://github.com/rackt/react-router)
+[history](https://github.com/reactjs/history) + `store` ([redux](https://github.com/rackt/redux)) &rarr; [**react-router-redux**](https://github.com/reactjs/react-router-redux) &rarr; enhanced [history](https://github.com/reactjs/history) &rarr; [react-router](https://github.com/reactjs/react-router)
 
 ## Tutorial
 
@@ -90,7 +90,7 @@ These two hooks will allow you to store the state that this library uses in what
 
 #### How do I access router state in a container component?
 
-React Router [provides route information via a route component's props](https://github.com/rackt/react-router/blob/latest/docs/Introduction.md#getting-url-parameters). This makes it easy to access them from a container component. When using [react-redux](https://github.com/rackt/react-redux) to `connect()` your components to state, you can access the router's props from the [2nd argument of `mapStateToProps`](https://github.com/rackt/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options):
+React Router [provides route information via a route component's props](https://github.com/reactjs/react-router/blob/latest/docs/Introduction.md#getting-url-parameters). This makes it easy to access them from a container component. When using [react-redux](https://github.com/rackt/react-redux) to `connect()` your components to state, you can access the router's props from the [2nd argument of `mapStateToProps`](https://github.com/rackt/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options):
 
 ```js
 function mapStateToProps(state, ownProps) {
@@ -154,7 +154,7 @@ The `options` object takes in the following optional keys:
 
 **You must install `routerMiddleware` for these action creators to work.**
 
-Action creators that correspond with the [history methods of the same name](https://github.com/rackt/history/blob/master/docs/GettingStarted.md#navigation). For reference they are defined as follows:
+Action creators that correspond with the [history methods of the same name](https://github.com/reactjs/history/blob/master/docs/GettingStarted.md#navigation). For reference they are defined as follows:
 
 - `push` - Pushes a new location to history, becoming the current location.
 - `replace` - Replaces the current location in history.
@@ -162,7 +162,7 @@ Action creators that correspond with the [history methods of the same name](http
 - `goForward` - Moves forward one location. Equivalent to `go(1)`
 - `goBack` - Moves backwards one location. Equivalent to `go(-1)`
 
-Both `push` and `replace` take in a [location descriptor](https://github.com/rackt/history/blob/master/docs/Glossary.md#locationdescriptor), which can be an object describing the URL or a plain string URL.
+Both `push` and `replace` take in a [location descriptor](https://github.com/reactjs/history/blob/master/docs/Glossary.md#locationdescriptor), which can be an object describing the URL or a plain string URL.
 
 These action creators are also available in one single object as `routerActions`, which can be used as a convenience when using Redux's `bindActionCreators()`.
 

@@ -9,7 +9,7 @@
     "lib",
     "src"
   ],
-  "repository": "rackt/react-router-redux",
+  "repository": "reactjs/react-router-redux",
   "authors": [
     "James Long",
     "Tim Dorr"
