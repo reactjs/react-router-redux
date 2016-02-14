@@ -115,7 +115,7 @@ function mapStateToProps(state, ownProps) {
 
 Examples from the community:
 
-* [shakacode/react-webpack-rails-tutorial](https://github.com/shakacode/react-webpack-rails-tutorial). React + Redux + React Router + including **Server Rendering** using [React on Rails](https://github.com/shakacode/react_on_rails/), live at [www.reactrails.com](http://www.reactrails.com/).
+* [shakacode/react-webpack-rails-tutorial](https://github.com/shakacode/react-webpack-rails-tutorial). react-router-redux including **Server Rendering** using [React on Rails](https://github.com/shakacode/react_on_rails/), live at [www.reactrails.com](http://www.reactrails.com/).
 * [davezuko/react-redux-starter-kit](https://github.com/davezuko/react-redux-starter-kit) - popular redux starter kit
   * **tip**: migrating from redux-router? use [this commit](https://github.com/davezuko/react-redux-starter-kit/commit/db66626ca8a02ecf030a3f7f5a669ac338fd5897) as a reference
 * [freeqaz/redux-simple-router-example](https://github.com/freeqaz/redux-simple-router-example) - example implementation
