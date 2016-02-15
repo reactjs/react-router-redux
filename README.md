@@ -127,6 +127,7 @@ Examples from the community:
 * [mattkrick/meatier](https://github.com/mattkrick/meatier) - SSR, dual dev/prod client builds
 * [mxstbr/react-boilerplate](https://github.com/mxstbr/react-boilerplate/tree/v3.0.0) - :fire: Quick setup for performance orientated, offline first React.js applications
   * **Tip**: Upgrading from react-router w/o react-router-redux? Use [this PR](https://github.com/mxstbr/react-boilerplate/pull/98/files) as a reference!
+* [erikras/react-redux-universal-hot-example](https://github.com/erikras/react-redux-universal-hot-example) - Universal rendering with Webpack
 
 _Have an example to add? Send us a PR!_
 
