@@ -129,7 +129,8 @@ Examples from the community:
 
 * [shakacode/react-webpack-rails-tutorial](https://github.com/shakacode/react-webpack-rails-tutorial) - react-router-redux including **Server Rendering** using [React on Rails](https://github.com/shakacode/react_on_rails/), live at [www.reactrails.com](http://www.reactrails.com/).
 * [davezuko/react-redux-starter-kit](https://github.com/davezuko/react-redux-starter-kit) - popular redux starter kit
-  * **tip**: migrating from react-router-redux `^3.0.0`? use [this commit](https://github.com/davezuko/react-redux-starter-kit/commit/0df26907dce6b2cf52f4f3d63fdce092188de139) as a reference
+  * **tip**: migrating from react-router-redux `^3.0.0`? use [this commit](https://github.com/davezuko/react-redux-starter-kit/commit/0df26907dce6b2cf52f4f3d63fdce092188de139) as a reference  
+* [svrcekmichal/universal-react](https://github.com/svrcekmichal/universal-react) - Universal react app with async actions provided by [svrcekmichal/reasync](https://github.com/svrcekmichal/reasync) package
 
 &rarr; _Have an example to add? Send us a PR!_ &larr;
 
