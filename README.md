@@ -128,6 +128,7 @@ Examples from the community:
 * [mxstbr/react-boilerplate](https://github.com/mxstbr/react-boilerplate/tree/v3.0.0) - :fire: Quick setup for performance orientated, offline first React.js applications
   * **Tip**: Upgrading from react-router w/o react-router-redux? Use [this PR](https://github.com/mxstbr/react-boilerplate/pull/98/files) as a reference!
 * [erikras/react-redux-universal-hot-example](https://github.com/erikras/react-redux-universal-hot-example) - Universal rendering with Webpack
+* [chentsulin/redux-boilerplate](https://github.com/chentsulin/redux-boilerplate) - Extend redux counter examples with react-router and react-router-redux
 
 _Have an example to add? Send us a PR!_
 
