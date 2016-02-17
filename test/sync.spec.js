@@ -1,4 +1,4 @@
 import { createMemoryHistory } from 'history'
-import createTests from '../createTests.js'
+import createTests from './_createSyncTest'
 
 createTests(createMemoryHistory, 'Memory History')

@@ -2,37 +2,31 @@
 
 [![npm version](https://img.shields.io/npm/v/react-router-redux.svg?style=flat-square)](https://www.npmjs.com/package/react-router-redux) [![npm downloads](https://img.shields.io/npm/dm/react-router-redux.svg?style=flat-square)](https://www.npmjs.com/package/react-router-redux) [![build status](https://img.shields.io/travis/reactjs/react-router-redux/master.svg?style=flat-square)](https://travis-ci.org/reactjs/react-router-redux)
 
-**Let react-router do all the work**  :sparkles:
+> **Keep your router in sync with application state** :sparkles:
 
 _Formerly known as redux-simple-router_
 
-[Redux](https://github.com/rackt/redux) is awesome. [React Router](https://github.com/reactjs/react-router) is cool. The problem is that react-router manages an important piece of your application state: the URL. If you are using redux, you want your app state to fully represent your UI; if you snapshotted the app state, you should be able to load it up later and see the same thing.
+You're a smart person. You use [Redux](https://github.com/rackt/redux) to manage your application state. You use [React Router](https://github.com/reactjs/react-router) to do routing. All is good.
 
-react-router does a great job of mapping the current URL to a component tree, and continually does so with any URL changes. This is very useful, but we really want to store this state in redux as well.
+But the two libraries don't coordinate. You want to do time travel with your application state, but React Router doesn't navigate between pages when you replay actions. It controls an important part of application state: the URL.
 
-The entire state that we are interested in boils down to one thing: the URL. This is an extremely simple library that just puts the URL in redux state and keeps it in sync with any react-router changes. Additionally, you can change the URL via redux and react-router will change accordingly.
+This library helps you keep that bit of state in sync with your Redux store. We keep a copy of the current location hidden in state. When you rewind your application state with a tool like [Redux DevTools](https://github.com/gaearon/redux-devtools), that state change is propagated to React Router so it can adjust the component tree accordingly. You can jump around in state, rewinding, replaying, and resetting as much as you'd like, and this library will ensure the two stay in sync at all times.
+
+## Installation
 
 ```
-npm install react-router-redux
+npm install --save react-router-redux
 ```
 
 If you want to install the next major version, use `react-router-redux@next`. Run `npm dist-tag ls react-router-redux` to see what `next` is aliased to.
 
-View the [CHANGELOG](https://github.com/reactjs/react-router-redux/blob/master/CHANGELOG.md) for recent changes.
+## How It Works
 
-Read the [API docs](#api) farther down this page.
+This library allows you to use React Router's APIs as they are documented. And, you can use redux like you normally would, with a single app state. The library simply enhances a history instance to allow it to synchronize any changes it receives into application state.
 
-**Note:** We are [currently working on some major changes/improvements](https://github.com/reactjs/react-router-redux/issues/259) to the library. [React Router's API in 2.0](https://github.com/reactjs/react-router/blob/master/upgrade-guides/v2.0.0.md) is significantly improved and obseletes the need for things like action creators and reading location state from the Redux. This library is still critical to enable things like time traveling and persisting state, so we're not going anywhere. But in many cases, you may not need this library and can simply use the provided React Router APIs. Go check them out and drop some technical debt. :smile:
+[history](https://github.com/reactjs/history) + `store` ([redux](https://github.com/rackt/redux)) &rarr; [**react-router-redux**](https://github.com/reactjs/react-router-redux) &rarr; enhanced [history](https://github.com/reactjs/history) &rarr; [react-router](https://github.com/reactjs/react-router)
 
-### Usage
-
-The idea of this library is to use react-router's functionality exactly like its documentation tells you to. You can access all of its APIs in routing components. Additionally, you can use redux like you normally would, with a single app state.
-
-[redux](https://github.com/rackt/redux) (`store.routing`) &nbsp;&harr;&nbsp; [**react-router-redux**](https://github.com/reactjs/react-router-redux) &nbsp;&harr;&nbsp; [history](https://github.com/reactjs/history) (`history.location`) &nbsp;&harr;&nbsp; [react-router](https://github.com/reactjs/react-router)
-
-We only store current URL and state, whereas redux-router stores the entire location object from react-router. You can read it, and also change it with an action.
-
-### Tutorial
+## Tutorial
 
 Let's take a look at a simple example.
 
@@ -44,25 +38,25 @@ import ReactDOM from 'react-dom'
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, browserHistory } from 'react-router'
-import { syncHistory, routeReducer } from 'react-router-redux'
+import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
+
 import reducers from '<project-path>/reducers'
 
-const reducer = combineReducers(Object.assign({}, reducers, {
-  routing: routeReducer
-}))
+// Add the reducer to your store on the `routing` key
+const store = createStore(
+  combineReducers({
+    ...reducers,
+    routing: routerReducer
+  })
+)
 
-// Sync dispatched route actions to the history
-const reduxRouterMiddleware = syncHistory(browserHistory)
-const createStoreWithMiddleware = applyMiddleware(reduxRouterMiddleware)(createStore)
-
-const store = createStoreWithMiddleware(reducer)
-
-// Required for replaying actions from devtools to work
-reduxRouterMiddleware.listenForReplays(store)
+// Create an enhanced history that syncs navigation events with the store
+const history = syncHistoryWithStore(browserHistory, store)
 
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={browserHistory}>
+    /* Tell the Router to use our enhanced history */
+    <Router history={history}>
       <Route path="/" component={App}>
         <Route path="foo" component={Foo}/>
         <Route path="bar" component={Bar}/>
@@ -73,31 +67,32 @@ ReactDOM.render(
 )
 ```
 
-Now you can read from `state.routing.location.pathname` to get the URL. It's far more likely that you want to change the URL more often, however. You can use the `push` action creator that we provide:
+Now any time you navigate, which can come from pressing browser buttons or navigating in your application code, the enhanced history will first pass the new location through the Redux store and then on to React Router to update the component tree. If you time travel, it will also pass the new state to React Router to update the component tree again.
+
+#### How do I watch for navigation events, such as for analytics?
+
+Simply listen to the enhanced history via `history.listen`. This takes in a function that will receive a `location` any time the store updates. This includes any time travel activity performed on the store.
 
 ```js
-import { routeActions } from 'react-router-redux'
+const history = syncHistoryWithStore(browserHistory, store)
 
-function MyComponent({ dispatch }) {
-  return <Button onClick={() => dispatch(routeActions.push('/foo'))}/>;
-}
+history.listen(location => analyticsService.track(location.pathname))
 ```
 
-This will change the state, which will trigger a change in react-router. Additionally, if you want to respond to the path update action, just handle the `UPDATE_LOCATION` constant that we provide:
+For other kinds of events in your system, you can use middleware on your Redux store like normal to watch any action that is dispatched to the store.
 
-```js
-import { UPDATE_LOCATION } from 'react-router-redux'
+#### What if I use Immutable.js with my Redux store?
 
-function update(state, action) {
-  switch(action.type) {
-  case UPDATE_LOCATION:
-    // do something here
-  }
-}
-```
-**But how do I access router props in a Container component?**
+When using a wrapper for your store's state, such as Immutable.js, you will need to change two things from the standard setup:
 
-react-router [injects route information via a child component's props](https://github.com/reactjs/react-router/blob/latest/docs/Introduction.md#getting-url-parameters). This makes accessing them from a simple component easy. When using a react-redux Container to connect simple components to the store state and dispatch you can access these injected route information from the [2nd argument of `mapStateToProps`](https://github.com/rackt/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options) as follows:
+1. Provide your own reducer function that will receive actions of type  `LOCATION_CHANGE` and return the payload merged into state.
+2. Pass a selector to access the payload state via the `selectLocationState` option on `syncHistoryWithStore`.
+
+These two hooks will allow you to store the state that this library uses in whatever format or wrapper you would like.
+
+#### How do I access router state in a container component?
+
+React Router [provides route information via a route component's props](https://github.com/reactjs/react-router/blob/latest/docs/Introduction.md#getting-url-parameters). This makes it easy to access them from a container component. When using [react-redux](https://github.com/rackt/react-redux) to `connect()` your components to state, you can access the router's props from the [2nd argument of `mapStateToProps`](https://github.com/rackt/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options):
 
 ```js
 function mapStateToProps(state, ownProps) {
@@ -108,64 +103,74 @@ function mapStateToProps(state, ownProps) {
 }
 ```
 
+You should not read the location state directly from the Redux store. This is because React Router operates asynchronously (to handle things such as dynamically-loaded components) and your component tree may not yet be updated in sync with your Redux state. You should rely on the props passed by React Router, as they are only updated after it has processed all asynchronous code.
 
-### Examples
+#### What if I want to issue navigation events via Redux actions?
 
-* [examples/basic](https://github.com/reactjs/react-router-redux/blob/master/examples/basic) - basic reference implementation
+React Router provides singleton versions of history (`browserHistory` and `hashHistory`) that you can import and use from anywhere in your application. However, if you prefer Redux style actions, the library also provides a set of action creators and a middleware to capture them and redirect them to your history instance.
+
+```js
+import { routerMiddleware, push } from 'react-router-redux'
+
+// Apply the middleware to the store
+const middleware = routerMiddleware(browserHistory)
+const store = createStore(
+  reducers,
+  applyMiddleware(middleware)
+)
+
+// Dispatch from anywhere like normal.
+store.dispatch(push('/foo'))
+```
+
+## Examples
+
+- [examples/basic](/examples/basic) - basic reference implementation
 
 Examples from the community:
 
+* [shakacode/react-webpack-rails-tutorial](https://github.com/shakacode/react-webpack-rails-tutorial) - react-router-redux including **Server Rendering** using [React on Rails](https://github.com/shakacode/react_on_rails/), live at [www.reactrails.com](http://www.reactrails.com/).
 * [davezuko/react-redux-starter-kit](https://github.com/davezuko/react-redux-starter-kit) - popular redux starter kit
-  * **tip**: migrating from redux-router? use [this commit](https://github.com/davezuko/react-redux-starter-kit/commit/db66626ca8a02ecf030a3f7f5a669ac338fd5897) as a reference
-* [freeqaz/redux-simple-router-example](https://github.com/freeqaz/redux-simple-router-example) - example implementation
-* [choonkending/react-webpack-node](https://github.com/choonkending/react-webpack-node) - boilerplate for universal redux and react-router
-* [tj/frontend-boilerplate](https://github.com/tj/frontend-boilerplate)
-* [bdefore/universal-redux](https://github.com/bdefore/universal-redux) - npm package for universally rendered redux applications
-* [tomatau/breko-hub](https://github.com/tomatau/breko-hub) - Babel, React & Koa, Hot Universal Boilerplate - focused on developer experience.
-* [yangli1990/react-redux-isomorphic](https://github.com/yangli1990/Isomorphic-Universal-React-Template) - boilerplate for universal redux and redux-simple-router
-* [StevenIseki/redux-simple-router-example](https://github.com/StevenIseki/redux-simple-router-example)
-* [mattkrick/meatier](https://github.com/mattkrick/meatier) - SSR, dual dev/prod client builds
-* [mxstbr/react-boilerplate](https://github.com/mxstbr/react-boilerplate/tree/v3.0.0) - :fire: Quick setup for performance orientated, offline first React.js applications
-  * **Tip**: Upgrading from react-router w/o react-router-redux? Use [this PR](https://github.com/mxstbr/react-boilerplate/pull/98/files) as a reference!
-* [erikras/react-redux-universal-hot-example](https://github.com/erikras/react-redux-universal-hot-example) - Universal rendering with Webpack
-* [chentsulin/redux-boilerplate](https://github.com/chentsulin/redux-boilerplate) - Extend redux counter examples with react-router and react-router-redux
+  * **tip**: migrating from react-router-redux `^3.0.0`? use [this commit](https://github.com/davezuko/react-redux-starter-kit/commit/0df26907) as a reference
+* [svrcekmichal/universal-react](https://github.com/svrcekmichal/universal-react) - Universal react app with async actions provided by [svrcekmichal/reasync](https://github.com/svrcekmichal/reasync) package
 
-_Have an example to add? Send us a PR!_
+&rarr; _Have an example to add? Send us a PR!_ &larr;
 
-### API
+## API
 
-#### `syncHistory(history: History) => ReduxMiddleware`
+#### `routerReducer()`
 
-Call this to create a middleware that can be applied with Redux's `applyMiddleware` to allow actions to call history methods. The middleware will look for route actions created by `push`, `replace`, etc. and applies them to the history.
+**You must add this reducer to your store for syncing to work.**
 
-#### `ReduxMiddleware.listenForReplays(store: ReduxStore, selectLocationState?: function)`
+A reducer function that stores location updates from `history`. If you use `combineReducers`, it should be nested under the `routing` key.
 
-By default, the syncing logic will not respond to replaying of actions, which means it won't work with projects like redux-devtools. Call this function on the middleware object returned from `syncHistory` and give it the store to listen to, and it will properly work with action replays. Obviously, you would do that after you have created the store and everything else has been set up.
+#### `history = syncHistoryWithStore(history, store, [options])`
 
-Supply an optional function `selectLocationState` to customize where to find the location state on your app state. It defaults to `state => state.routing.location`, so you would install the reducer under the name "routing". Feel free to change this to whatever you like.
+Creates an enhanced history from the provided history. This history changes `history.listen` to pass all location updates through the provided store first. This ensures if the store is updated either from a navigation event or from a time travel action, such as a replay, the listeners of the enhanced history will stay in sync.
 
-#### `ReduxMiddleware.unsubscribe()`
+**You must provide the enhanced history to your `<Router>` component.** This ensures your routes stay in sync with your location and your store at the same time.
 
-Call this on the middleware returned from `syncHistory` to stop the syncing process set up by `listenForReplays`.
+The `options` object takes in the following optional keys:
 
-#### `routeReducer`
+- `selectLocationState` - (default `state => state.routing`) A selector function to obtain the history state from your store. Useful when not using the provided `routerReducer` to store history state. Allows you to use wrappers, such as Immutable.js.
+- `adjustUrlOnReplay` - (default `true`) When `false`, the URL will not be kept in sync during time travel. This is useful when using `persistState` from Redux DevTools and not wanting to maintain the URL state when restoring state.
 
-A reducer function that keeps track of the router state. You must add this reducer to your app reducers when creating the store. It will return a `location` property in state. If you use `combineReducers`, it will be nested under wherever property you add it to (`state.routing` in the example above).
+#### `push(location)`, `replace(location)`, `go(number)`, `goBack()`, `goForward()`
 
-**Warning:** It is a bad pattern to use `react-redux`'s `connect` decorator to map the state from this reducer to props on your `Route` components. This can lead to infinite loops and performance problems. `react-router` already provides this for you via `this.props.location`.
+**You must install `routerMiddleware` for these action creators to work.**
 
-#### `UPDATE_LOCATION`
+Action creators that correspond with the [history methods of the same name](https://github.com/reactjs/history/blob/master/docs/GettingStarted.md#navigation). For reference they are defined as follows:
 
-An action type that you can listen for in your reducers to be notified of route updates.
+- `push` - Pushes a new location to history, becoming the current location.
+- `replace` - Replaces the current location in history.
+- `go` - Moves backwards or forwards a relative number of locations in history.
+- `goForward` - Moves forward one location. Equivalent to `go(1)`
+- `goBack` - Moves backwards one location. Equivalent to `go(-1)`
 
-#### `routeActions`
+Both `push` and `replace` take in a [location descriptor](https://github.com/reactjs/history/blob/master/docs/Glossary.md#locationdescriptor), which can be an object describing the URL or a plain string URL.
 
-An object that contains all the actions creators you can use to manipulate history:
+These action creators are also available in one single object as `routerActions`, which can be used as a convenience when using Redux's `bindActionCreators()`.
 
-* `push(nextLocation: LocationDescriptor)`
-* `replace(nextLocation: LocationDescriptor)`
-* `go(n: number)`
-* `goForward()`
-* `goBack()`
+#### `routerMiddleware(history)`
 
-A [location descriptor](https://github.com/reactjs/history/blob/master/docs/Glossary.md#locationdescriptor) can be a descriptive object (see the link) or a normal URL string. The most common action is to push a new URL via `routeActions.push(...)`. These all directly call the analogous [history methods](https://github.com/reactjs/history/blob/master/docs/GettingStarted.md#navigation).
+A middleware you can apply to your Redux `store` to capture dispatched actions created by the action creators. It will redirect those actions to the provided `history` instance.

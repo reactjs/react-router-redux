@@ -4,38 +4,35 @@ import DockMonitor from 'redux-devtools-dock-monitor'
 
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { applyMiddleware, compose, createStore, combineReducers } from 'redux'
+import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, IndexRoute, browserHistory } from 'react-router'
-import { syncHistory, routeReducer } from 'react-router-redux'
+import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 
 import * as reducers from './reducers'
 import { App, Home, Foo, Bar } from './components'
 
-const middleware = syncHistory(browserHistory)
 const reducer = combineReducers({
   ...reducers,
-  routing: routeReducer
+  routing: routerReducer
 })
 
 const DevTools = createDevTools(
-  <DockMonitor toggleVisibilityKey="ctrl-h"
-               changePositionKey="ctrl-q">
+  <DockMonitor toggleVisibilityKey="ctrl-h" changePositionKey="ctrl-q">
     <LogMonitor theme="tomorrow" preserveScrollTop={false} />
   </DockMonitor>
 )
 
-const finalCreateStore = compose(
-  applyMiddleware(middleware),
+const store = createStore(
+  reducer,
   DevTools.instrument()
-)(createStore)
-const store = finalCreateStore(reducer)
-middleware.listenForReplays(store)
+)
+const history = syncHistoryWithStore(browserHistory, store)
 
 ReactDOM.render(
   <Provider store={store}>
     <div>
-      <Router history={browserHistory}>
+      <Router history={history}>
         <Route path="/" component={App}>
           <IndexRoute component={Home}/>
           <Route path="foo" component={Foo}/>
