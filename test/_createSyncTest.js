@@ -1,5 +1,9 @@
 import expect from 'expect'
 
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Router, Route, useRouterHistory } from 'react-router'
+import { Provider } from 'react-redux'
 import { createStore, combineReducers } from 'redux'
 import { ActionCreators, instrument } from 'redux-devtools'
 
@@ -214,5 +218,81 @@ export default function createTests(createHistory, name, reset = defaultReset) {
         historyUnsubscribe()
       })
     })
+
+    if (typeof(document) !== 'undefined') {
+      describe('Redux Router component', () => {
+        let store, history, rootElement
+
+        beforeEach(() => {
+          store = createStore(combineReducers({
+            routing: routerReducer
+          }))
+
+          history = syncHistoryWithStore(useRouterHistory(createHistory)(), store)
+
+          rootElement = document.createElement('div')
+          document.body.appendChild(rootElement)
+        })
+
+        afterEach(() => {
+          history.unsubscribe()
+          rootElement.parentNode.removeChild(rootElement)
+        })
+
+        it('syncs history -> components', () => {
+          history.push('/foo')
+
+          ReactDOM.render(
+            React.createElement(Provider, { store },
+              React.createElement(Router, { history },
+                React.createElement(Route,
+                  {
+                    path: '/',
+                    component: props => React.createElement('span', {}, props.children)
+                  },
+                  [ 'foo', 'bar' ].map(path =>
+                    React.createElement(Route, {
+                      path: path,
+                      component: () => React.createElement('span', {}, `at /${path}`)
+                    })
+                  )
+                )
+              )
+            ),
+            rootElement
+          )
+          expect(rootElement.textContent).toEqual('at /foo')
+
+          history.push('/bar')
+          expect(rootElement.textContent).toEqual('at /bar')
+        })
+
+        it('syncs history -> components when the initial route gets replaced', () => {
+          history.push('/foo')
+
+          ReactDOM.render(
+            React.createElement(Provider, { store },
+              React.createElement(Router, { history }, [
+                React.createElement(Route, {
+                  path: '/',
+                  component: props => React.createElement('span', {}, props.children)
+                }, [
+                  React.createElement(Route, {
+                    path: 'foo',
+                    onEnter: (nextState, replace) => replace('/bar')
+                  }),
+                  React.createElement(Route, {
+                    path: 'bar',
+                    component: () => React.createElement('span', {}, [ 'at /bar' ])
+                  })
+                ])
+              ])
+            ),
+            rootElement
+          )
+          expect(rootElement.textContent).toEqual('at /bar')
+        })
+      })
+    }
   })
 }
