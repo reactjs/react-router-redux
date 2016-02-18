@@ -101,8 +101,6 @@ export default function syncHistoryWithStore(history, store, {
     listen(listener) {
       // Copy of last location.
       let lastPublishedLocation = getLocationInStore(true)
-      // History listeners expect a synchronous call
-      listener(lastPublishedLocation)
 
       // Keep track of whether we unsubscribed, as Redux store
       // only applies changes in subscriptions on next dispatch
@@ -117,6 +115,11 @@ export default function syncHistoryWithStore(history, store, {
           listener(lastPublishedLocation)
         }
       })
+
+      // History listeners expect a synchronous call. Make the first call to the
+      // listener after subscribing to the store, in case the listener causes a
+      // location change (e.g. when it redirects)
+      listener(lastPublishedLocation)
 
       // Let user unsubscribe later
       return () => {
