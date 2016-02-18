@@ -131,7 +131,7 @@ export default function createTests(createHistory, name, reset = defaultReset) {
         })
       })
 
-      it('provices an unsubscribe method to stop listening to history and store', () => {
+      it('provides an unsubscribe method to stop listening to history and store', () => {
         history.push('/foo')
         expect(store).toContainLocation({
           pathname: '/foo'
