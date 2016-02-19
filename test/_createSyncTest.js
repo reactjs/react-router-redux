@@ -243,22 +243,14 @@ export default function createTests(createHistory, name, reset = defaultReset) {
           history.push('/foo')
 
           ReactDOM.render(
-            React.createElement(Provider, { store },
-              React.createElement(Router, { history },
-                React.createElement(Route,
-                  {
-                    path: '/',
-                    component: props => React.createElement('span', {}, props.children)
-                  },
-                  [ 'foo', 'bar' ].map(path =>
-                    React.createElement(Route, {
-                      path: path,
-                      component: () => React.createElement('span', {}, `at /${path}`)
-                    })
-                  )
-                )
-              )
-            ),
+            <Provider store={store}>
+              <Router history={history}>
+                <Route path="/" component={props => (<span>{props.children}</span>)}>
+                  <Route path="foo" component={() => (<span>at /foo</span>)} />
+                  <Route path="bar" component={() => (<span>at /bar</span>)} />
+                </Route>
+              </Router>
+            </Provider>,
             rootElement
           )
           expect(rootElement.textContent).toEqual('at /foo')
@@ -271,23 +263,14 @@ export default function createTests(createHistory, name, reset = defaultReset) {
           history.push('/foo')
 
           ReactDOM.render(
-            React.createElement(Provider, { store },
-              React.createElement(Router, { history }, [
-                React.createElement(Route, {
-                  path: '/',
-                  component: props => React.createElement('span', {}, props.children)
-                }, [
-                  React.createElement(Route, {
-                    path: 'foo',
-                    onEnter: (nextState, replace) => replace('/bar')
-                  }),
-                  React.createElement(Route, {
-                    path: 'bar',
-                    component: () => React.createElement('span', {}, [ 'at /bar' ])
-                  })
-                ])
-              ])
-            ),
+            <Provider store={store}>
+              <Router history={history}>
+                <Route path="/" component={props => (<span>{props.children}</span>)}>
+                  <Route path="foo" onEnter={(nextState, replace) => replace('/bar')} />
+                  <Route path="bar" component={() => (<span>at /bar</span>)} />
+                </Route>
+              </Router>
+            </Provider>,
             rootElement
           )
           expect(rootElement.textContent).toEqual('at /bar')
