@@ -1,6 +1,6 @@
 {
   "name": "react-router-redux",
-  "version": "4.0.0-rc.2",
+  "version": "4.0.0",
   "description": "Ruthlessly simple bindings to keep react-router and redux in sync",
   "main": "lib/index",
   "files": [
