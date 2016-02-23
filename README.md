@@ -55,7 +55,7 @@ const history = syncHistoryWithStore(browserHistory, store)
 
 ReactDOM.render(
   <Provider store={store}>
-    /* Tell the Router to use our enhanced history */
+    { /* Tell the Router to use our enhanced history */ }
     <Router history={history}>
       <Route path="/" component={App}>
         <Route path="foo" component={Foo}/>
