@@ -30,8 +30,6 @@ This library allows you to use React Router's APIs as they are documented. And, 
 
 Let's take a look at a simple example.
 
-**Note:** This example uses `react-router`'s 2.0 API.
-
 ```js
 import React from 'react'
 import ReactDOM from 'react-dom'
