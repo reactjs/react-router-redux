@@ -36,7 +36,7 @@ const HTML = ({ content, store }) => (
 )
 
 app.use(function (req, res) {
-  const memoryHistory = createMemoryHistory(req.path)
+  const memoryHistory = createMemoryHistory(req.url)
   const store = configureStore(memoryHistory)
   const history = syncHistoryWithStore(memoryHistory, store)
 
