@@ -132,6 +132,7 @@ Examples from the community:
   * **tip**: migrating from react-router-redux `^3.0.0`? use [this commit](https://github.com/davezuko/react-redux-starter-kit/commit/0df26907) as a reference
 * [svrcekmichal/universal-react](https://github.com/svrcekmichal/universal-react) - Universal react app with async actions provided by [svrcekmichal/reasync](https://github.com/svrcekmichal/reasync) package
 * [steveniseki/react-router-redux-example](https://github.com/StevenIseki/react-router-redux-example) - minimal react-router-redux example includes css modules and universal rendering
+* [choonkending/react-webpack-node](https://github.com/choonkending/react-webpack-node) - Full-stack universal Redux App
 
 &rarr; _Have an example to add? Send us a PR!_ &larr;
 
