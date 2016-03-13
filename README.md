@@ -133,6 +133,7 @@ Examples from the community:
 * [svrcekmichal/universal-react](https://github.com/svrcekmichal/universal-react) - Universal react app with async actions provided by [svrcekmichal/reasync](https://github.com/svrcekmichal/reasync) package
 * [steveniseki/react-router-redux-example](https://github.com/StevenIseki/react-router-redux-example) - minimal react-router-redux example includes css modules and universal rendering
 * [choonkending/react-webpack-node](https://github.com/choonkending/react-webpack-node) - Full-stack universal Redux App
+* [kuy/treemap-with-router](https://github.com/kuy/treemap-with-router) - An example for react-router-redux with d3's treemap.
 
 &rarr; _Have an example to add? Send us a PR!_ &larr;
 
