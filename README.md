@@ -180,4 +180,6 @@ A middleware you can apply to your Redux `store` to capture dispatched actions c
 
 An action type that you can listen for in your reducers to be notified of route updates. Fires *after* any changes to history.
 
-Notice: it(`LOCATION_CHANGE`) changed names since 3.0.0 version, so if you want use it and your dependencies under 3.0.0 version, you should upgrade this lib by `npm upgrade`
+Notice1: it(`LOCATION_CHANGE`) changed names since 3.0.0 version, so if you want use it and your dependencies under 3.0.0 version, you should upgrade this lib by `npm upgrade`
+
+Notice2: if you upgrade this lib by `npm upgrade`, you need change some code for new  version's api 
