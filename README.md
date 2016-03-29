@@ -56,6 +56,7 @@ ReactDOM.render(
     { /* Tell the Router to use our enhanced history */ }
     <Router history={history}>
       <Route path="/" component={App}>
+        { /* Make sure your App component accepts "children" prop, and renders them in proper place */ }
         <Route path="foo" component={Foo}/>
         <Route path="bar" component={Bar}/>
       </Route>
