@@ -24,7 +24,7 @@ If you want to install the next major version, use `react-router-redux@next`. Ru
 
 This library allows you to use React Router's APIs as they are documented. And, you can use redux like you normally would, with a single app state. The library simply enhances a history instance to allow it to synchronize any changes it receives into application state.
 
-[history](https://github.com/reactjs/history) + `store` ([redux](https://github.com/rackt/redux)) &rarr; [**react-router-redux**](https://github.com/reactjs/react-router-redux) &rarr; enhanced [history](https://github.com/reactjs/history) &rarr; [react-router](https://github.com/reactjs/react-router)
+[history](https://github.com/reactjs/history) + `store` ([redux](https://github.com/reactjs/redux)) &rarr; [**react-router-redux**](https://github.com/reactjs/react-router-redux) &rarr; enhanced [history](https://github.com/reactjs/history) &rarr; [react-router](https://github.com/reactjs/react-router)
 
 ## Tutorial
 
