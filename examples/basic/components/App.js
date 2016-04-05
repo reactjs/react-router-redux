@@ -1,9 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router'
-import { connect } from 'react-redux'
-import { routeActions } from 'react-router-redux'
+import { Link, browserHistory } from 'react-router'
 
-function App({ push, children }) {
+export default function App({ children }) {
   return (
     <div>
       <header>
@@ -16,14 +14,9 @@ function App({ push, children }) {
         <Link to="/bar">Bar</Link>
       </header>
       <div>
-        <button onClick={() => push('/foo')}>Go to /foo</button>
+        <button onClick={() => browserHistory.push('/foo')}>Go to /foo</button>
       </div>
       <div style={{ marginTop: '1.5em' }}>{children}</div>
     </div>
   )
 }
-
-export default connect(
-  null,
-  routeActions
-)(App)
