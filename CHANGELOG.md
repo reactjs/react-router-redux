@@ -1,10 +1,18 @@
-## [4.0.0](https://github.com/reactjs/react-router-redux/compare/3.0.0...4.0.0)
+## [4.0.2](https://github.com/reactjs/react-router-redux/compare/v4.0.1...v4.0.2)
+
+- Calling routerReducer() with no args crashes. [#350](https://github.com/reactjs/react-router-redux/pull/350)
+
+## [4.0.1](https://github.com/reactjs/react-router-redux/compare/v4.0.0...v4.0.1)
+
+- Fix IE8 compatbility. [#344](https://github.com/reactjs/react-router-redux/pull/344)
+
+## [4.0.0](https://github.com/reactjs/react-router-redux/compare/3.0.0...v4.0.0)
 
 This is a big breaking release, but the last one for the foreseeable future. The scope of this library has changed, so please re-evaluate its usefulness to you. You may not need it and this is ok!
 
 #### Summary of Changes
 
-The provided action creators and middleware are now separate from the history<->state syncing function. For the vast majority of cases, using action creators to trigger navigation is obsoleted by React Router's [new history singletons](https://github.com/rackt/react-router/blob/master/upgrade-guides/v2.0.0.md#history-singletons-provided) provided in 2.0. Building this functionality in by default and coupling it to our history syncing logic no longer makes sense.
+The provided action creators and middleware are now separate from the history<->state syncing function. For the vast majority of cases, using action creators to trigger navigation is obsoleted by React Router's [new history singletons](https://github.com/reactjs/react-router/blob/master/upgrade-guides/v2.0.0.md#history-singletons-provided) provided in 2.0. Building this functionality in by default and coupling it to our history syncing logic no longer makes sense.
 
 We now sync by enhancing the history instance to listen for navigation events and dispatch those into the store. The enhanced history has its `listen` method overridden to respond to store changes, rather than directly to navigation events. When this history is provided to `<Router>`, the router will listen to it and receive these store changes. This means if we time travel with the store, the router will receive those store changes and update based on the location in the store, instead of what the browser says. Normal navigation events (hitting your browser back/forward buttons, telling a history singleton to `push` a location) flow through the history's listener like normal, so all the usual stuff works A-OK.
 
