@@ -16,7 +16,10 @@
   ],
   "license": "MIT",
   "scripts": {
-    "build": "mkdir -p lib && babel ./src -d lib",
+    "build": "npm run build:commonjs & npm run build:umd & npm run build:umd:min",
+    "build:commonjs": "mkdir -p lib && babel ./src -d lib",
+    "build:umd": "webpack dist/ReactRouterRedux.js",
+    "build:umd:min": "NODE_ENV=production webpack dist/ReactRouterRedux.min.js",
     "lint": "eslint examples src test",
     "test": "npm run lint && npm run test:node && npm run test:browser",
     "test:node": "mocha --compilers js:babel-register --recursive ./test/*.spec.js",
