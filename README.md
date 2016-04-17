@@ -84,7 +84,7 @@ For other kinds of events in your system, you can use middleware on your Redux s
 When using a wrapper for your store's state, such as Immutable.js, you will need to change two things from the standard setup:
 
 1. Provide your own reducer function that will receive actions of type  `LOCATION_CHANGE` and return the payload merged into state.
-2. Pass a selector to access the payload state via the `selectLocationState` option on `syncHistoryWithStore`.
+2. Pass a selector to access the payload state and convert it to a JS object via the `selectLocationState` option on `syncHistoryWithStore`.
 
 These two hooks will allow you to store the state that this library uses in whatever format or wrapper you would like.
 
