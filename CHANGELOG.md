@@ -1,3 +1,7 @@
+## [4.0.4](https://github.com/reactjs/react-router-redux/compare/v4.0.2...v4.0.4)
+
+- Added a UMD build. [#362](https://github.com/reactjs/react-router-redux/pull/362)
+
 ## [4.0.2](https://github.com/reactjs/react-router-redux/compare/v4.0.1...v4.0.2)
 
 - Calling routerReducer() with no args crashes. [#350](https://github.com/reactjs/react-router-redux/pull/350)
