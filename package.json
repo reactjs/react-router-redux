@@ -5,6 +5,7 @@
   "main": "lib/index",
   "files": [
     "*.md",
+    "dist",
     "LICENSE",
     "lib",
     "src"
