@@ -31,7 +31,6 @@ export default function syncHistoryWithStore(history, store, {
   }
 
   let initialLocation
-  let currentLocation
   let isTimeTraveling
   let unsubscribeFromStore
   let unsubscribeFromHistory
@@ -42,6 +41,9 @@ export default function syncHistoryWithStore(history, store, {
     return locationState.locationBeforeTransitions ||
       (useInitialIfEmpty ? initialLocation : undefined)
   }
+
+  // Init currentLocation with potential location in store
+  let currentLocation = getLocationInStore()
 
   // If the store is replayed, update the URL in the browser to match.
   if (adjustUrlOnReplay) {

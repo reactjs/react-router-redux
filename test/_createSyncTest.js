@@ -163,6 +163,33 @@ export default function createTests(createHistory, name, reset = defaultReset) {
       })
     })
 
+    describe('Server', () => {
+      it('handles inital load correctly', () => {
+        // Server
+        const { store: serverStore } = createSyncedHistoryAndStore(createHistory('/'))
+        expect(serverStore).toContainLocation({
+          pathname: '/',
+          action: 'POP'
+        })
+
+        // Client
+        let clientStore = createStore(combineReducers({
+          routing: routerReducer
+        }), serverStore.getState())
+        let clientHistory = useRouterHistory(createHistory)()
+
+        const historyListen = expect.createSpy()
+        const historyUnsubscribe = clientHistory.listen(historyListen)
+
+        syncHistoryWithStore(clientHistory, clientStore)
+
+        // We expect that we get a single call to history
+        expect(historyListen.calls.length).toBe(1)
+
+        historyUnsubscribe()
+      })
+    })
+
     describe('Redux DevTools', () => {
       let originalHistory, history, store, devToolsStore
 
