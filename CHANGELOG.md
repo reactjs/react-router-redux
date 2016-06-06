@@ -1,3 +1,7 @@
+## [4.0.5](https://github.com/reactjs/react-router-redux/compare/v4.0.4...v4.0.5)
+
+- Initialize currentLocation to initial location from the store. [#403](https://github.com/reactjs/react-router-redux/pull/403)
+
 ## [4.0.4](https://github.com/reactjs/react-router-redux/compare/v4.0.2...v4.0.4)
 
 - Added a UMD build. [#362](https://github.com/reactjs/react-router-redux/pull/362)
