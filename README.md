@@ -81,12 +81,12 @@ history.listen(location => analyticsService.track(location.pathname))
 
 For other kinds of events in your system, you can use middleware on your Redux store like normal to watch any action that is dispatched to the store.
 
-#### What if I use Immutable.js with my Redux store?
+#### What if I use Immutable.js or another wrapper with my Redux store?
 
 When using a wrapper for your store's state, such as Immutable.js, you will need to change two things from the standard setup:
 
-1. Provide your own reducer function that will receive actions of type  `LOCATION_CHANGE` and return the payload merged into state.
-2. Pass a selector to access the payload state and convert it to a JS object via the `selectLocationState` option on `syncHistoryWithStore`.
+1. By default, the library expects to find the router state at `state.routing`. If your wrapper prevents accessing properties directly, or you want to put the routing state elsewhere, pass a selector to access the payload state and convert it to a JS object via the `selectLocationState` option on `syncHistoryWithStore`.
+2. Provide your own reducer function that will receive actions of type  `LOCATION_CHANGE` and return the payload merged into the `locationBeforeTransitions` property of the routing state. For example, `state.set("routing", {locationBeforeTransitions: action.payload})`.
 
 These two hooks will allow you to store the state that this library uses in whatever format or wrapper you would like.
 
