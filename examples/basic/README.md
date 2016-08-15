@@ -3,7 +3,7 @@ react-router-redux basic example
 
 This is a basic example that demonstrates rendering components based
 on URLs with `react-router` as well as connecting them to Redux state.
-It uses both <Link> elements as well as the `push` action creator
+It uses both `<Link>` elements as well as the `push` action creator
 provided by react-router-redux.
 
 This example also demonstrates integration with
