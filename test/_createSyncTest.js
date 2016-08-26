@@ -186,6 +186,13 @@ export default function createTests(createHistory, name, reset = defaultReset) {
         // We expect that we get a single call to history
         expect(historyListen.calls.length).toBe(1)
 
+        clientStore.dispatch({
+          type: 'non-router'
+        })
+
+        // We expect that we still get only a single call to history after a non-router action is dispatched
+        expect(historyListen.calls.length).toBe(1)
+
         historyUnsubscribe()
       })
     })
