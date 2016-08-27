@@ -35,7 +35,7 @@ Let's take a look at a simple example.
 ```js
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
 import { Router, Route, browserHistory } from 'react-router'
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
@@ -110,6 +110,7 @@ You should not read the location state directly from the Redux store. This is be
 React Router provides singleton versions of history (`browserHistory` and `hashHistory`) that you can import and use from anywhere in your application. However, if you prefer Redux style actions, the library also provides a set of action creators and a middleware to capture them and redirect them to your history instance.
 
 ```js
+import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { routerMiddleware, push } from 'react-router-redux'
 
 // Apply the middleware to the store
