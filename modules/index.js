@@ -1,0 +1,1 @@
+export ConnectedRouter from './ConnectedRouter'
