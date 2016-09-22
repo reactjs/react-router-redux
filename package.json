@@ -15,7 +15,7 @@
     "build-umd": "webpack modules/index.js umd/react-router.js",
     "build-min": "webpack -p modules/index.js umd/react-router.min.js",
     "clean": "rm $(ls modules | grep -v __)",
-    "test": "npm run lint && npm run test",
+    "test": "npm run lint && jest modules",
     "lint": "eslint modules"
   },
   "tags": [
@@ -49,5 +49,8 @@
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-test-renderer": "^15.3.2"
+  },
+  "jest": {
+    "testPathDirs": ["modules/"]
   }
 }
