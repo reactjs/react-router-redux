@@ -1,3 +1,7 @@
+## [4.0.6](https://github.com/reactjs/react-router-redux/compare/v4.0.5...v4.0.6)
+
+- Makes sure the state in the store matches the state in history when using SSR [#445](https://github.com/reactjs/react-router-redux/pull/445)
+
 ## [4.0.5](https://github.com/reactjs/react-router-redux/compare/v4.0.4...v4.0.5)
 
 - Initialize currentLocation to initial location from the store. [#403](https://github.com/reactjs/react-router-redux/pull/403)
