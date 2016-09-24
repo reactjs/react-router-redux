@@ -61,3 +61,8 @@ The location will automatically be synced with `state.router.location`. You can 
 
 - Action creators to issue navigation events (`dispatch(push('/foo'))`)
 - More and better tests
+
+# Thanks and Acknowledgments
+
+- [James Long](https://github.com/jlongster) - For creating the initial versions of this library and being a good open source steward.
+- [Jimmy Jia](https://github.com/taion) - For the majority of the work on 3.0, which inspires the continuing simplicity of this library.
