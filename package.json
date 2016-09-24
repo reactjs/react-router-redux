@@ -16,6 +16,7 @@
     "build-min": "webpack -p modules/index.js umd/react-router.min.js",
     "clean": "rm $(ls modules | grep -v __)",
     "test": "npm run lint && jest modules",
+    "start": "jest modules --watch",
     "lint": "eslint modules"
   },
   "tags": [
@@ -48,9 +49,13 @@
     "jest": "^15.1.1",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
-    "react-test-renderer": "^15.3.2"
+    "react-redux": "^4.4.5",
+    "react-test-renderer": "^15.3.2",
+    "redux": "^3.6.0"
   },
   "jest": {
-    "testPathDirs": ["modules/"]
+    "testPathDirs": [
+      "modules/"
+    ]
   }
 }

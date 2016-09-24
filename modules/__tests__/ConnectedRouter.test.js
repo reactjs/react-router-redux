@@ -1,16 +1,32 @@
 import React from 'react'
 import { renderToString } from 'react-dom/server'
+import { createStore, combineReducers } from 'redux'
+import MemoryHistory from 'react-history/MemoryHistory'
+import Match from 'react-router/Match'
 
-import ConnectedRouter from '../ConnectedRouter'
+import { ConnectedRouter, routerReducer } from '../'
 
 describe('ConnectedRouter', () => {
-  it('creates a connected router', () =>{
+  let store
+
+  beforeEach(() => {
+    store = createStore(combineReducers({
+      router: routerReducer
+    }))
+  })
+
+  it('sets the initial state in the store', () =>{
     const html = renderToString(
-      <ConnectedRouter>
-        <div>Hi!</div>
+      <ConnectedRouter store={store} history={MemoryHistory} location="/foo">
+        <Match pattern="/foo" render={() => (<div>Matched!</div>)}/>
       </ConnectedRouter>
     )
 
-    expect(html).toContain('Hi!')
+    const { router: { location, action } } = store.getState()
+
+    expect(html).toContain('Matched!')
+
+    expect(location.pathname).toBe('/')
+    expect(action).toBe('POP')
   })
 })
