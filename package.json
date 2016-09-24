@@ -12,8 +12,8 @@
   ],
   "scripts": {
     "build-lib": "babel ./modules -d . --ignore '__tests__'",
-    "build-umd": "webpack modules/index.js umd/react-router.js",
-    "build-min": "webpack -p modules/index.js umd/react-router.min.js",
+    "build-umd": "webpack modules/index.js umd/react-router-redux.js",
+    "build-min": "webpack -p modules/index.js umd/react-router-redux.min.js",
     "clean": "rm $(ls modules | grep -v __)",
     "test": "npm run lint && jest modules",
     "start": "jest modules --watch",
