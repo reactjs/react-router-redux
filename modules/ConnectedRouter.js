@@ -4,6 +4,47 @@ import StaticRouter from 'react-router/StaticRouter'
 
 import { LOCATION_CHANGE } from './reducer'
 
+class DispatchingRouter extends Component {
+  static propTypes = {
+    store: PropTypes.object,
+    history: PropTypes.object,
+    action: PropTypes.string,
+    location: PropTypes.string,
+    basename: PropTypes.string
+  }
+
+  constructor(props) {
+    super(props)
+    this.handleLocationChange(this.props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.handleLocationChange(nextProps)
+  }
+
+  handleLocationChange = ({ store, action, location }) => {
+    store.dispatch({
+      type: LOCATION_CHANGE,
+      payload: { action, location }
+    })
+  }
+
+  render() {
+    const { history, action, location, basename, ...props } = this.props
+
+    return (
+      <StaticRouter
+        action={action}
+        location={location}
+        basename={basename}
+        onPush={history.push}
+        onReplace={history.replace}
+        blockTransitions={history.block}
+        {...props}
+      />)
+  }
+}
+
 class ConnectedRouter extends Component {
   static propTypes = {
     store: PropTypes.object,
@@ -24,23 +65,15 @@ class ConnectedRouter extends Component {
     const { history:History, basename, keyLength, ...props } = this.props
 
     return (
-      <History location={props.location} basename={basename} keyLength={keyLength}>
+      <History basename={basename} keyLength={keyLength}>
         {({ history, action, location }) => {
-          const store = this.context.store || this.props.store
-
-          store.dispatch({
-            type: LOCATION_CHANGE,
-            payload: { action, location }
-          })
-
           return (
-            <StaticRouter
+            <DispatchingRouter
+              store={this.context.store || this.props.store}
+              history={history}
               action={action}
               location={location}
               basename={basename}
-              onPush={history.push}
-              onReplace={history.replace}
-              blockTransitions={history.block}
               {...props}
             />)
           }}

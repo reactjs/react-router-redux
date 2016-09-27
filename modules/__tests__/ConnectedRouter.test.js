@@ -28,7 +28,7 @@ describe('ConnectedRouter', () => {
 
     expect(html).toContain('Matched!')
 
-    expect(location.pathname).toBe('/')
+    expect(location).toBe('/foo')
     expect(action).toBe('POP')
   })
 
@@ -45,7 +45,7 @@ describe('ConnectedRouter', () => {
 
     expect(html).toContain('Matched!')
 
-    expect(location.pathname).toBe('/')
+    expect(location).toBe('/foo')
     expect(action).toBe('POP')
   })
 })
