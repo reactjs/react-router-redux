@@ -1,5 +1,3 @@
-lib
-dist
+umd
 node_modules
-coverage
-*.log
+npm-debug.log

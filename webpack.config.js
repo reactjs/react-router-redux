@@ -1,29 +1,29 @@
-var webpack = require('webpack')
+const webpack = require('webpack')
 
-var config = {
-  entry: './src/index',
-  module: {
-    loaders: [
-      { test: /\.js$/, loaders: [ 'babel' ], exclude: /node_modules/ }
-    ]
-  },
+module.exports = {
   output: {
     library: 'ReactRouterRedux',
     libraryTarget: 'umd'
   },
+
+  externals: {
+    react: {
+      root: 'React',
+      commonjs2: 'react',
+      commonjs: 'react',
+      amd: 'react'
+    }
+  },
+
+  module: {
+    loaders: [
+      { test: /\.js$/, exclude: /node_modules/, loader: 'babel' }
+    ]
+  },
+
   plugins: [
-    new webpack.optimize.OccurenceOrderPlugin()
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
+    })
   ]
 }
-
-if (process.env.NODE_ENV === 'production') {
-  config.plugins.push(
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        warnings: false
-      }
-    })
-  )
-}
-
-module.exports = config
