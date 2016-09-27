@@ -9,7 +9,7 @@ class DispatchingRouter extends Component {
     store: PropTypes.object,
     history: PropTypes.object,
     action: PropTypes.string,
-    location: PropTypes.string,
+    location: PropTypes.oneOfType([ PropTypes.object, PropTypes.string ]),
     basename: PropTypes.string
   }
 
