@@ -1,6 +1,6 @@
 {
   "name": "react-router-redux",
-  "version": "4.0.6",
+  "version": "5.0.0-alpha.1",
   "description": "Synchronize React Router with your Redux store",
   "repository": "reactjs/react-router-redux",
   "license": "MIT",
