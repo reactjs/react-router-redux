@@ -24,7 +24,7 @@ class ConnectedRouter extends Component {
     const { history:History, basename, keyLength, ...props } = this.props
 
     return (
-      <History location={location} basename={basename} keyLength={keyLength}>
+      <History location={props.location} basename={basename} keyLength={keyLength}>
         {({ history, action, location }) => {
           const store = this.context.store || this.props.store
 
