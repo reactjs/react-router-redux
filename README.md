@@ -163,7 +163,8 @@ The `options` object takes in the following optional keys:
 
 **You must install `routerMiddleware` for these action creators to work.**
 
-Action creators that correspond with the [history methods of the same name](https://github.com/reactjs/history/blob/master/docs/GettingStarted.md#navigation). For reference they are defined as follows:
+Action creators that correspond with the [history methods of the same name]
+(https://github.com/mjackson/history/blob/master/README.md#navigation). For reference they are defined as follows:
 
 - `push` - Pushes a new location to history, becoming the current location.
 - `replace` - Replaces the current location in history.
@@ -171,7 +172,7 @@ Action creators that correspond with the [history methods of the same name](http
 - `goForward` - Moves forward one location. Equivalent to `go(1)`
 - `goBack` - Moves backwards one location. Equivalent to `go(-1)`
 
-Both `push` and `replace` take in a [location descriptor](https://github.com/reactjs/history/blob/master/docs/Glossary.md#locationdescriptor), which can be an object describing the URL or a plain string URL.
+Both `push` and `replace` take in a [location descriptor](https://github.com/mjackson/history/blob/v2.x/docs/Glossary.md#locationdescriptor), which can be an object describing the URL or a plain string URL.
 
 These action creators are also available in one single object as `routerActions`, which can be used as a convenience when using Redux's `bindActionCreators()`.
 
