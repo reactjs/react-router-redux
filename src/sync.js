@@ -97,6 +97,11 @@ export default function syncHistoryWithStore(history, store, {
   }
   unsubscribeFromHistory = history.listen(handleLocationChange)
 
+  // support history 3.x
+  if(history.getCurrentLocation) {
+    handleLocationChange(history.getCurrentLocation())
+  }
+
   // The enhanced history uses store as source of truth
   return {
     ...history,
