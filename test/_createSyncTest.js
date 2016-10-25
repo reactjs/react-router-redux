@@ -183,15 +183,15 @@ export default function createTests(createHistory, name, reset = defaultReset) {
 
         syncHistoryWithStore(clientHistory, clientStore)
 
-        // We expect that we get a single call to history
-        expect(historyListen.calls.length).toBe(1)
+        // History v3: Listener should not be called during initialization
+        expect(historyListen.calls.length).toBe(0)
 
         clientStore.dispatch({
           type: 'non-router'
         })
 
-        // We expect that we still get only a single call to history after a non-router action is dispatched
-        expect(historyListen.calls.length).toBe(1)
+        // We expect that we still didn't get any call to history after a non-router action is dispatched
+        expect(historyListen.calls.length).toBe(0)
 
         historyUnsubscribe()
       })
