@@ -20,8 +20,6 @@ This library helps you keep that bit of state in sync with your Redux store. We 
 npm install --save react-router-redux
 ```
 
-If you want to install the next major version, use `react-router-redux@next`. Run `npm dist-tag ls react-router-redux` to see what `next` is aliased to.
-
 ## How It Works
 
 This library allows you to use React Router's APIs as they are documented. And, you can use redux like you normally would, with a single app state. The library simply enhances a history instance to allow it to synchronize any changes it receives into application state.
