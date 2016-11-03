@@ -1,3 +1,7 @@
+## [4.0.7](https://github.com/reactjs/react-router-redux/compare/v4.0.6...v4.0.7)
+
+- Support history 3 [#476](https://github.com/reactjs/react-router-redux/pull/476)
+
 ## [4.0.6](https://github.com/reactjs/react-router-redux/compare/v4.0.5...v4.0.6)
 
 - Makes sure the state in the store matches the state in history when using SSR [#445](https://github.com/reactjs/react-router-redux/pull/445)
