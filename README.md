@@ -6,7 +6,7 @@
 
 _Formerly known as redux-simple-router_
 
-You're a smart person. You use [Redux](https://github.com/rackt/redux) to manage your application state. You use [React Router](https://github.com/reactjs/react-router) to do routing. All is good.
+You're a smart person. You use [Redux](https://github.com/reactjs/redux) to manage your application state. You use [React Router](https://github.com/reactjs/react-router) to do routing. All is good.
 
 But the two libraries don't coordinate. You want to do time travel with your application state, but React Router doesn't navigate between pages when you replay actions. It controls an important part of application state: the URL.
 
