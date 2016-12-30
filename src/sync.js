@@ -102,6 +102,11 @@ export default function syncHistoryWithStore(history, store, {
     handleLocationChange(history.getCurrentLocation())
   }
 
+  // support history 4.x
+  if(history.location) {
+    handleLocationChange(history.location)
+  }
+
   const wrapper = {}
 
   Object.keys(history).map((key) => {
