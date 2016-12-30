@@ -98,7 +98,7 @@ export default function syncHistoryWithStore(history, store, {
   unsubscribeFromHistory = history.listen(handleLocationChange)
 
   // support history 3.x
-  if (history.getCurrentLocation) {
+  if(history.getCurrentLocation) {
     handleLocationChange(history.getCurrentLocation())
   }
 
@@ -127,7 +127,7 @@ export default function syncHistoryWithStore(history, store, {
 
       // Keep track of whether we unsubscribed, as Redux store
       // only applies changes in subscriptions on next dispatch
-      let unsubscribed  = false
+      let unsubscribed = false
       const unsubscribeFromStore = store.subscribe(() => {
         const currentLocation = getLocationInStore(true)
         if (currentLocation === lastPublishedLocation) {
