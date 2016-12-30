@@ -106,13 +106,16 @@ export default function syncHistoryWithStore(history, store, {
 
   Object.keys(history).map((key) => {
     if (key === 'listen') return
+  
+    if (typeof history[key] === 'function') {
+      wrapper[key] = history[key]
+      return
+    }
+    
     Object.defineProperty(wrapper, key, {
       configurable: false,
       get: function () {
         return history[key]
-      },
-      set: function (value) {
-        history[key] = value
       }
     })
   })
