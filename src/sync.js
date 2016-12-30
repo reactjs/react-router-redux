@@ -29,23 +29,23 @@ export default function syncHistoryWithStore(history, store, {
       'your reducers.'
     )
   }
-
+  
   let initialLocation
   let isTimeTraveling
   let unsubscribeFromStore
   let unsubscribeFromHistory
   let currentLocation
-
+  
   // What does the store say about current location?
   const getLocationInStore = (useInitialIfEmpty) => {
     const locationState = selectLocationState(store.getState())
     return locationState.locationBeforeTransitions ||
-      (useInitialIfEmpty ? initialLocation : undefined)
+           (useInitialIfEmpty ? initialLocation : undefined)
   }
-
+  
   // Init initialLocation with potential location in store
   initialLocation = getLocationInStore()
-
+  
   // If the store is replayed, update the URL in the browser to match.
   if (adjustUrlOnReplay) {
     const handleStoreChange = () => {
@@ -53,7 +53,7 @@ export default function syncHistoryWithStore(history, store, {
       if (currentLocation === locationInStore || initialLocation === locationInStore) {
         return
       }
-
+      
       // Update address bar to reflect store state
       isTimeTraveling = true
       currentLocation = locationInStore
@@ -63,56 +63,68 @@ export default function syncHistoryWithStore(history, store, {
       })
       isTimeTraveling = false
     }
-
+    
     unsubscribeFromStore = store.subscribe(handleStoreChange)
     handleStoreChange()
   }
-
+  
   // Whenever location changes, dispatch an action to get it in the store
   const handleLocationChange = (location) => {
     // ... unless we just caused that location change
     if (isTimeTraveling) {
       return
     }
-
+    
     // Remember where we are
     currentLocation = location
-
+    
     // Are we being called for the first time?
     if (!initialLocation) {
       // Remember as a fallback in case state is reset
       initialLocation = location
-
+      
       // Respect persisted location, if any
       if (getLocationInStore()) {
         return
       }
     }
-
+    
     // Tell the store to update by dispatching an action
     store.dispatch({
       type: LOCATION_CHANGE,
       payload: location
     })
   }
-  unsubscribeFromHistory = history.listen(handleLocationChange)
-
+  unsubscribeFromHistory     = history.listen(handleLocationChange)
+  
   // support history 3.x
-  if(history.getCurrentLocation) {
+  if (history.getCurrentLocation) {
     handleLocationChange(history.getCurrentLocation())
   }
+  
+  const wrapper = {}
 
-  // The enhanced history uses store as source of truth
-  return {
-    ...history,
-    // The listeners are subscribed to the store instead of history
+  Object.keys(history).map((key) => {
+    if (key === 'listen') return
+    Object.defineProperty(wrapper, key, {
+      configurable: false,
+      get: function () {
+        return history[key]
+      },
+      set: function (value) {
+        history[key] = value
+      }
+    })
+  })
+
+  Object.assign(wrapper, {
     listen(listener) {
       // Copy of last location.
       let lastPublishedLocation = getLocationInStore(true)
 
       // Keep track of whether we unsubscribed, as Redux store
       // only applies changes in subscriptions on next dispatch
-      let unsubscribed = false
+      let unsubscribed           = false
       const unsubscribeFromStore = store.subscribe(() => {
         const currentLocation = getLocationInStore(true)
         if (currentLocation === lastPublishedLocation) {
@@ -143,5 +155,7 @@ export default function syncHistoryWithStore(history, store, {
       }
       unsubscribeFromHistory()
     }
-  }
+  })
+
+  return wrapper
 }
