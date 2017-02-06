@@ -12,6 +12,8 @@ But the two libraries don't coordinate. You want to do time travel with your app
 
 This library helps you keep that bit of state in sync with your Redux store. We keep a copy of the current location hidden in state. When you rewind your application state with a tool like [Redux DevTools](https://github.com/gaearon/redux-devtools), that state change is propagated to React Router so it can adjust the component tree accordingly. You can jump around in state, rewinding, replaying, and resetting as much as you'd like, and this library will ensure the two stay in sync at all times.
 
+:warning: It is also possible to support old codebase which relied on the nested query parameter of history (removed from history > 4). Head to `query_support` for more information. 
+
 **This library is not _necessary_ for using Redux together with React Router. You can use the two together just fine without any additional libraries. It is useful if you care about recording, persisting, and replaying user actions, using time travel. If you don't care about these features, just [use Redux and React Router directly](http://stackoverflow.com/questions/36722584/how-to-sync-redux-state-and-url-hash-tag-params/36749963#36749963).**
 
 ## Installation
@@ -156,6 +158,7 @@ The `options` object takes in the following optional keys:
 
 - `selectLocationState` - (default `state => state.routing`) A selector function to obtain the history state from your store. Useful when not using the provided `routerReducer` to store history state. Allows you to use wrappers, such as Immutable.js.
 - `adjustUrlOnReplay` - (default `true`) When `false`, the URL will not be kept in sync during time travel. This is useful when using `persistState` from Redux DevTools and not wanting to maintain the URL state when restoring state.
+- `query_support` - (default `false`) When `true`, a query object is added to the store, it helps to support code that still rely on the query object from history < 4.
 
 #### `push(location)`, `replace(location)`, `go(number)`, `goBack()`, `goForward()`
 
