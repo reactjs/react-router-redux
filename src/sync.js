@@ -1,3 +1,4 @@
+import queryString from 'query-string'
 import { LOCATION_CHANGE } from './reducer'
 
 const defaultSelectLocationState = state => state.routing
@@ -16,7 +17,8 @@ const defaultSelectLocationState = state => state.routing
  */
 export default function syncHistoryWithStore(history, store, {
   selectLocationState = defaultSelectLocationState,
-  adjustUrlOnReplay = true
+  adjustUrlOnReplay = true, 
+  query_support = false
 } = {}) {
   // Ensure that the reducer is mounted on the store and functioning properly.
   if (typeof selectLocationState(store.getState()) === 'undefined') {
@@ -46,11 +48,30 @@ export default function syncHistoryWithStore(history, store, {
   // Init initialLocation with potential location in store
   initialLocation = getLocationInStore()
 
+  const withoutQuery = obj => obj ? {
+    hash: obj.hash,
+    pathname: obj.pathname,
+    key: obj.key,
+    state: obj.state,
+    search: obj.search
+  } : obj
+
   // If the store is replayed, update the URL in the browser to match.
   if (adjustUrlOnReplay) {
     const handleStoreChange = () => {
       const locationInStore = getLocationInStore(true)
-      if (currentLocation === locationInStore || initialLocation === locationInStore) {
+
+      // if we support query we need to compare without the nested query object
+      if (query_support) {
+        const currLoc = withoutQuery(currentLocation),
+          locInStore = withoutQuery(locationInStore),
+          initLoc = withoutQuery(initialLocation)
+
+        if (currLoc === locInStore || initLoc === locInStore) {
+          return
+        }
+      }
+      else if (currentLocation === locationInStore || initialLocation === locationInStore) {
         return
       }
 
@@ -76,12 +97,16 @@ export default function syncHistoryWithStore(history, store, {
     }
 
     // Remember where we are
-    currentLocation = location
+    currentLocation = query_support ?
+      {
+        ...location,
+        query: queryString.parse(location.search) // add query support
+      } : location
 
     // Are we being called for the first time?
     if (!initialLocation) {
       // Remember as a fallback in case state is reset
-      initialLocation = location
+      initialLocation = currentLocation
 
       // Respect persisted location, if any
       if (getLocationInStore()) {
@@ -92,7 +117,7 @@ export default function syncHistoryWithStore(history, store, {
     // Tell the store to update by dispatching an action
     store.dispatch({
       type: LOCATION_CHANGE,
-      payload: location
+      payload: currentLocation
     })
   }
   unsubscribeFromHistory = history.listen(handleLocationChange)
@@ -103,45 +128,43 @@ export default function syncHistoryWithStore(history, store, {
   }
 
   // The enhanced history uses store as source of truth
-  return {
-    ...history,
-    // The listeners are subscribed to the store instead of history
-    listen(listener) {
-      // Copy of last location.
-      let lastPublishedLocation = getLocationInStore(true)
+  history.listen = (listener) => {
+    // Copy of last location.
+    let lastPublishedLocation = getLocationInStore(true)
 
-      // Keep track of whether we unsubscribed, as Redux store
-      // only applies changes in subscriptions on next dispatch
-      let unsubscribed = false
-      const unsubscribeFromStore = store.subscribe(() => {
-        const currentLocation = getLocationInStore(true)
-        if (currentLocation === lastPublishedLocation) {
-          return
-        }
-        lastPublishedLocation = currentLocation
-        if (!unsubscribed) {
-          listener(lastPublishedLocation)
-        }
-      })
-
-      // History listeners expect a synchronous call. Make the first call to the
-      // listener after subscribing to the store, in case the listener causes a
-      // location change (e.g. when it redirects)
-      listener(lastPublishedLocation)
-
-      // Let user unsubscribe later
-      return () => {
-        unsubscribed = true
-        unsubscribeFromStore()
+    // Keep track of whether we unsubscribed, as Redux store
+    // only applies changes in subscriptions on next dispatch
+    let unsubscribed = false
+    const unsubscribeFromStore = store.subscribe(() => {
+      const currentLocation = getLocationInStore(true)
+      if (currentLocation === lastPublishedLocation) {
+        return
       }
-    },
-
-    // It also provides a way to destroy internal listeners
-    unsubscribe() {
-      if (adjustUrlOnReplay) {
-        unsubscribeFromStore()
+      lastPublishedLocation = currentLocation
+      if (!unsubscribed) {
+        listener(lastPublishedLocation)
       }
-      unsubscribeFromHistory()
+    })
+
+    // History listeners expect a synchronous call. Make the first call to the
+    // listener after subscribing to the store, in case the listener causes a
+    // location change (e.g. when it redirects)
+    listener(lastPublishedLocation)
+
+    // Let user unsubscribe later
+    return () => {
+      unsubscribed = true
+      unsubscribeFromStore()
     }
   }
+
+  history.unsubscribe = () => {
+    if (adjustUrlOnReplay) {
+      unsubscribeFromStore()
+    }
+    unsubscribeFromHistory()
+  }
+
+  // The enhanced history uses store as source of truth
+  return history
 }
