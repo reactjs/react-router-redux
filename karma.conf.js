@@ -38,10 +38,11 @@ module.exports = function (config) {
     webpack: {
       devtool: 'inline-source-map',
       module: {
-        preLoaders: [
+        rules: [
           {
-            loader: 'babel',
             test: /\.js$/,
+            enforce: "pre",
+            use: 'babel-loader',
             include: [
               path.resolve('src/'),
               path.resolve('test/')
