@@ -157,7 +157,7 @@ export default function createTests(createHistory, name, reset = defaultReset) {
         history.push('/foo')
         history.replace('/foo')
 
-        expect(updates).toEqual([ '/', '/foo', '/foo', '/foo' ])
+        expect(updates).toEqual([ '/foo', '/foo', '/foo' ])
 
         historyUnsubscribe()
       })
