@@ -1,3 +1,7 @@
+## [4.0.8](https://github.com/reactjs/react-router-redux/compare/v4.0.7...v4.0.8)
+
+- Don't run listeners synchronously with history 3 [`b2c2259`](https://github.com/reactjs/react-router-redux/commit/b2c2259c189cafad3e6e68eac7729e74f2bd56a9)
+
 ## [4.0.7](https://github.com/reactjs/react-router-redux/compare/v4.0.6...v4.0.7)
 
 - Support history 3 [#476](https://github.com/reactjs/react-router-redux/pull/476)
