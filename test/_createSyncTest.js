@@ -146,6 +146,8 @@ export default function createTests(createHistory, name, reset = defaultReset) {
       })
 
       it('updates the router even if path is the same', () => {
+        history.push('/')
+
         const updates = []
         const historyUnsubscribe = history.listen(location => {
           updates.push(location.pathname)
