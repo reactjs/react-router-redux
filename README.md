@@ -90,7 +90,7 @@ These two hooks will allow you to store the state that this library uses in what
 
 #### How do I access router state in a container component?
 
-React Router [provides route information via a route component's props](https://github.com/reactjs/react-router/blob/latest/docs/Introduction.md#getting-url-parameters). This makes it easy to access them from a container component. When using [react-redux](https://github.com/reactjs/react-redux) to `connect()` your components to state, you can access the router's props from the [2nd argument of `mapStateToProps`](https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options):
+React Router [provides route information via a route component's props](https://github.com/ReactTraining/react-router/blob/master/docs/Introduction.md#getting-url-parameters). This makes it easy to access them from a container component. When using [react-redux](https://github.com/reactjs/react-redux) to `connect()` your components to state, you can access the router's props from the [2nd argument of `mapStateToProps`](https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options):
 
 ```js
 function mapStateToProps(state, ownProps) {
