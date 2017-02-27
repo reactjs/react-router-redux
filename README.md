@@ -170,7 +170,7 @@ Action creators that correspond with the [history methods of the same name]
 - `goForward` - Moves forward one location. Equivalent to `go(1)`
 - `goBack` - Moves backwards one location. Equivalent to `go(-1)`
 
-Both `push` and `replace` take in a [location descriptor](https://github.com/mjackson/history/blob/v2.x/docs/Glossary.md#locationdescriptor), which can be an object describing the URL or a plain string URL.
+Both `push` and `replace` take in a [location descriptor](https://github.com/ReactTraining/history/blob/v2/docs/Glossary.md#locationdescriptor), which can be an object describing the URL or a plain string URL.
 
 These action creators are also available in one single object as `routerActions`, which can be used as a convenience when using Redux's `bindActionCreators()`.
 
