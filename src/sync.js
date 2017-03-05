@@ -37,8 +37,8 @@ export default function syncHistoryWithStore(history, store, {
   let currentLocation
 
   // What does the store say about current location?
-  const getLocationInStore = (useInitialIfEmpty) => {
-    const locationState = selectLocationState(store.getState())
+  const getLocationInStore = useInitialIfEmpty => {
+    let locationState = selectLocationState(store.getState())
     return locationState.locationBeforeTransitions ||
       (useInitialIfEmpty ? initialLocation : undefined)
   }
@@ -69,7 +69,7 @@ export default function syncHistoryWithStore(history, store, {
   }
 
   // Whenever location changes, dispatch an action to get it in the store
-  const handleLocationChange = (location) => {
+  const handleLocationChange = location => {
     // ... unless we just caused that location change
     if (isTimeTraveling) {
       return
