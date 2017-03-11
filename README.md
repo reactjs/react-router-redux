@@ -1,3 +1,11 @@
+# We're moving!
+
+react-router-redux is going to live alongside react-router. In fact, it's already set up over there. [Go take a look!](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-redux)
+
+**This repo is for react-router-redux 4.x, which is only compatible with react-router 2.x and 3.x**
+
+The next version of react-router-redux will be 5.0.0 and will be compatible with react-router 4.x. It is currently being actively developed [over there](https://github.com/ReactTraining/react-router/tree/master/packages/react-router-redux). Feel free to help out!
+
 # react-router-redux
 
 [![npm version](https://img.shields.io/npm/v/react-router-redux.svg?style=flat-square)](https://www.npmjs.com/package/react-router-redux) [![npm downloads](https://img.shields.io/npm/dm/react-router-redux.svg?style=flat-square)](https://www.npmjs.com/package/react-router-redux) [![build status](https://img.shields.io/travis/reactjs/react-router-redux/master.svg?style=flat-square)](https://travis-ci.org/reactjs/react-router-redux)
