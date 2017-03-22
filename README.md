@@ -135,6 +135,7 @@ store.dispatch(push('/foo'))
 - [examples/basic](/examples/basic) - basic reference implementation
 
 Examples from the community:
+
 * [react-redux-styled-hot-universal](https://github.com/krasevych/react-redux-styled-hot-universal) (SSR, Universal Webpack, Redux, React-router, Webpack 2, Babel, Styled Components and more...)
 * [shakacode/react-webpack-rails-tutorial](https://github.com/shakacode/react-webpack-rails-tutorial) - react-router-redux including **Server Rendering** using [React on Rails](https://github.com/shakacode/react_on_rails/), live at [www.reactrails.com](http://www.reactrails.com/).
 * [davezuko/react-redux-starter-kit](https://github.com/davezuko/react-redux-starter-kit) - popular redux starter kit
