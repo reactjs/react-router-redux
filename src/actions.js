@@ -5,12 +5,10 @@
  */
 export const CALL_HISTORY_METHOD = '@@router/CALL_HISTORY_METHOD'
 
-function updateLocation(method) {
-  return (...args) => ({
-    type: CALL_HISTORY_METHOD,
-    payload: { method, args }
-  })
-}
+const updateLocation = method => (...args) => ({
+  type: CALL_HISTORY_METHOD,
+  payload: { method, args },
+})
 
 /**
  * These actions correspond to the history API.
