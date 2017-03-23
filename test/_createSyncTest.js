@@ -153,6 +153,7 @@ export default function createTests(createHistory, name, reset = defaultReset) {
           updates.push(location.pathname)
         })
 
+        history.push('/')
         history.push('/foo')
         history.push('/foo')
         history.replace('/foo')
