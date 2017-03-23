@@ -98,7 +98,7 @@ These two hooks will allow you to store the state that this library uses in what
 
 #### How do I access router state in a container component?
 
-React Router [provides route information via a route component's props](https://github.com/ReactTraining/react-router/blob/master/docs/Introduction.md#getting-url-parameters). This makes it easy to access them from a container component. When using [react-redux](https://github.com/reactjs/react-redux) to `connect()` your components to state, you can access the router's props from the [2nd argument of `mapStateToProps`](https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options):
+React Router [provides route information via a route component's props](https://github.com/ReactTraining/react-router/blob/v3/docs/Introduction.md#getting-url-parameters). This makes it easy to access them from a container component. When using [react-redux](https://github.com/reactjs/react-redux) to `connect()` your components to state, you can access the router's props from the [2nd argument of `mapStateToProps`](https://github.com/reactjs/react-redux/blob/master/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options):
 
 ```js
 function mapStateToProps(state, ownProps) {
@@ -171,7 +171,7 @@ The `options` object takes in the following optional keys:
 **You must install `routerMiddleware` for these action creators to work.**
 
 Action creators that correspond with the [history methods of the same name]
-(https://github.com/mjackson/history/blob/master/README.md#navigation). For reference they are defined as follows:
+(https://github.com/ReactTraining/history/blob/v3/docs/GettingStarted.md#navigation). For reference they are defined as follows:
 
 - `push` - Pushes a new location to history, becoming the current location.
 - `replace` - Replaces the current location in history.
@@ -179,7 +179,7 @@ Action creators that correspond with the [history methods of the same name]
 - `goForward` - Moves forward one location. Equivalent to `go(1)`
 - `goBack` - Moves backwards one location. Equivalent to `go(-1)`
 
-Both `push` and `replace` take in a [location descriptor](https://github.com/ReactTraining/history/blob/v2/docs/Glossary.md#locationdescriptor), which can be an object describing the URL or a plain string URL.
+Both `push` and `replace` take in a [location descriptor](https://github.com/ReactTraining/history/blob/v3/docs/Location.md), which can be an object describing the URL or a plain string URL.
 
 These action creators are also available in one single object as `routerActions`, which can be used as a convenience when using Redux's `bindActionCreators()`.
 
