@@ -75,9 +75,6 @@ export default function syncHistoryWithStore(history, store, {
       return
     }
 
-    // Remember where we are
-    currentLocation = location
-
     // Are we being called for the first time?
     if (!initialLocation) {
       // Remember as a fallback in case state is reset
@@ -88,6 +85,9 @@ export default function syncHistoryWithStore(history, store, {
         return
       }
     }
+
+    // Remember where we are
+    currentLocation = location
 
     // Tell the store to update by dispatching an action
     store.dispatch({

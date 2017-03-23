@@ -164,7 +164,7 @@ export default function createTests(createHistory, name, reset = defaultReset) {
     })
 
     describe('Server', () => {
-      it('handles inital load correctly', () => {
+      it('handles initial load correctly', () => {
         // Server
         const { store: serverStore } = createSyncedHistoryAndStore(createHistory('/'))
         expect(serverStore).toContainLocation({
@@ -192,6 +192,13 @@ export default function createTests(createHistory, name, reset = defaultReset) {
 
         // We expect that we still didn't get any call to history after a non-router action is dispatched
         expect(historyListen.calls.length).toBe(0)
+
+        clientStore.dispatch({
+          type: 'non-router'
+        })
+
+        // We expect that we still get only a single call to history after a non-router action is dispatched
+        expect(historyListen.calls.length).toBe(1)
 
         historyUnsubscribe()
       })
