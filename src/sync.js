@@ -102,10 +102,30 @@ export default function syncHistoryWithStore(history, store, {
     handleLocationChange(history.getCurrentLocation())
   }
 
-  // The enhanced history uses store as source of truth
-  return {
-    ...history,
-    // The listeners are subscribed to the store instead of history
+  // support history 4.x
+  if(history.location) {
+    handleLocationChange(history.location)
+  }
+
+  const wrapper = {}
+
+  Object.keys(history).map((key) => {
+    if (key === 'listen') return
+
+    if (typeof history[key] === 'function') {
+      wrapper[key] = history[key]
+      return
+    }
+
+    Object.defineProperty(wrapper, key, {
+      configurable: false,
+      get: function () {
+        return history[key]
+      }
+    })
+  })
+
+  Object.assign(wrapper, {
     listen(listener) {
       // Copy of last location.
       let lastPublishedLocation = getLocationInStore(true)
@@ -145,5 +165,7 @@ export default function syncHistoryWithStore(history, store, {
       }
       unsubscribeFromHistory()
     }
-  }
+  })
+
+  return wrapper
 }
