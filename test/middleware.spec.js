@@ -9,13 +9,13 @@ describe('routerMiddleware', () => {
   beforeEach(() => {
     history = {
       push: createSpy(),
-      replace: createSpy()
+      replace: createSpy(),
+      getCurrentLocation: () => ({ pathname: '/bar' })
     }
     next = createSpy()
 
     dispatch = routerMiddleware(history)()(next)
   })
-
 
   it('calls the appropriate history method', () => {
     dispatch(push('/foo'))
@@ -28,6 +28,10 @@ describe('routerMiddleware', () => {
   })
 
   it('ignores other actions', () => {
+    history.getCurrentLocation = () => ({ pathname: '/foo' })
+    dispatch(push('/foo'))
+    expect(history.push).toNotHaveBeenCalled()
+
     dispatch({ type: 'FOO' })
     expect(next).toHaveBeenCalled()
   })

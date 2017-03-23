@@ -12,6 +12,12 @@ export default function routerMiddleware(history) {
     }
 
     const { payload: { method, args } } = action
-    history[method](...args)
+    const location = history.getCurrentLocation()
+
+    if (location.pathname !== args[0]) {
+      history[method](...args)
+    } else {
+      return next(action)
+    }
   }
 }
