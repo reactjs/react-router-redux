@@ -187,6 +187,6 @@ These action creators are also available in one single object as `routerActions`
 
 A middleware you can apply to your Redux `store` to capture dispatched actions created by the action creators. It will redirect those actions to the provided `history` instance.
 
-#### `LOCATION_CHANGE`
+#### `@@router/LOCATION_CHANGE`
 
 An action type that you can listen for in your reducers to be notified of route updates. Fires *after* any changes to history.
