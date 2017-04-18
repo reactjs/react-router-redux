@@ -43,7 +43,8 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { createStore, combineReducers } from 'redux'
 import { Provider } from 'react-redux'
-import { Router, Route, browserHistory } from 'react-router'
+import { Router, Route } from 'react-router'
+import { createHistory } from 'history'
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'
 
 import reducers from '<project-path>/reducers'
@@ -57,7 +58,7 @@ const store = createStore(
 )
 
 // Create an enhanced history that syncs navigation events with the store
-const history = syncHistoryWithStore(browserHistory, store)
+const history = syncHistoryWithStore(createHistory(), store)
 
 ReactDOM.render(
   <Provider store={store}>
@@ -80,7 +81,7 @@ Now any time you navigate, which can come from pressing browser buttons or navig
 Simply listen to the enhanced history via `history.listen`. This takes in a function that will receive a `location` any time the store updates. This includes any time travel activity performed on the store.
 
 ```js
-const history = syncHistoryWithStore(browserHistory, store)
+const history = syncHistoryWithStore(createHistory(), store)
 
 history.listen(location => analyticsService.track(location.pathname))
 ```
@@ -113,14 +114,14 @@ You should not read the location state directly from the Redux store. This is be
 
 #### What if I want to issue navigation events via Redux actions?
 
-React Router provides singleton versions of history (`browserHistory` and `hashHistory`) that you can import and use from anywhere in your application. However, if you prefer Redux style actions, the library also provides a set of action creators and a middleware to capture them and redirect them to your history instance.
+React Router provides singleton versions of history (`createHistory()` , `createhashHistory()` and `createMemoryHistory()`) that you can import and use from anywhere in your application. However, if you prefer Redux style actions, the library also provides a set of action creators and a middleware to capture them and redirect them to your history instance.
 
 ```js
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { routerMiddleware, push } from 'react-router-redux'
 
 // Apply the middleware to the store
-const middleware = routerMiddleware(browserHistory)
+const middleware = routerMiddleware(createHistory())
 const store = createStore(
   reducers,
   applyMiddleware(middleware)
