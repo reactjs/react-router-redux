@@ -8,7 +8,7 @@ import { createStore, combineReducers } from 'redux'
 import { ActionCreators, instrument } from 'redux-devtools'
 
 import syncHistoryWithStore from '../src/sync'
-import { routerReducer } from '../src/reducer'
+import { routerReducer, LOCATION_CHANGE } from '../src/reducer'
 
 expect.extend({
   toContainLocation({
@@ -32,12 +32,14 @@ expect.extend({
 })
 
 
-function createSyncedHistoryAndStore(originalHistory) {
+function createSyncedHistoryAndStore(originalHistory, select = null) {
 
   const store = createStore(combineReducers({
     routing: routerReducer
   }))
-  const history = syncHistoryWithStore(originalHistory, store)
+
+  const opt = !select ? undefined : {  selectLocationState: select }
+  const history = syncHistoryWithStore(originalHistory, store, opt)
 
   return { history, store }
 }
@@ -160,6 +162,22 @@ export default function createTests(createHistory, name, reset = defaultReset) {
         expect(updates).toEqual([ '/foo', '/foo', '/foo' ])
 
         historyUnsubscribe()
+      })
+
+      it('does not updates history if store has matching state on first load', () => {
+        const originalHistory = createHistory()
+        const transitonSpy = expect.spyOn(originalHistory, 'transitionTo')
+
+        const select = state => JSON.parse(JSON.stringify(state.routing)) // Same object structure with different reference
+        const { store } = createSyncedHistoryAndStore(originalHistory, select)
+
+        const { locationBeforeTransitions: location } = store.getState().routing
+        store.dispatch({
+          type: LOCATION_CHANGE,
+          payload: location
+        })
+
+        expect(transitonSpy.calls.length).toBe(0)
       })
     })
 
