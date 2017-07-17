@@ -2,6 +2,14 @@ import { LOCATION_CHANGE } from './reducer'
 
 const defaultSelectLocationState = state => state.routing
 
+const isEqual = (state1, state2) => {
+  if (state1 === state2) {
+    return true
+  }
+
+  return JSON.stringify(state1) === JSON.stringify(state2)
+}
+
 /**
  * This function synchronizes your history state with the Redux store.
  * Location changes flow from history to the store. An enhanced history is
@@ -50,7 +58,7 @@ export default function syncHistoryWithStore(history, store, {
   if (adjustUrlOnReplay) {
     const handleStoreChange = () => {
       const locationInStore = getLocationInStore(true)
-      if (currentLocation === locationInStore || initialLocation === locationInStore) {
+      if (isEqual(currentLocation, locationInStore) || isEqual(initialLocation, locationInStore)) {
         return
       }
 
