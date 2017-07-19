@@ -7,6 +7,7 @@ import { CALL_HISTORY_METHOD } from './actions'
  */
 export default function routerMiddleware(history) {
   return () => next => action => {
+    if (!action) return next()
     if (action.type !== CALL_HISTORY_METHOD) {
       return next(action)
     }
