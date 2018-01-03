@@ -170,8 +170,7 @@ The `options` object takes in the following optional keys:
 
 **You must install `routerMiddleware` for these action creators to work.**
 
-Action creators that correspond with the [history methods of the same name]
-(https://github.com/ReactTraining/history/blob/v3/docs/GettingStarted.md#navigation). For reference they are defined as follows:
+Action creators that correspond with the [history methods of the same name](https://github.com/ReactTraining/history/blob/v3/docs/GettingStarted.md#navigation). For reference they are defined as follows:
 
 - `push` - Pushes a new location to history, becoming the current location.
 - `replace` - Replaces the current location in history.
